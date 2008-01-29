@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.1.1
+# HME Server for Python, v0.1.2
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __license__ = 'LPGL'
 
 import os
@@ -64,18 +64,19 @@ apps = [name for name in os.listdir(ROOT) if
 
 apptitles = {}
 
-for name in apps:
+for name in apps[:]:
     try:
         app = __import__(name)
-        apptitles[name] = getattr(app, 'TITLE', name.title())
-    except ImportError:
+    except:
         apps.remove(name)
+    else:
+        apptitles[name] = getattr(app, 'TITLE', name.title())
 
 class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
     pass
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
-    server_version = 'HMEPython/0.1'
+    server_version = 'HMEPython/0.1.2'
 
     BUFSIZE = 0x10000
 
