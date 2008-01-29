@@ -1,4 +1,4 @@
-HME for Python, v0.1
+HME for Python, v0.1.1
 by William McBrine <wmcbrine@gmail.com>
 January 28, 2008
 
@@ -25,7 +25,7 @@ In Windows:
 
   python hmeserver.py
 
-This will serve the example apps. The default port is 8080 (not TiVo's 
+This will serve the example apps. The default port is 9042 (not TiVo's 
 7288).
 
 

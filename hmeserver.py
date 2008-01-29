@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.1
+# HME Server for Python, v0.1.1
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.1'
+__version__ = '0.1.1'
 __license__ = 'LPGL'
 
 import os
@@ -54,7 +54,7 @@ import Zeroconf
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
 HOST = ''      # By default, attach to all available interfaces
-PORT = 8080    # TiVo Inc. uses 7288. But set it to 80 to make "Manually 
+PORT = 9042    # TiVo Inc. uses 7288. But set it to 80 to make "Manually 
                # add a server" work.
 ROOT = os.path.abspath(os.path.dirname(__file__))   # You are here
 
