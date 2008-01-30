@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.1.2
+# HME Server for Python, v0.1.3
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __license__ = 'LPGL'
 
 import os
@@ -76,7 +76,7 @@ class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
     pass
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
-    server_version = 'HMEPython/0.1.2'
+    server_version = 'HMEPython/%s' % __version__
 
     BUFSIZE = 0x10000
 

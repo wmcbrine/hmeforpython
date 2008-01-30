@@ -1,4 +1,4 @@
-HME for Python, v0.1.1
+HME for Python, v0.1.3
 by William McBrine <wmcbrine@gmail.com>
 January 28, 2008
 
