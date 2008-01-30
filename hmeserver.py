@@ -136,10 +136,10 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_header('Content-type', 'application/x-hme')
             self.end_headers()
 
-            print time.asctime(), 'Starting HME'
+            print time.asctime(), 'Starting HME: %s' % name
             appinst = appclass(context=self)
             appinst.mainloop()
-            print time.asctime(), 'Ending HME'
+            print time.asctime(), 'Ending HME: %s' % name
 
         else:
             path = ROOT + urllib.unquote(self.path).replace('/..', '')

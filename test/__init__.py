@@ -1,3 +1,8 @@
+# My test app for whatever. Contents will change randomly from version 
+# to version. Old commented-out stuff will sometimes hang around, 
+# sometimes not.
+
+import random
 import time
 
 from hme import *
@@ -25,6 +30,13 @@ class Test(Application):
 
         #self.root.set_image('test/back1.mpg')
         self.root.set_image('test/back1.jpg', flags=RSRC_IMAGE_HFIT)
+        #self.root.set_image('test/tapdancer.gif', flags=RSRC_IMAGE_VFIT)
+
+        dancer = Image(self, 'test/tapdancer.gif')
+        self.silly = []
+        for i in xrange(10):
+            self.silly.append(self.root.child(resource=dancer))
+            self.update_silly(i)
 
         safe = View(self, SAFE_TITLE_H, SAFE_TITLE_V,
                     self.root.width - SAFE_TITLE_H * 2,
@@ -56,7 +68,9 @@ class Test(Application):
             self.active = False
 
     def handle_key_press(self, keynum, rawcode=None):
-        if keynum != KEY_LEFT:
+        if keynum == KEY_TIVO:
+            self.update_silly(rawcode)
+        elif keynum != KEY_LEFT:
             self.text.resource.remove()
             self.text.set_text(KEY_NAMES[keynum])
             if keynum == KEY_RIGHT:
@@ -84,3 +98,13 @@ class Test(Application):
             return res
         else:
             return self.current_resolution
+
+    def handle_error(self, code, text):
+        print code, text
+
+    def update_silly(self, index):
+        new_x = random.randrange(-self.root.width / 2, self.root.width / 2)
+        new_y = random.randrange(-self.root.height / 2, self.root.height / 2)
+        speed = random.randrange(2000, 8000, 100)
+        self.silly[index].set_translation(new_x, new_y, animtime=speed)
+        self.send_key(KEY_TIVO, index, animtime=speed)
