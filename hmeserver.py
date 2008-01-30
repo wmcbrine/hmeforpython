@@ -109,6 +109,14 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     XML_CLOSER = '</TiVoContainer>'
 
+    def address_string(self):
+        """ Override address_string() with a version that skips the 
+            reverse lookup. Suggestion of Jason Michalski.
+
+        """
+        host, port = self.client_address[:2]
+        return host
+
     def _page(self, body):
         name = self.path.strip('/')
         if name.startswith('TiVoConnect'):
