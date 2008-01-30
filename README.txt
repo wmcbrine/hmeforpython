@@ -1,6 +1,6 @@
 HME for Python, v0.1.3
 by William McBrine <wmcbrine@gmail.com>
-January 28, 2008
+January 30, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
