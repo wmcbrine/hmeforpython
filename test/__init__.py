@@ -30,7 +30,6 @@ class Test(Application):
 
         #self.root.set_image('test/back1.mpg')
         self.root.set_image('test/back1.jpg', flags=RSRC_IMAGE_HFIT)
-        #self.root.set_image('test/tapdancer.gif', flags=RSRC_IMAGE_VFIT)
 
         dancer = Image(self, 'test/tapdancer.gif')
         self.silly = []
