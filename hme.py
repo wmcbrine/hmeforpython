@@ -1020,7 +1020,6 @@ class Application(Resource):
         # The root view object -- created after the startup events to 
         # accomodate any resolution changes.
         self.root = View(self, id=ID_ROOT_VIEW)
-        self.root.set_visible()
 
     def mainloop(self):
         """ The main loop -- startup, handle events, cleanup, exit. 
@@ -1028,11 +1027,14 @@ class Application(Resource):
 
         """
         self.startup()
+        self.root.set_visible()
         while self.active and self.get_event():
             pass
         self.active = False
         self.cleanup()
         self.set_active(False)
+        while self.get_event():
+            pass
 
     def next_resnum(self):
         """ Return the next available resource ID number, starting from 
@@ -1051,6 +1053,7 @@ class Application(Resource):
             EVT_RESOLUTION_INFO), and returns True.
 
         """
+        self.wfile.flush()
         chunk = get_chunk(self.rfile)
         if not chunk:
             return False
