@@ -33,6 +33,9 @@ class Clock(Application):
         tm = time.time()
         n = 0
 
+        while not self.active:
+            pass
+
         while self.active:
             # fade out the old time
             self.time_views[n].set_transparency(1, fade)

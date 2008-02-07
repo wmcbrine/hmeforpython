@@ -1013,12 +1013,7 @@ class Application(Resource):
         # self.answer[-2:] contains the reciever's supported HME 
         # version, if you care. (I get 0.45 with TiVo 9.2.)
 
-        # Startup events
-        while not self.active and self.get_event():
-            pass
-
-        # The root view object -- created after the startup events to 
-        # accomodate any resolution changes.
+        # The root view object
         self.root = View(self, id=ID_ROOT_VIEW)
 
     def mainloop(self):
@@ -1028,11 +1023,21 @@ class Application(Resource):
         """
         self.startup()
         self.root.set_visible()
+
+        # Startup events
+        while not self.active and self.get_event():
+            pass
+
+        # Run events until there are no more, or until self.active is 
+        # set to False.
         while self.active and self.get_event():
             pass
+
         self.active = False
         self.cleanup()
         self.set_active(False)
+
+        # Discard any pending events
         while self.get_event():
             pass
 
@@ -1159,7 +1164,8 @@ class Application(Resource):
                          pack_vint(new_res[2]) +
                          pack_vint(new_res[3]))
                 self.current_resolution = new_res
-                View(self, id=ID_ROOT_VIEW).set_bounds()
+                self.root.width = new_res[0]
+                self.root.height = new_res[1]
 
         return True
 
