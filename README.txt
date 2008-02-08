@@ -20,10 +20,10 @@ examples (mostly ported from TiVo's Java HME SDK). Everything is
 released under the LGPL 2.1+, except where noted. (Most of the examples 
 are Common Public License.)
 
-I developed this in Python 2.5.1, and haven't tested it with other 
-versions, but it does nothing exotic. (hme.py depends only on the struct 
-module. hmeserver.py is a bit more demanding.) But I have tested it in 
-Linux, Mac OS X, and Windows XP.
+I developed this in Python 2.5.1, and tested it in Linux, Mac OS X, and 
+Windows XP, and with Python 2.4.4. The requirements are minimal. (hme.py 
+depends only on the struct module. hmeserver.py is a bit more demanding, 
+but uses only the standard library.)
 
 
 Quick Start
