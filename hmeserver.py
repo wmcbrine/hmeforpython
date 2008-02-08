@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.1.3
+# HME Server for Python, v0.2
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.1.3'
+__version__ = '0.2'
 __license__ = 'LPGL'
 
 import os
@@ -188,6 +188,7 @@ class Broadcast:
         self.appinfo = []
         self.rz = Zeroconf.Zeroconf()
         for name in apps:
+            print 'Publishing:', name
             desc = {'path': '/%s/' % name,
                     'version': '%d.%d' % (HME_MAJOR_VERSION,
                                           HME_MINOR_VERSION)}
@@ -200,6 +201,7 @@ class Broadcast:
             self.appinfo.append(info)
 
     def shutdown(self):
+        print 'Unregistering:', ' '.join(apps)
         for info in self.appinfo:
             self.rz.unregisterService(info)
         self.rz.close()
