@@ -104,10 +104,6 @@ class Effects(Application):
 
     def update(self):
         parity = False
-
-        while not self.active:
-            pass
-
         while self.active:
             parity = not parity
 

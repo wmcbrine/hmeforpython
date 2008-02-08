@@ -1,4 +1,4 @@
-# HME for Python, v0.1
+# HME for Python, v0.2
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.1'
+__version__ = '0.2'
 __license__ = 'LPGL'
 
 import struct
@@ -1021,12 +1021,9 @@ class Application(Resource):
             hmeserver.py calls this after initializing the app object.
 
         """
+        self.active = True
         self.startup()
         self.root.set_visible()
-
-        # Startup events
-        while not self.active and self.get_event():
-            pass
 
         # Run events until there are no more, or until self.active is 
         # set to False.
