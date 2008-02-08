@@ -31,11 +31,11 @@ class Test(Application):
         #self.root.set_image('test/back1.mpg')
         self.root.set_image('test/back1.jpg', flags=RSRC_IMAGE_HFIT)
 
-        dancer = Image(self, 'test/tapdancer.gif')
-        self.silly = []
-        for i in xrange(10):
-            self.silly.append(self.root.child(resource=dancer))
-            self.update_silly(i)
+        #dancer = Image(self, 'test/tapdancer.gif')
+        #self.silly = []
+        #for i in xrange(10):
+        #    self.silly.append(self.root.child(resource=dancer))
+        #    self.update_silly(i)
 
         safe = View(self, SAFE_TITLE_H, SAFE_TITLE_V,
                     self.root.width - SAFE_TITLE_H * 2,
