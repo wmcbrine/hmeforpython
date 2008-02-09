@@ -1,18 +1,6 @@
-HME for Python, v0.2
+HME for Python, v0.3
 by William McBrine <wmcbrine@gmail.com>
-February 7, 2008
-
-0.2   -- Moved root view activation to after startup(), but before event
-         handling; flush output before checking for input; flush input
-         after close. This should bring it a little closer to the Java
-         SDK's behavior, and makes it work under TiVo software 7.2.
-         Also, hmeserver now prints app names as they're published/
-         unregistered.
-0.1.3 -- Skip reverse lookup in hmeserver (thanks armooo); include the 
-         app name in the Starting/Stopping HME line; added a silly 
-         effect for the test app.
-0.1.2 -- The mechanism for skipping non-app directories was broken.
-0.1.1 -- Changed default port.
+February 8, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -51,6 +39,39 @@ In Windows, you're stuck with either Ctrl-Break, or closing the command
 window, neither of which does an orderly shutdown.
 
 
+Changes
+-------
+
+0.3   -- Absorb all exceptions during reading or writing, allowing 
+         orderly shutdown even if the socket is abrubtly cut off; also, 
+         the use of the term "chunk" was not appropriate -- it should be 
+         reserved for the components of the chunked stream.
+
+         Removed self.app_info and self.device_info; added 
+         handle_app_info() and handle_device_info(). With the new 
+         structure (startup(), activate, then start handling events), 
+         something like this is necessary.
+
+         Prevent animate and effects from being run on the broken 9.1 
+         software (the others seem OK); print more info about events in 
+         the test app.
+
+0.2   -- Moved root view activation to after startup(), but before event
+         handling; flush output before checking for input; flush input
+         after close. This should bring it a little closer to the Java
+         SDK's behavior, and makes it work under TiVo software 7.2.
+
+         hmeserver now prints app names as they're published/unregistered.
+
+0.1.3 -- Skip reverse lookup in hmeserver (thanks armooo).
+
+         Include the app name in the Starting/Stopping HME line.
+
+0.1.2 -- The mechanism for skipping non-app directories was broken.
+
+0.1.1 -- Changed default port.
+
+
 More Info
 ---------
 
@@ -63,14 +84,3 @@ Java SDK. And the rest of the documentation from that package may be
 helpful in a general way, but it can also be misleading, because (apart 
 from the example apps) this is NOT a port of the Java SDK; it's based on 
 the protocol spec.
-
-
-Bugs
-----
-
-If you run the Animate demo from a Series 2 TiVo running 9.1 software, 
-it will crash and make all your text disappear. This is a TiVo-side bug, 
-not a bug in HME for Python; you can see the same behavior by running 
-the original version of Animate from TiVo's Java HME SDK. Other models 
-and/or software versions (Series 2 running 7.2, Series 3 running 9.2) 
-are not affected.
