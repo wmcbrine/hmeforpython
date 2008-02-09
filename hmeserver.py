@@ -67,7 +67,7 @@ apptitles = {}
 for name in apps[:]:
     try:
         app = __import__(name)
-    except:
+    except (ValueError, ImportError):
         apps.remove(name)
     else:
         apptitles[name] = getattr(app, 'TITLE', name.title())
