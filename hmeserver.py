@@ -188,7 +188,7 @@ class Broadcast:
         self.appinfo = []
         self.rz = Zeroconf.Zeroconf()
         for name in apps:
-            print 'Publishing:', name
+            print 'Registering:', name
             desc = {'path': '/%s/' % name,
                     'version': '%d.%d' % (HME_MAJOR_VERSION,
                                           HME_MINOR_VERSION)}
