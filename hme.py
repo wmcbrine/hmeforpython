@@ -996,9 +996,6 @@ class Application(Resource):
             self.rfile = infile
             self.wfile = outfile
 
-        self.device_info = {}
-        self.app_info = {}
-
         # Resource caches
         self.resources = {}
         self.colors = {}
@@ -1096,29 +1093,30 @@ class Application(Resource):
                 self.handle_key_release(keynum, rawcode)
 
         elif evnum == EVT_DEVICE_INFO:
-            self.device_info = {}
+            info = {}
             count = ev.unpack_vint()
             for i in xrange(count):
                 key = ev.unpack_string()
                 value = ev.unpack_string()
-                self.device_info[key] = value
+                info[key] = value
+            self.handle_device_info(info)
 
         elif evnum == EVT_APP_INFO:
-            self.app_info = {}
+            info = {}
             count = ev.unpack_vint()
             for i in xrange(count):
                 key = ev.unpack_string()
                 value = ev.unpack_string()
-                self.app_info[key] = value
-                if key == 'active' and value == 'true':
-                    self.active = True
-            if 'error.code' in self.app_info:
-                code = self.app_info['error.code']
-                if 'error.text' in self.app_info:
-                    text = self.app_info['error.text']
+                info[key] = value
+            if 'error.code' in info:
+                code = info['error.code']
+                if 'error.text' in info:
+                    text = info['error.text']
                 else:
                     text = ''
                 self.handle_error(code, text)
+            else:
+                self.handle_app_info(info)
 
         elif evnum == EVT_RSRC_INFO:
             info = {}
@@ -1225,6 +1223,14 @@ class Application(Resource):
 
     def handle_error(self, code, text):
         """ Override this to handle errors from EVT_APP_INFO. """
+        pass
+
+    def handle_app_info(self, info):
+        """ Override this to handle anything else from EVT_APP_INFO """
+        pass
+
+    def handle_device_info(self, info):
+        """ Override this to handle EVT_DEVICE_INFO """
         pass
 
     def handle_resource_info(self, resource, status, info):
