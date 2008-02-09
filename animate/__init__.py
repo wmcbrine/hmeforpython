@@ -19,7 +19,12 @@ from hme import *
 """
 
 class Animate(Application):
-    def startup(self):
+    def handle_device_info(self, info):
+        if 'version' in info and info['version'].startswith('9.1'):
+            self.root.set_text('Sorry, this program is not compatible\n' +
+                               'with TiVo software version 9.1.')
+            return
+
         self.sprites = []
 
         # create a container view that will hold everything else, sized 

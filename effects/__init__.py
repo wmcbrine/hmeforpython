@@ -37,7 +37,14 @@ from hme import *
 """
 
 class Effects(Application):
-    def startup(self):
+    def handle_device_info(self, info):
+        if 'version' in info and info['version'].startswith('9.1'):
+            self.root.set_text('Sorry, this program is not compatible\n' +
+                               'with TiVo software version 9.1.')
+            time.sleep(5)
+            self.active = False
+            return
+
         # Prepare our view & container
         self.root.set_color()
 
