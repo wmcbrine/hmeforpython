@@ -282,17 +282,17 @@ FONT_METRICS_GLYPH = 2
 
 #--- Low-level stream handling ----------------------------------------
 
-class EventChunk:
-    """ Take a chunk of raw event data and allow various Python types to 
-        be extracted from it.
+class EventData:
+    """ Take raw event data and allow various Python types to be 
+        extracted from it.
 
     """
-    def __init__(self, chunk):
-        self.chunk = chunk
+    def __init__(self, data):
+        self.data = data
         self.index = 0
 
     def next(self):
-        c = ord(self.chunk[self.index])
+        c = ord(self.data[self.index])
         self.index += 1
         return c
 
@@ -328,14 +328,14 @@ class EventChunk:
 
     def unpack_float(self):
         """ HME float to float """
-        value = struct.unpack('!f', self.chunk[self.index:self.index + 4])[0]
+        value = struct.unpack('!f', self.data[self.index:self.index + 4])[0]
         self.index += 4
         return value
 
     def unpack_vdata(self):
         """ HME variable-length data to str """
         length = self.unpack_vuint()
-        result = self.chunk[self.index:self.index + length]
+        result = self.data[self.index:self.index + length]
         self.index += length
         return result
 
@@ -343,17 +343,25 @@ class EventChunk:
         """ HME string to unicode """
         return self.unpack_vdata().decode('utf-8')
 
-def get_chunk(stream):
-    """ Read HME-style chunked data from the input stream. """
-    chunk = ''
-    rawlen = stream.read(2)
-    if len(rawlen) != 2:
-        return None
-    length = struct.unpack('!H', rawlen)[0]
-    while length:
-        chunk += stream.read(length)
-        length = struct.unpack('!H', stream.read(2))[0]
-    return chunk
+def get_chunked(stream):
+    """ Read HME-style chunked event data from the input stream. """
+    data = ''
+    while True:
+        # Get the next chunk length
+        try:
+            length = struct.unpack('!H', stream.read(2))[0]
+        except:
+            return None
+
+        # A zero-length chunk marks the end of the event
+        if not length:
+            return data
+
+        # Otherwise, append the new chunk
+        try:
+            data += stream.read(length)
+        except:
+            return None
 
 def pack_bool(value):
     """ bool to HME boolean """
@@ -396,18 +404,24 @@ def pack_string(value):
     """ unicode to HME string """
     return pack_vdata(value.encode('utf-8'))
 
-def put_chunk(stream, value):
+def put_chunked(stream, data):
     """ Write HME-style chunked data to the output stream. """
     MAXSIZE = 0xfffe
-    if len(value):
-        index = 0
-        while len(value[index:]) > MAXSIZE:
-            stream.write(struct.pack('!H', MAXSIZE))
-            stream.write(value[index:index + MAXSIZE])
-            index += MAXSIZE
-        stream.write(struct.pack('!H', len(value[index:])))
-        stream.write(value[index:])
-    stream.write('\0\0')
+    size = len(data)
+    index = 0
+    while size:
+        blocksize = size % MAXSIZE
+        try:
+            stream.write(struct.pack('!H', blocksize))
+            stream.write(data[index:index + blocksize])
+        except:
+            return
+        index += blocksize
+        size -= blocksize
+    try:
+        stream.write('\0\0')
+    except:
+        pass
 
 #--- Resource classes -------------------------------------------------
 
@@ -434,10 +448,10 @@ class HMEObject:
             pre-packed into HME format.
 
         """
-        put_chunk(self.app.wfile,
-                  pack_vint(cmd) +
-                  pack_vint(self.id) +
-                  params)
+        put_chunked(self.app.wfile,
+                    pack_vint(cmd) +
+                    pack_vint(self.id) +
+                    params)
 
 class Resource(HMEObject):
     """ Base class for Resources
@@ -1055,12 +1069,16 @@ class Application(Resource):
             EVT_RESOLUTION_INFO), and returns True.
 
         """
-        self.wfile.flush()
-        chunk = get_chunk(self.rfile)
-        if not chunk:
+        try:
+            self.wfile.flush()
+        except:
             return False
 
-        ev = EventChunk(chunk)
+        data = get_chunked(self.rfile)
+        if not data:
+            return False
+
+        ev = EventData(data)
 
         evnum = ev.unpack_vint()
         resource = ev.unpack_vint()
