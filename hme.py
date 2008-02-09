@@ -1,4 +1,4 @@
-# HME for Python, v0.2
+# HME for Python, v0.3
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.2'
+__version__ = '0.3'
 __license__ = 'LPGL'
 
 import struct
@@ -1115,6 +1115,8 @@ class Application(Resource):
                 else:
                     text = ''
                 self.handle_error(code, text)
+            elif 'active' in info and info['active'] = true:
+                self.handle_active()
             else:
                 self.handle_app_info(info)
 
@@ -1221,16 +1223,19 @@ class Application(Resource):
         """ Override this to handle key releases. (EVT_KEY, KEY_RELEASE) """
         pass
 
+    def handle_active(self):
+        """ Override this to handle "active = true" from EVT_APP_INFO. """
+
     def handle_error(self, code, text):
         """ Override this to handle errors from EVT_APP_INFO. """
         pass
 
     def handle_app_info(self, info):
-        """ Override this to handle anything else from EVT_APP_INFO """
+        """ Override this to handle anything else from EVT_APP_INFO. """
         pass
 
     def handle_device_info(self, info):
-        """ Override this to handle EVT_DEVICE_INFO """
+        """ Override this to handle EVT_DEVICE_INFO. """
         pass
 
     def handle_resource_info(self, resource, status, info):

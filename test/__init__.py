@@ -99,6 +99,10 @@ class Test(Application):
         else:
             return self.current_resolution
 
+    def handle_active(self):
+        print 'Receiver says we're active'
+        print
+
     def handle_app_info(self, info):
         for key in info:
             print key, '=', info[key]
