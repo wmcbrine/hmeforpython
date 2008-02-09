@@ -90,6 +90,7 @@ class Test(Application):
             else:
                 print ' ',
             print '%4dx%d %d:%d' % res
+        print
         res = (640, 480, 1, 1)
         #res = (704, 480, 40, 33)
         #res = (1280, 720, 1, 1)
@@ -98,8 +99,21 @@ class Test(Application):
         else:
             return self.current_resolution
 
+    def handle_app_info(self, info):
+        for key in info:
+            print key, '=', info[key]
+        print
+
     def handle_error(self, code, text):
         print code, text
+        print
+
+    def handle_device_info(self, info):
+        self.handle_app_info(info)
+
+    def handle_resource_info(self, resource, status, info):
+        print resource, status
+        self.handle_app_info(info)
 
     def update_silly(self, index):
         new_x = random.randrange(-self.root.width / 2, self.root.width / 2)
