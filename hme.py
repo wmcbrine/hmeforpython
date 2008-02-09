@@ -1115,7 +1115,7 @@ class Application(Resource):
                 else:
                     text = ''
                 self.handle_error(code, text)
-            elif 'active' in info and info['active'] = true:
+            elif 'active' in info and info['active'] == 'true':
                 self.handle_active()
             else:
                 self.handle_app_info(info)
