@@ -746,9 +746,9 @@ class View(HMEObject):
             if app is None:
                 app = parent.app
             if width is None:
-                width = parent.width
+                width = parent.width - xpos
             if height is None:
-                height = parent.height
+                height = parent.height - ypos
         else:
             width, height = app.current_resolution[:2]
         self.xpos = xpos
