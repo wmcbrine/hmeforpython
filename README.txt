@@ -1,6 +1,6 @@
-HME for Python, v0.3
+HME for Python, v0.4
 by William McBrine <wmcbrine@gmail.com>
-February 8, 2008
+February 9, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -42,18 +42,24 @@ window, neither of which does an orderly shutdown.
 Changes
 -------
 
-0.3   -- Absorb all exceptions during reading or writing, allowing 
-         orderly shutdown even if the socket is abrubtly cut off; also, 
-         the use of the term "chunk" was not appropriate -- it should be 
+0.4   -- Narrow the list of exceptions handled when importing -- this
+         covers non-module directories without masking real errors.
+
+         One more event handler -- handle_active(). This can be used
+         where startup() used to be, i.e., after the startup events.
+
+0.3   -- Absorb all exceptions during reading or writing, allowing
+         orderly shutdown even if the socket is abrubtly cut off; also,
+         the use of the term "chunk" was not appropriate -- it should be
          reserved for the components of the chunked stream.
 
-         Removed self.app_info and self.device_info; added 
-         handle_app_info() and handle_device_info(). With the new 
-         structure (startup(), activate, then start handling events), 
+         Removed self.app_info and self.device_info; added
+         handle_app_info() and handle_device_info(). With the new
+         structure (startup(), activate, then start handling events),
          something like this is necessary.
 
-         Prevent animate and effects from being run on the broken 9.1 
-         software (the others seem OK); print more info about events in 
+         Prevent animate and effects from being run on the broken 9.1
+         software (the others seem OK); print more info about events in
          the test app.
 
 0.2   -- Moved root view activation to after startup(), but before event

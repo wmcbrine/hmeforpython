@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.2
+# HME Server for Python, v0.4
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.2'
+__version__ = '0.4'
 __license__ = 'LPGL'
 
 import os
