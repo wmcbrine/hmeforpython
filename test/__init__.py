@@ -80,9 +80,6 @@ class Test(Application):
                 self.text.translate(yincrement=-10)
             Sound(self).play()
 
-    def handle_key_repeat(self, keynum, rawcode):
-        self.handle_key_press(keynum)
-
     def handle_resolution(self):
         for res in self.resolutions:
             if res == self.current_resolution:

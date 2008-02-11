@@ -1217,7 +1217,7 @@ class Application(Resource):
 
     def handle_key_repeat(self, keynum, rawcode=None):
         """ Override this to handle key repeats. (EVT_KEY, KEY_REPEAT) """
-        pass
+        self.handle_key_press(keynum, rawcode)
 
     def handle_key_release(self, keynum, rawcode=None):
         """ Override this to handle key releases. (EVT_KEY, KEY_RELEASE) """
