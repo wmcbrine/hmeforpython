@@ -1012,6 +1012,7 @@ class Application(Resource):
         self.last_color = None
         self.last_ttf = None
         self.last_font = None
+        self.focus = None
 
         self.current_resolution = (640, 480, 1, 1)
         self.resolutions = [self.current_resolution]
@@ -1086,11 +1087,15 @@ class Application(Resource):
             rawcode = ev.unpack_vint()
 
             if action == KEY_PRESS:
-                self.handle_key_press(keynum, rawcode)
+                handle = getattr(self.focus, 'handle_key_press',
+                                 self.handle_key_press)
             elif action == KEY_REPEAT:
-                self.handle_key_repeat(keynum, rawcode)
+                handle = getattr(self.focus, 'handle_key_repeat',
+                                 self.handle_key_repeat)
             elif action == KEY_RELEASE:
-                self.handle_key_release(keynum, rawcode)
+                handle = getattr(self.focus, 'handle_key_release',
+                                 self.handle_key_release)
+            handle(keynum, rawcode)
 
         elif evnum == EVT_DEVICE_INFO:
             info = {}
@@ -1099,7 +1104,9 @@ class Application(Resource):
                 key = ev.unpack_string()
                 value = ev.unpack_string()
                 info[key] = value
-            self.handle_device_info(info)
+            handle = getattr(self.focus, 'handle_device_info',
+                             self.handle_device_info)
+            handle(info)
 
         elif evnum == EVT_APP_INFO:
             info = {}
@@ -1114,11 +1121,17 @@ class Application(Resource):
                     text = info['error.text']
                 else:
                     text = ''
-                self.handle_error(code, text)
+                handle = getattr(self.focus, 'handle_error',
+                                 self.handle_error)
+                handle(code, text)
             elif 'active' in info and info['active'] == 'true':
-                self.handle_active()
+                handle = getattr(self.focus, 'handle_active',
+                                 self.handle_active)
+                handle()
             else:
-                self.handle_app_info(info)
+                handle = getattr(self.focus, 'handle_app_info',
+                                 self.handle_app_info)
+                handle(info)
 
         elif evnum == EVT_RSRC_INFO:
             info = {}
@@ -1128,11 +1141,14 @@ class Application(Resource):
                 key = ev.unpack_string()
                 value = ev.unpack_string()
                 info[key] = value
-            self.handle_resource_info(resource, status, info)
+            handle = getattr(self.focus, 'handle_resource_info',
+                             self.handle_resource_info)
+            handle(resource, status, info)
 
         elif evnum == EVT_IDLE:
             idle = ev.unpack_bool()
-            handled = self.handle_idle(idle)
+            handle = getattr(self.focus, 'handle_idle', self.handle_idle)
+            handled = handle(idle)
             self.put(CMD_RECEIVER_ACKNOWLEDGE_IDLE, pack_bool(handled))
 
         elif evnum == EVT_FONT_INFO:
@@ -1150,7 +1166,9 @@ class Application(Resource):
                 bounding = ev.unpack_float()
                 ev.index += 4 * extras
                 font.glyphs[unichr(id)] = (advance, bounding)
-            self.handle_font_info(font)
+            handle = getattr(self.focus, 'handle_font_info',
+                             self.handle_font_info)
+            handle(font)
 
         elif evnum == EVT_RESOLUTION_INFO:
             def unpack_res(ev, field_count):
@@ -1170,7 +1188,9 @@ class Application(Resource):
             for i in xrange(res_count):
                 self.resolutions.append(unpack_res(ev, field_count))
 
-            new_res = self.handle_resolution()
+            handle = getattr(self.focus, 'handle_resolution',
+                             self.handle_resolution)
+            new_res = handle()
             if new_res in self.resolutions and \
                new_res != self.current_resolution:
                 self.put(CMD_RECEIVER_SET_RESOLUTION,
