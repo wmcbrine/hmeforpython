@@ -1,4 +1,4 @@
-# HME for Python, v0.4
+# HME for Python, v0.5
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -44,7 +44,6 @@
     * Event pushing other than key presses
 
     Java SDK items not in the spec and not implemented here:
-    * Focus, including focus-based event handling
     * Persistent data -- you can get the tsn and Cookie from 
       self.context.headers, if using hmeserver.py, but what you do with
       them is outside the scope of this module
@@ -54,7 +53,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.4'
+__version__ = '0.5'
 __license__ = 'LPGL'
 
 import struct

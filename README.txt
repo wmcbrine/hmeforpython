@@ -1,6 +1,6 @@
-HME for Python, v0.4
+HME for Python, v0.5
 by William McBrine <wmcbrine@gmail.com>
-February 9, 2008
+February 11, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -41,6 +41,19 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.5   -- Focus support -- set self.focus to the object you want to 
+         handle events. It need not be a View; it can be any object.
+         Just add the appropriate handler as an attribute. If a handler
+         isn't present in the self.focus object, the app's handler is
+         used. But if you want to pass events on from the object's
+         handler, you'll have to call the app's handler explicitly.
+
+         Default key repeat event behavior is now to call the key press
+         handler.
+
+         Unspecified width and height in a child window need to default
+         to that of the parent window _minus_ the position.
 
 0.4   -- Narrow the list of exceptions handled when importing -- this
          covers non-module directories without masking real errors.
