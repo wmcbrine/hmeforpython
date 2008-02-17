@@ -1020,6 +1020,7 @@ class Application(Resource):
         # The HME handshake
         self.wfile.write('SBTV\0\0%c%c' % (chr(HME_MAJOR_VERSION),
                                            chr(HME_MINOR_VERSION)))
+        self.wfile.flush()
         self.answer = self.rfile.read(8)
         # self.answer[-2:] contains the reciever's supported HME 
         # version, if you care. (I get 0.45 with TiVo 9.2.)
