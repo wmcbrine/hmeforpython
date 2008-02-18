@@ -1222,6 +1222,18 @@ class Application(Resource):
                  pack_vint(keynum) +
                  pack_vint(rawcode))
 
+    def set_focus(self, focus):
+        """ Set the focus to a new object, and notify both the old and 
+            newly focused objects of the change.
+
+        """
+        if focus != self.focus:
+            if hasattr(self.focus, 'handle_focus'):
+                getattr(self.focus, 'handle_focus')(False)
+            self.focus = focus
+            if hasattr(focus, 'handle_focus'):
+                getattr(focus, 'handle_focus')(True)
+
     # Stubs for apps to override.
 
     def startup(self):
