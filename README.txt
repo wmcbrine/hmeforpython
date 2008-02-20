@@ -1,6 +1,6 @@
-HME for Python, v0.5
+HME for Python, v0.6
 by William McBrine <wmcbrine@gmail.com>
-February 11, 2008
+February 20, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -41,6 +41,20 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.6   -- Added set_focus() to use when changing focus, instead of
+         setting self.focus directly. Define a handle_focus() method for
+         an object if you want it to do something special on a focus
+         change; handle_focus() should take a single boolean parameter,
+         which will be False when losing focus and True when gaining it.
+
+         Shorter form for sound calls -- because in practice, they're
+         always ID-based.
+
+         Exit (event loop) on receiving an EVT_APP_INFO of active=false.
+
+         Flush the sent handshake; exit mainloop() if no valid handshake
+         is received.
 
 0.5   -- Focus support -- set self.focus to the object you want to 
          handle events. It need not be a View; it can be any object.
