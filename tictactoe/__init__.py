@@ -138,4 +138,4 @@ class Piece(View):
     def __init__(self, parent, x, y, w, h, player):
         View.__init__(self, parent.app, x, y, w, h, parent=parent)
         self.player = player;
-        self.child(0, 0, w, h).set_resource(self.app.tokens[player])
+        self.child().set_resource(self.app.tokens[player])
