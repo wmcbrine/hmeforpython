@@ -1,4 +1,4 @@
-# HME for Python, v0.5
+# HME for Python, v0.6
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.5'
+__version__ = '0.6'
 __license__ = 'LPGL'
 
 import struct
@@ -1033,6 +1033,9 @@ class Application(Resource):
             hmeserver.py calls this after initializing the app object.
 
         """
+        if not self.answer.startswith('SBTV'):
+            return
+
         self.active = True
         self.startup()
         self.root.set_visible()
