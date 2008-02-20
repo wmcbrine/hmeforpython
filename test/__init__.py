@@ -61,7 +61,7 @@ class Test(Application):
 
     def handle_key_release(self, keynum, rawcode):
         if keynum == KEY_LEFT:
-            Sound(self, id=ID_LEFT_SOUND).play()
+            self.sound(ID_LEFT_SOUND)
             self.safe.set_transparency(1, animtime=500)
             time.sleep(0.5)
             self.active = False
@@ -78,7 +78,7 @@ class Test(Application):
                 self.text.translate(yincrement=10)
             elif keynum == KEY_UP:
                 self.text.translate(yincrement=-10)
-            Sound(self).play()
+            self.sound()
 
     def handle_resolution(self):
         for res in self.resolutions:

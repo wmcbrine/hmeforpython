@@ -1237,6 +1237,13 @@ class Application(Resource):
             if hasattr(focus, 'handle_focus'):
                 getattr(focus, 'handle_focus')(True)
 
+    def sound(self, id=None):
+        """ Shorter form for playing sounds based on the id (the only 
+            ones that actually work).
+
+        """
+        Sound(self, id=id).play()
+
     # Stubs for apps to override.
 
     def startup(self):
@@ -1260,6 +1267,7 @@ class Application(Resource):
 
     def handle_active(self):
         """ Override this to handle "active = true" from EVT_APP_INFO. """
+        pass
 
     def handle_error(self, code, text):
         """ Override this to handle errors from EVT_APP_INFO. """

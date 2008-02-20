@@ -49,12 +49,12 @@ class TicTacToe(Application):
         elif keynum == KEY_LEFT:
             self.active = False
         else:
-            Sound(self, id=ID_BONK_SOUND).play()
+            self.sound(ID_BONK_SOUND)
 
     def make_move(self, x, y):
         # is this a valid move?
         if self.pieces[x][y] is not None:
-            Sound(self, id=ID_BONK_SOUND).play()
+            self.sound(ID_BONK_SOUND)
             return
         player = self.num_moves % 2
         self.num_moves += 1
@@ -72,7 +72,7 @@ class TicTacToe(Application):
                 snd = ID_TIVO_SOUND
             else:
                 snd = ID_THUMBSDOWN_SOUND
-            Sound(self, id=snd).play()
+            self.sound(snd)
 
             time.sleep(2)
 
