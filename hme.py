@@ -1229,8 +1229,12 @@ class Application(Resource):
                  pack_vint(rawcode))
 
     def set_focus(self, focus):
-        """ Set the focus to a new object, and notify both the old and 
-            newly focused objects of the change.
+        """ Set the focus to a new object, and notify both the old and
+            newly focused objects of the change. Define a handle_focus()
+            method for an object if you want it to do something special
+            on a focus change; handle_focus() should take a single
+            boolean parameter, which will be False when losing focus and 
+            True when gaining it.
 
         """
         if focus != self.focus:
