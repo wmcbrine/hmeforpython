@@ -1127,10 +1127,13 @@ class Application(Resource):
                 handle = getattr(self.focus, 'handle_error',
                                  self.handle_error)
                 handle(code, text)
-            elif 'active' in info and info['active'] == 'true':
-                handle = getattr(self.focus, 'handle_active',
-                                 self.handle_active)
-                handle()
+            elif 'active' in info:
+                if info['active'] == 'true':
+                    handle = getattr(self.focus, 'handle_active',
+                                     self.handle_active)
+                    handle()
+                else:
+                    return False
             else:
                 handle = getattr(self.focus, 'handle_app_info',
                                  self.handle_app_info)
