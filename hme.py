@@ -1,4 +1,4 @@
-# HME for Python, v0.6
+# HME for Python, v0.7
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -39,8 +39,6 @@
     is called.
 
     Items not yet implemented from the spec:
-    * App transitions -- partly because they rely on a data format, 
-      "dict" (not the Python type), that's not defined in the spec
     * Event pushing other than key presses
 
     Java SDK items not in the spec and not implemented here:
@@ -53,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.6'
+__version__ = '0.7'
 __license__ = 'LPGL'
 
 import struct
@@ -342,6 +340,29 @@ class EventData:
         """ HME string to unicode """
         return self.unpack_vdata().decode('utf-8')
 
+    def unpack_dict(self):
+        """ HME dict to dict (each value is a list)
+            Note that the HME dict type is referred to, but not
+            documented, in the HME protocol specification.
+
+        """
+        d = {}
+        while True:
+            key = self.unpack_string()
+            if not key:
+                break
+            value = []
+            while True:
+                c = self.next()
+                if not c:
+                    break
+                if c == 1:
+                    value.append(self.unpack_string())
+                else:
+                    value.append(self.unpack_dict())
+            d[key] = value
+        return d
+
 def get_chunked(stream):
     """ Read HME-style chunked event data from the input stream. """
     data = ''
@@ -401,7 +422,32 @@ def pack_vdata(value):
 
 def pack_string(value):
     """ unicode to HME string """
+    if not type(value) in (str, unicode):
+        value = str(value)
     return pack_vdata(value.encode('utf-8'))
+
+def pack_dict(value):
+    """ dict (of lists) to HME dict """
+    result = ''
+    if type(value) != dict:
+        raise TypeError, 'must be a dict'
+    # The keys must be sorted, or the TiVo ignores the transition.
+    items = value.keys()
+    items.sort()
+    for key in items:
+        if type(value[key]) != list:
+            raise TypeError, 'must be a list'
+        result += pack_string(key)
+        for item in value[key]:
+            if type(item) == dict:
+                result += chr(2)
+                result += pack_dict(item)
+            else:
+                result += chr(1)
+                result += pack_string(item)
+        result += chr(0)
+    result += pack_string('')
+    return result
 
 def put_chunked(stream, data):
     """ Write HME-style chunked data to the output stream. """
@@ -1176,6 +1222,13 @@ class Application(Resource):
                              self.handle_font_info)
             handle(font)
 
+        elif evnum == EVT_INIT_INFO:
+            params = ev.unpack_dict()
+            memento = ev.unpack_vdata()
+            handle = getattr(self.focus, 'handle_init_info',
+                             self.handle_init_info)
+            handle(params, memento)
+
         elif evnum == EVT_RESOLUTION_INFO:
             def unpack_res(ev, field_count):
                 width = ev.unpack_vint()
@@ -1251,6 +1304,25 @@ class Application(Resource):
         """
         Sound(self, id=id).play()
 
+    def transition(self, direction, params, url='', memento=''):
+        """ Switch to another HME app.
+            direction is TRANSITION_FORWARD or TRANSITION_BACK. params
+            is a dict of lists -- see pack_dict(). url is the address of
+            the new app -- leave it blank for a backwards transition.
+            memento is a blob of data in unspecified format, limited to
+            10K. params is meant to pass parameters, while memento is
+            supposed to record the current state of the app, and is
+            passed back unchanged after a TRANSITION_BACK.
+
+        """
+        if len(memento) > 10240:
+            raise Exception, 'memento too large'
+        self.put(CMD_RECEIVER_TRANSITION,
+                 pack_string(url) +
+                 pack_vint(direction) +
+                 pack_dict(params) +
+                 pack_vdata(memento))
+
     # Stubs for apps to override.
 
     def startup(self):
@@ -1312,6 +1384,13 @@ class Application(Resource):
 
         """
         return False
+
+    def handle_init_info(self, params, memento):
+        """ Override this to handle EVT_INIT_INFO. params and memento 
+            are as created by the transition() method in the parent app.
+
+        """
+        pass
 
     def handle_resolution(self):
         """ Override this if you want to be able to change the screen 
