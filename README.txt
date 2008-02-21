@@ -1,6 +1,6 @@
-HME for Python, v0.6
+HME for Python, v0.7
 by William McBrine <wmcbrine@gmail.com>
-February 20, 2008
+February 21, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -41,6 +41,12 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.7   -- Added support for app transitions -- the last unimplemented
+         part of the HME specification. (But I still have more to do to
+         match the Java SDK.) This also entailed support for the HME
+         "dict" type, which although mentioned in the specification is
+         not documented. A sample app is included.
 
 0.6   -- Added set_focus() to use when changing focus, instead of
          setting self.focus directly. Define a handle_focus() method for
