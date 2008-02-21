@@ -88,14 +88,12 @@ class Transition(Application):
             self.update_hilight()
         elif code == KEY_RIGHT:
             mem = chr(self.cur_color)
-            params = {'entry': [self.cur_color],
-                      'depth': [self.depth + 1]}
+            params = {'entry': self.cur_color, 'depth': self.depth + 1}
             self.transition(TRANSITION_FORWARD, params,
                             'http://%s/transition/' %
                             self.context.headers['host'], mem)
         elif code == KEY_LEFT:
-            params = {'return': [self.cur_color],
-                      'depth': [self.depth - 1]}
+            params = {'return': self.cur_color, 'depth': self.depth - 1}
             self.transition(TRANSITION_BACK, params)
 
     def handle_error(self, code, text):

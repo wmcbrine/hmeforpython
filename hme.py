@@ -432,13 +432,14 @@ def pack_dict(value):
     if type(value) != dict:
         raise TypeError, 'must be a dict'
     # The keys must be sorted, or the TiVo ignores the transition.
-    items = value.keys()
-    items.sort()
-    for key in items:
-        if type(value[key]) != list:
-            raise TypeError, 'must be a list'
+    keys = value.keys()
+    keys.sort()
+    for key in keys:
         result += pack_string(key)
-        for item in value[key]:
+        items = value[key]
+        if type(items) != list:
+            items = [items]
+        for item in items:
             if type(item) == dict:
                 result += chr(2)
                 result += pack_dict(item)
