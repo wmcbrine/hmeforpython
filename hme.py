@@ -1,4 +1,4 @@
-# HME for Python, v0.7
+# HME for Python, v0.8
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.7'
+__version__ = '0.8'
 __license__ = 'LPGL'
 
 import struct

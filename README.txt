@@ -1,6 +1,6 @@
-HME for Python, v0.7
+HME for Python, v0.8
 by William McBrine <wmcbrine@gmail.com>
-February 21, 2008
+February 22, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -41,6 +41,15 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.8   -- The dict items for transition() no longer have to be in list 
+         form, although they still _can_ be. (The values returned to
+         handle_init_info() are still lists, though.)
+
+         Simplified the transition demo and added an icon for it.
+
+         Print the skipped directories in hmeserver, along with the
+         reasons they were skipped.
 
 0.7   -- Added support for app transitions -- the last unimplemented
          part of the HME specification. (But I still have more to do to
