@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.4
+# HME Server for Python, v0.8
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.4'
+__version__ = '0.8'
 __license__ = 'LPGL'
 
 import os
@@ -67,7 +67,8 @@ apptitles = {}
 for name in apps[:]:
     try:
         app = __import__(name)
-    except (ValueError, ImportError):
+    except (ValueError, ImportError), msg:
+        print 'Skipping:', name, '-', msg
         apps.remove(name)
     else:
         apptitles[name] = getattr(app, 'TITLE', name.title())
