@@ -1,4 +1,4 @@
-# HME for Python, v0.8
+# HME for Python, v0.9
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.8'
+__version__ = '0.9'
 __license__ = 'LPGL'
 
 import struct
@@ -1250,17 +1250,7 @@ class Application(Resource):
 
             handle = getattr(self.focus, 'handle_resolution',
                              self.handle_resolution)
-            new_res = handle()
-            if new_res in self.resolutions and \
-               new_res != self.current_resolution:
-                self.put(CMD_RECEIVER_SET_RESOLUTION,
-                         pack_vint(new_res[0]) +
-                         pack_vint(new_res[1]) +
-                         pack_vint(new_res[2]) +
-                         pack_vint(new_res[3]))
-                self.current_resolution = new_res
-                self.root.width = new_res[0]
-                self.root.height = new_res[1]
+            self.set_resolution(handle())
 
         return True
 
@@ -1323,6 +1313,24 @@ class Application(Resource):
                  pack_vint(direction) +
                  pack_dict(params) +
                  pack_vdata(memento))
+
+    def set_resolution(self, resolution):
+        """ Change the screen resolution.
+            This is called from get_event() after handle_resolution()
+            (see there for more about resolution), but can also be used 
+            directly.
+
+        """
+        if resolution in self.resolutions and \
+           resolution != self.current_resolution:
+            self.put(CMD_RECEIVER_SET_RESOLUTION,
+                     pack_vint(resolution[0]) +
+                     pack_vint(resolution[1]) +
+                     pack_vint(resolution[2]) +
+                     pack_vint(resolution[3]))
+            self.current_resolution = resolution
+            self.root.set_bounds(width=resolution[0],
+                                 height=resolution[1])
 
     # Stubs for apps to override.
 
