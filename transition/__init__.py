@@ -24,19 +24,18 @@ class Transition(Application):
         x = SAFE_ACTION_H
         w = self.root.width - 2 * x
 
-        Font(self, size=30)
-        View(self, x, SAFE_ACTION_V, w, 40, text='HME Transition Test')
+        TextView(self, x, SAFE_ACTION_V, w, 40, fontsize=30,
+                 text='HME Transition Test')
 
-        self.depth_view = TextView(self.root, x, 70, w, 40)
-        self.entry_view = TextView(self.root, x, 100, w / 2 - 10, 40)
-        self.return_view = TextView(self.root, x + w / 2 + 20, 100,
+        self.depth_view = TextView(self, x, 70, w, 40)
+        self.entry_view = TextView(self, x, 100, w / 2 - 10, 40)
+        self.return_view = TextView(self, x + w / 2 + 20, 100,
                                     w / 2 - 10, 40)
-        self.color_view = TextView(self.root, x, 130, w, 40)
+        self.color_view = TextView(self, x, 130, w, 40)
 
-        Font(self, size=14)
-        View(self, x, 400, w, 40,
-             text='Move up and down to select a color.  ' +
-                  'Move left to go back, right to go forward.')
+        TextView(self, x, 400, w, 40, fontsize=14,
+                 text='Move up and down to select a color.  ' +
+                      'Move left to go back, right to go forward.')
 
         x = SAFE_ACTION_H + 75
         w = self.root.width - 2 * x
@@ -51,9 +50,8 @@ class Transition(Application):
             y = 180 + c * 50
             View(self, x, y, w, h, colornum=self.COLORS[c])
 
-        self.error_view = TextView(self.root, x, 440, w, 40)
-        self.error_view.set_font(18)
-        self.error_view.set_foreground(0xff0000)
+        self.error_view = TextView(self, x, 440, w, 40, 
+                                   fontsize=18, textcolor=0xff0000)
 
     # This method handles the incoming INIT_INFO event.  Here we
     # determine if we were entered via a "forward" transition or a
@@ -125,29 +123,14 @@ class Transition(Application):
 
 
 class TextView(View):
-    def __init__(self, parent, x, y, width, height):
-        View.__init__(self, parent.app, x, y, width, height, parent=parent)
-        self.fg = Color(self.app)
-        self.font = Font(self.app, size=20)
-        self.value = ''
+    def __init__(self, app, x, y, width, height,
+                 text='', fontsize=20, textcolor=0xffffff):
+        View.__init__(self, app, x, y, width, height)
+        self.font = Font(self.app, size=fontsize)
+        self.set_value(text, textcolor)
 
-    def set_foreground(self, fg):
-        fg = Color(self.app, fg)
-        if self.fg != fg:
-            self.fg = fg
-            self.repaint()
-
-    def set_font(self, size=20):
-        font = Font(self.app, size=size)
-        if self.font != font:
-            self.font = font
-            self.repaint()
-
-    def set_value(self, obj, colornum=None):
-        self.value = obj
+    def set_value(self, text, colornum=None):
+        self.value = text
         if colornum is not None:
-            self.set_foreground(colornum)
-        self.repaint()
-
-    def repaint(self):
+            self.fg = Color(self.app, colornum)
         self.set_text(self.value, self.font, self.fg)
