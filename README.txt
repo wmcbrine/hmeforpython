@@ -1,4 +1,4 @@
-HME for Python, v0.8
+HME for Python, v0.9
 by William McBrine <wmcbrine@gmail.com>
 February 22, 2008
 
@@ -41,6 +41,12 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.9   -- Added a separate set_resolution() function.
+
+         Changing the resolution with an already-visible root view
+         (which is always the situation, since 0.2) requires a
+         set_bounds() call on the root view.
 
 0.8   -- The dict items for transition() no longer have to be in list 
          form, although they still _can_ be. (The values returned to
