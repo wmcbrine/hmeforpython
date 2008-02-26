@@ -1,4 +1,4 @@
-# HME for Python, v0.9
+# HME for Python, v0.10
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.9'
+__version__ = '0.10'
 __license__ = 'LPGL'
 
 import struct
@@ -686,7 +686,8 @@ class Image(Resource):
 
     def remove(self):
         Resource.remove(self)
-        self.app.images.pop(self.name)
+        if self.name:
+            self.app.images.pop(self.name)
 
 class Sound(Resource):
     """ Sound resource
