@@ -1,6 +1,6 @@
-HME for Python, v0.9
+HME for Python, v0.10
 by William McBrine <wmcbrine@gmail.com>
-February 22, 2008
+February 26, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -41,6 +41,11 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.10  -- Sending data larger than 64K was broken since 0.3. Argh.
+
+         Images without names are not cached, but Image.remove() was
+         still trying to remove them from the cache.
 
 0.9   -- Added a separate set_resolution() function.
 
