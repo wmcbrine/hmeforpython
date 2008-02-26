@@ -456,7 +456,10 @@ def put_chunked(stream, data):
     size = len(data)
     index = 0
     while size:
-        blocksize = size % MAXSIZE
+        if size > MAXSIZE:
+            blocksize = MAXSIZE
+        else:
+            blocksize = size
         try:
             stream.write(struct.pack('!H', blocksize))
             stream.write(data[index:index + blocksize])
