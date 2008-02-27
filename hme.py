@@ -1,4 +1,4 @@
-# HME for Python, v0.10
+# HME for Python, v0.11
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.10'
+__version__ = '0.11'
 __license__ = 'LPGL'
 
 import struct
@@ -456,10 +456,7 @@ def put_chunked(stream, data):
     size = len(data)
     index = 0
     while size:
-        if size > MAXSIZE:
-            blocksize = MAXSIZE
-        else:
-            blocksize = size
+        blocksize = min(size, MAXSIZE)
         try:
             stream.write(struct.pack('!H', blocksize))
             stream.write(data[index:index + blocksize])
