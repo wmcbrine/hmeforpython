@@ -1,6 +1,6 @@
-HME for Python, v0.10
+HME for Python, v0.11
 by William McBrine <wmcbrine@gmail.com>
-February 26, 2008
+February 28, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -41,6 +41,18 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.11  -- Added a simple slideshow Picture Viewer to the included apps.
+         It depends on the Python Imaging Library, and you'll have to
+         edit picture/__init__.py to set ROOT to an appropriate
+         directory. The app automatically uses hi-def mode when
+         available.
+
+         Changed the Animation class (and all the "animtime" parameters
+         of various functions) to take seconds instead of milliseconds,
+         to make it more consistent with general Python usage.
+
+         Small tweak to the put_chunked() function.
 
 0.10  -- Sending data larger than 64K was broken since 0.3. Argh.
 
