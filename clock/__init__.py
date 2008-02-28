@@ -29,7 +29,7 @@ class Clock(Application):
         thread.start_new_thread(self.update, ())
 
     def update(self):
-        fade = Animation(self, 750)
+        fade = Animation(self, 0.75)
         tm = time.time()
         n = 0
 

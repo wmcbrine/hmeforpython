@@ -51,7 +51,7 @@ class Test(Application):
 
         self.text = safe.child(text='HME for Python. r0x0r')
 
-        safe.set_transparency(0, animtime=500)
+        safe.set_transparency(0, animtime=0.5)
 
         self.safe = safe
 
@@ -62,7 +62,7 @@ class Test(Application):
     def handle_key_release(self, keynum, rawcode):
         if keynum == KEY_LEFT:
             self.sound(ID_LEFT_SOUND)
-            self.safe.set_transparency(1, animtime=500)
+            self.safe.set_transparency(1, animtime=0.5)
             time.sleep(0.5)
             self.active = False
 
@@ -119,6 +119,6 @@ class Test(Application):
     def update_silly(self, index):
         new_x = random.randrange(-self.root.width / 2, self.root.width / 2)
         new_y = random.randrange(-self.root.height / 2, self.root.height / 2)
-        speed = random.randrange(2000, 8000, 100)
+        speed = random.randrange(2000, 8000, 100) / 1000.0
         self.silly[index].set_translation(new_x, new_y, animtime=speed)
         self.send_key(KEY_TIVO, index, animtime=speed)

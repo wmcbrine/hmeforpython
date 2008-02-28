@@ -728,8 +728,8 @@ class Stream(Resource):
 
 class Animation(Resource):
     """ Animation resource
-        Specified by duration in milliseconds, with optional ease and
-        id. (The id is used to initalize a zero-duration object for
+        Specified by duration in seconds, with optional ease and id.
+        (The id is used to initalize a zero-duration object for
         ID_NULL.) Animation objects are cached in the app.anims dict.
 
     """
@@ -741,7 +741,7 @@ class Animation(Resource):
             else:
                 Resource.__init__(self, app)
                 self.put(CMD_RSRC_ADD_ANIM,
-                         pack_vint(duration) +
+                         pack_vint(duration * 1000) +
                          pack_float(ease))
                 app.anims[self.key] = self
         else:
@@ -828,8 +828,8 @@ class View(HMEObject):
                    animation=None, animtime=0):
         """ Change the size and/or shape of the view, optionally over a
             period of time. The interval can be specified either in
-            number of milliseconds (animtime=), or as an Animation
-            object (animation=).
+            number of seconds (animtime=), or as an Animation object
+            (animation=).
 
         """
         if xpos is None:

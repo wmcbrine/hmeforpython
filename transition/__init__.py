@@ -116,7 +116,7 @@ class Transition(Application):
 
     def update_hilight(self):
         y = 180 + self.cur_color * 50 - 5
-        self.hilight_view.set_bounds(ypos=y, animtime=250)
+        self.hilight_view.set_bounds(ypos=y, animtime=0.25)
         self.color_view.set_value('The currently selected color is %#08x' %
                                   self.COLORS[self.cur_color],
                                   self.COLORS[self.cur_color])

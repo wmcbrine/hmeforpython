@@ -78,7 +78,7 @@ class TicTacToe(Application):
 
             # if this is a victory, explode the pieces
             # if this is a victory or a draw, make the pieces fade away
-            anim = Animation(self, 1000)
+            anim = Animation(self, 1)
             for i in xrange(3):
                 for j in xrange(3):
                     v = self.pieces[i][j]

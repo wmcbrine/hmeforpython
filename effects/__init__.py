@@ -118,7 +118,8 @@ class Effects(Application):
             # method of creating the resource is the most efficient 
             # because the receiver will use a cached resource if it has 
             # one already.
-            anim = Animation(self, self.anim_time, float(self.ease) / 100)
+            anim = Animation(self, self.anim_time / 1000.0,
+                                   self.ease / 100.0)
 
             # Update the animations for each property, alternating. All 
             # of these animations use the shared animation resource.
@@ -147,7 +148,7 @@ class Effects(Application):
             # from another thread
             self.wfile.flush()
 
-            time.sleep(self.anim_time / 1000)
+            time.sleep(self.anim_time / 1000.0)
 
 
     # Display the value of the ease and animTime in the given color.

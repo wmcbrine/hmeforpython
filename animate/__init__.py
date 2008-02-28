@@ -68,7 +68,7 @@ class SpriteView(View):
     def animate(self):
         # Use a step of 50ms to cut down on the number of resources 
         # created. -- wmcbrine
-        speed = random.randrange(250, 5250, 50)
+        speed = random.randrange(250, 5250, 50) / 1000.0
 
         dest_x = random.randrange(self.parent.width)
         dest_y = random.randrange(self.parent.height)
