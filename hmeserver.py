@@ -39,7 +39,7 @@
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
 __version__ = '0.8'
-__license__ = 'LPGL'
+__license__ = 'LGPL'
 
 import os
 import socket

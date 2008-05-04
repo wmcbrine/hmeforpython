@@ -52,7 +52,7 @@
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
 __version__ = '0.11'
-__license__ = 'LPGL'
+__license__ = 'LGPL'
 
 import struct
 
