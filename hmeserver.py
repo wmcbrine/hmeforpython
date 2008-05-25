@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.8
+# HME Server for Python, v0.12
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.8'
+__version__ = '0.12'
 __license__ = 'LGPL'
 
 import os
@@ -171,11 +171,11 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', mime)
             self.end_headers()
-            if body:
+            while body:
                 block = page.read(self.BUFSIZE)
-                while block:
-                    self.wfile.write(block)
-                    block = page.read(self.BUFSIZE)
+                if not block:
+                    break
+                self.wfile.write(block)
             page.close()
 
     def do_HEAD(self):

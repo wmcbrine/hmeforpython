@@ -1,4 +1,4 @@
-# HME for Python, v0.11
+# HME for Python, v0.12
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.11'
+__version__ = '0.12'
 __license__ = 'LGPL'
 
 import struct
@@ -301,11 +301,12 @@ class EventData:
         """ HME variable-length integer to int """
         value = 0
         shift = 0
-        c = self.next()
-        while not (c & 0x80):
+        while True:
+            c = self.next()
+            if c & 0x80:
+                break
             value += c << shift
             shift += 7
-            c = self.next()
         value += (c & 0x3f) << shift
         if c & 0x40:
             value = -value
@@ -315,11 +316,12 @@ class EventData:
         """ HME variable-length unsigned integer to int """
         value = 0
         shift = 0
-        c = self.next()
-        while not (c & 0x80):
+        while True:
+            c = self.next()
+            if c & 0x80:
+                break
             value += c << shift
             shift += 7
-            c = self.next()
         value += (c & 0x7f) << shift
         return value
 
