@@ -1,6 +1,6 @@
-HME for Python, v0.11
+HME for Python, v0.12
 by William McBrine <wmcbrine@gmail.com>
-February 28, 2008
+May 24, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -8,10 +8,12 @@ examples (mostly ported from TiVo's Java HME SDK). Everything is
 released under the LGPL 2.1+, except where noted. (Most of the examples 
 are Common Public License.)
 
-I developed this in Python 2.5.1, and tested it in Linux, Mac OS X, and 
-Windows XP, and with Python 2.4.4. The requirements are minimal. (hme.py 
-depends only on the struct module. hmeserver.py is a bit more demanding, 
-but uses only the standard library.)
+I developed this in Python 2.5.2, and tested it in Linux, Mac OS X, and 
+Windows XP, and with Python 2.4.5 and 2.3.5. It even mostly works under 
+Jython 2.2.1, if you disable Zeroconf and use the manual connect method. 
+The requirements are minimal. (hme.py depends only on the struct module. 
+hmeserver.py is a bit more demanding, but uses only the standard 
+library.)
 
 
 Quick Start
