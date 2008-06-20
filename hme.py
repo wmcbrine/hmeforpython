@@ -490,7 +490,7 @@ class HMEObject:
             self.id = id
         self.app = app
 
-    def put(self, cmd, params=''):
+    def put(self, cmd, *params):
         """ Send a command (cmd) with the current resource id and 
             specified parameters, if any. The parameters must be 
             pre-packed into HME format.
@@ -499,7 +499,7 @@ class HMEObject:
         put_chunked(self.app.wfile,
                     pack_vint(cmd) +
                     pack_vint(self.id) +
-                    params)
+                    ''.join(params))
 
 class Resource(HMEObject):
     """ Base class for Resources
@@ -622,9 +622,9 @@ class Font(Resource):
         else:
             Resource.__init__(self, app)
             self.put(CMD_RSRC_ADD_FONT,
-                     pack_vint(ttf.id) +
-                     pack_vint(style) +
-                     pack_float(size) +
+                     pack_vint(ttf.id),
+                     pack_vint(style),
+                     pack_float(size),
                      pack_vint(flags))
             app.fonts[self.key] = self
         app.last_font = self
@@ -659,8 +659,8 @@ class Text(Resource):
             if font is None:
                 font = Font(app)
         self.put(CMD_RSRC_ADD_TEXT,
-                 pack_vint(font.id) +
-                 pack_vint(color.id) +
+                 pack_vint(font.id),
+                 pack_vint(color.id),
                  pack_string(text))
 
 class Image(Resource):
@@ -724,8 +724,8 @@ class Stream(Resource):
     def __init__(self, app, url, mime='', play=True):
         Resource.__init__(self, app)
         self.put(CMD_RSRC_ADD_STREAM,
-                 pack_string(url) +
-                 pack_string(mime) +
+                 pack_string(url),
+                 pack_string(mime),
                  pack_bool(play))
 
 class Animation(Resource):
@@ -743,7 +743,7 @@ class Animation(Resource):
             else:
                 Resource.__init__(self, app)
                 self.put(CMD_RSRC_ADD_ANIM,
-                         pack_vint(duration * 1000) +
+                         pack_vint(duration * 1000),
                          pack_float(ease))
                 app.anims[self.key] = self
         else:
@@ -806,11 +806,11 @@ class View(HMEObject):
         self.height = height
         if parent:
             self.put(CMD_VIEW_ADD,
-                     pack_vint(parent.id) +
-                     pack_vint(xpos) +
-                     pack_vint(ypos) +
-                     pack_vint(width) +
-                     pack_vint(height) +
+                     pack_vint(parent.id),
+                     pack_vint(xpos),
+                     pack_vint(ypos),
+                     pack_vint(width),
+                     pack_vint(height),
                      pack_bool(visible))
             parent.children.append(self)
         else:
@@ -848,10 +848,10 @@ class View(HMEObject):
             else:
                 animation = self.app.immediate
         self.put(CMD_VIEW_SET_BOUNDS,
-                 pack_vint(xpos) +
-                 pack_vint(ypos) +
-                 pack_vint(width) +
-                 pack_vint(height) +
+                 pack_vint(xpos),
+                 pack_vint(ypos),
+                 pack_vint(width),
+                 pack_vint(height),
                  pack_vint(animation.id))
         self.xpos = xpos
         self.ypos = ypos
@@ -873,8 +873,8 @@ class View(HMEObject):
             else:
                 animation = self.app.immediate
         self.put(CMD_VIEW_SET_SCALE,
-                 pack_float(xscale) +
-                 pack_float(yscale) +
+                 pack_float(xscale),
+                 pack_float(yscale),
                  pack_vint(animation.id))
         self.xscale = xscale
         self.yscale = yscale
@@ -894,8 +894,8 @@ class View(HMEObject):
                 else:
                     animation = self.app.immediate
             self.put(CMD_VIEW_SET_TRANSLATION,
-                     pack_vint(xtranslation) +
-                     pack_vint(ytranslation) +
+                     pack_vint(xtranslation),
+                     pack_vint(ytranslation),
                      pack_vint(animation.id))
             self.xtranslation = xtranslation
             self.ytranslation = ytranslation
@@ -922,7 +922,7 @@ class View(HMEObject):
                 else:
                     animation = self.app.immediate
             self.put(CMD_VIEW_SET_TRANSPARENCY,
-                     pack_float(transparency) +
+                     pack_float(transparency),
                      pack_vint(animation.id))
             self.transparency = transparency
 
@@ -938,7 +938,7 @@ class View(HMEObject):
                 else:
                     animation = self.app.immediate
             self.put(CMD_VIEW_SET_VISIBLE,
-                     pack_bool(visible) +
+                     pack_bool(visible),
                      pack_vint(animation.id))
             self.visible = visible
 
@@ -961,7 +961,7 @@ class View(HMEObject):
         """
         if self.resource is not resource:
             self.put(CMD_VIEW_SET_RESOURCE,
-                     pack_vint(resource.id) +
+                     pack_vint(resource.id),
                      pack_vint(flags))
             self.resource = resource
 
@@ -1268,11 +1268,11 @@ class Application(Resource):
             else:
                 animation = self.immediate
         self.put(CMD_RSRC_SEND_EVENT,
-                 pack_vint(animation.id) +
-                 pack_vint(EVT_KEY) +
-                 pack_vint(self.id) +
-                 pack_vint(KEY_PRESS) +
-                 pack_vint(keynum) +
+                 pack_vint(animation.id),
+                 pack_vint(EVT_KEY),
+                 pack_vint(self.id),
+                 pack_vint(KEY_PRESS),
+                 pack_vint(keynum),
                  pack_vint(rawcode))
 
     def set_focus(self, focus):
@@ -1312,9 +1312,9 @@ class Application(Resource):
         if len(memento) > 10240:
             raise Exception, 'memento too large'
         self.put(CMD_RECEIVER_TRANSITION,
-                 pack_string(url) +
-                 pack_vint(direction) +
-                 pack_dict(params) +
+                 pack_string(url),
+                 pack_vint(direction),
+                 pack_dict(params),
                  pack_vdata(memento))
 
     def set_resolution(self, resolution):
@@ -1327,9 +1327,9 @@ class Application(Resource):
         if resolution in self.resolutions and \
            resolution != self.current_resolution:
             self.put(CMD_RECEIVER_SET_RESOLUTION,
-                     pack_vint(resolution[0]) +
-                     pack_vint(resolution[1]) +
-                     pack_vint(resolution[2]) +
+                     pack_vint(resolution[0]),
+                     pack_vint(resolution[1]),
+                     pack_vint(resolution[2]),
                      pack_vint(resolution[3]))
             self.current_resolution = resolution
             self.root.set_bounds(width=resolution[0],
