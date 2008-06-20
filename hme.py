@@ -369,7 +369,6 @@ class EventData:
         """ Unpack a list of types, based on a format string. """
         func = {'b': self.unpack_bool,
                 'i': self.unpack_vint,
-                'u': self.unpack_vuint,
                 'f': self.unpack_float,
                 'v': self.unpack_vdata,
                 's': self.unpack_string,
@@ -472,7 +471,6 @@ def pack(format, *values):
     """ Pack a list of types, based on a format string. """
     func = {'b': pack_bool,
             'i': pack_vint,
-            'u': pack_vuint,
             'f': pack_float,
             'v': pack_vdata,
             's': pack_string,
