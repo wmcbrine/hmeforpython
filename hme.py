@@ -1301,9 +1301,7 @@ class Application(Resource):
         """
         if resolution in self.resolutions and \
            resolution != self.current_resolution:
-            self.put(CMD_RECEIVER_SET_RESOLUTION, 'iiii',
-                     resolution[0], resolution[1],
-                     resolution[2], resolution[3])
+            self.put(CMD_RECEIVER_SET_RESOLUTION, 'iiii', *resolution)
             self.current_resolution = resolution
             self.root.set_bounds(width=resolution[0],
                                  height=resolution[1])
