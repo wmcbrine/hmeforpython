@@ -365,6 +365,18 @@ class EventData:
             d[key] = value
         return d
 
+    def unpack(self, format):
+        """ Unpack a list of types, based on a format string. """
+        func = {'b': self.unpack_bool,
+                'i': self.unpack_vint,
+                'u': self.unpack_vuint,
+                'f': self.unpack_float,
+                'v': self.unpack_vdata,
+                's': self.unpack_string,
+                'd': self.unpack_dict}
+
+        return [func[i]() for i in format]
+
 def get_chunked(stream):
     """ Read HME-style chunked event data from the input stream. """
     data = ''
@@ -452,6 +464,23 @@ def pack_dict(value):
     result += pack_string('')
     return result
 
+def pack_raw(value):
+    """ Return the data as-is. """
+    return value
+
+def pack(format, *values):
+    """ Pack a list of types, based on a format string. """
+    func = {'b': pack_bool,
+            'i': pack_vint,
+            'u': pack_vuint,
+            'f': pack_float,
+            'v': pack_vdata,
+            's': pack_string,
+            'd': pack_dict,
+            'r': pack_raw}
+
+    return ''.join([func[i](value) for i, value in zip(format, values)])
+
 def put_chunked(stream, data):
     """ Write HME-style chunked data to the output stream. """
     MAXSIZE = 0xfffe
@@ -490,16 +519,14 @@ class HMEObject:
             self.id = id
         self.app = app
 
-    def put(self, cmd, *params):
+    def put(self, cmd, format='', *params):
         """ Send a command (cmd) with the current resource id and 
-            specified parameters, if any. The parameters must be 
-            pre-packed into HME format.
+            specified parameters, if any. The parameters are packed 
+            according to the format string.
 
         """
         put_chunked(self.app.wfile,
-                    pack_vint(cmd) +
-                    pack_vint(self.id) +
-                    ''.join(params))
+                    pack('ii' + format, cmd, self.id, *params))
 
 class Resource(HMEObject):
     """ Base class for Resources
@@ -514,13 +541,13 @@ class Resource(HMEObject):
             app.resources[self.id] = self
 
     def set_active(self, make_active=True):
-        self.put(CMD_RSRC_SET_ACTIVE, pack_bool(make_active))
+        self.put(CMD_RSRC_SET_ACTIVE, 'b', make_active)
 
     def set_position(self, position):
-        self.put(CMD_RSRC_SET_POSITION, pack_vint(position))
+        self.put(CMD_RSRC_SET_POSITION, 'i', position)
 
     def set_speed(self, speed):
-        self.put(CMD_RSRC_SET_SPEED, pack_float(speed))
+        self.put(CMD_RSRC_SET_SPEED, 'f', speed)
 
     def close(self):
         self.put(CMD_RSRC_CLOSE)
@@ -559,7 +586,7 @@ class Color(Resource):
             Resource.__init__(self, app, app.colors[colornum].id)
         else:
             Resource.__init__(self, app)
-            self.put(CMD_RSRC_ADD_COLOR, struct.pack('!I', colornum))
+            self.put(CMD_RSRC_ADD_COLOR, 'r', struct.pack('!I', colornum))
             app.colors[colornum] = self
         app.last_color = self
 
@@ -590,7 +617,7 @@ class TTF(Resource):
                     if f is None:
                         f = open(name, 'rb')
                     data = f.read()
-                self.put(CMD_RSRC_ADD_TTF, data)
+                self.put(CMD_RSRC_ADD_TTF, 'r', data)
                 if name:
                     app.ttfs[name] = self
         app.last_ttf = self
@@ -621,11 +648,7 @@ class Font(Resource):
             Resource.__init__(self, app, app.fonts[self.key].id)
         else:
             Resource.__init__(self, app)
-            self.put(CMD_RSRC_ADD_FONT,
-                     pack_vint(ttf.id),
-                     pack_vint(style),
-                     pack_float(size),
-                     pack_vint(flags))
+            self.put(CMD_RSRC_ADD_FONT, 'iifi', ttf.id, style, size, flags)
             app.fonts[self.key] = self
         app.last_font = self
 
@@ -658,10 +681,7 @@ class Text(Resource):
             font = app.last_font
             if font is None:
                 font = Font(app)
-        self.put(CMD_RSRC_ADD_TEXT,
-                 pack_vint(font.id),
-                 pack_vint(color.id),
-                 pack_string(text))
+        self.put(CMD_RSRC_ADD_TEXT, 'iis', font.id, color.id, text)
 
 class Image(Resource):
     """ Image resource
@@ -682,7 +702,7 @@ class Image(Resource):
                 if f is None:
                     f = open(name, 'rb')
                 data = f.read()
-            self.put(CMD_RSRC_ADD_IMAGE, data)
+            self.put(CMD_RSRC_ADD_IMAGE, 'r', data)
             if name:
                 app.images[name] = self
 
@@ -710,7 +730,7 @@ class Sound(Resource):
                 if f is None:
                     f = open(name, 'rb')
                 data = f.read()
-            self.put(CMD_RSRC_ADD_SOUND, data)
+            self.put(CMD_RSRC_ADD_SOUND, 'r', data)
 
 class Stream(Resource):
     """ Stream resource
@@ -723,10 +743,7 @@ class Stream(Resource):
     """
     def __init__(self, app, url, mime='', play=True):
         Resource.__init__(self, app)
-        self.put(CMD_RSRC_ADD_STREAM,
-                 pack_string(url),
-                 pack_string(mime),
-                 pack_bool(play))
+        self.put(CMD_RSRC_ADD_STREAM, 'ssb', url, mime, play)
 
 class Animation(Resource):
     """ Animation resource
@@ -742,9 +759,7 @@ class Animation(Resource):
                 Resource.__init__(self, app, app.anims[self.key].id)
             else:
                 Resource.__init__(self, app)
-                self.put(CMD_RSRC_ADD_ANIM,
-                         pack_vint(duration * 1000),
-                         pack_float(ease))
+                self.put(CMD_RSRC_ADD_ANIM, 'if', duration * 1000, ease)
                 app.anims[self.key] = self
         else:
             Resource.__init__(self, app, id)
@@ -805,13 +820,8 @@ class View(HMEObject):
         self.width = width
         self.height = height
         if parent:
-            self.put(CMD_VIEW_ADD,
-                     pack_vint(parent.id),
-                     pack_vint(xpos),
-                     pack_vint(ypos),
-                     pack_vint(width),
-                     pack_vint(height),
-                     pack_bool(visible))
+            self.put(CMD_VIEW_ADD, 'iiiiib', parent.id, xpos, ypos,
+                     width, height, visible)
             parent.children.append(self)
         else:
             visible = False  # root view starts out not visible
@@ -847,12 +857,8 @@ class View(HMEObject):
                 animation = Animation(self.app, animtime)
             else:
                 animation = self.app.immediate
-        self.put(CMD_VIEW_SET_BOUNDS,
-                 pack_vint(xpos),
-                 pack_vint(ypos),
-                 pack_vint(width),
-                 pack_vint(height),
-                 pack_vint(animation.id))
+        self.put(CMD_VIEW_SET_BOUNDS, 'iiiii', xpos, ypos, width, height,
+                 animation.id)
         self.xpos = xpos
         self.ypos = ypos
         self.width = width
@@ -872,10 +878,8 @@ class View(HMEObject):
                 animation = Animation(self.app, animtime)
             else:
                 animation = self.app.immediate
-        self.put(CMD_VIEW_SET_SCALE,
-                 pack_float(xscale),
-                 pack_float(yscale),
-                 pack_vint(animation.id))
+        self.put(CMD_VIEW_SET_SCALE, 'ffi', xscale, yscale,
+                 animation.id)
         self.xscale = xscale
         self.yscale = yscale
 
@@ -893,10 +897,8 @@ class View(HMEObject):
                     animation = Animation(self.app, animtime)
                 else:
                     animation = self.app.immediate
-            self.put(CMD_VIEW_SET_TRANSLATION,
-                     pack_vint(xtranslation),
-                     pack_vint(ytranslation),
-                     pack_vint(animation.id))
+            self.put(CMD_VIEW_SET_TRANSLATION, 'iii',
+                     xtranslation, ytranslation, animation.id)
             self.xtranslation = xtranslation
             self.ytranslation = ytranslation
 
@@ -921,9 +923,8 @@ class View(HMEObject):
                     animation = Animation(self.app, animtime)
                 else:
                     animation = self.app.immediate
-            self.put(CMD_VIEW_SET_TRANSPARENCY,
-                     pack_float(transparency),
-                     pack_vint(animation.id))
+            self.put(CMD_VIEW_SET_TRANSPARENCY, 'fi',
+                     transparency, animation.id)
             self.transparency = transparency
 
     def set_visible(self, visible=True, animation=None, animtime=0):
@@ -937,9 +938,8 @@ class View(HMEObject):
                     animation = Animation(self.app, animtime)
                 else:
                     animation = self.app.immediate
-            self.put(CMD_VIEW_SET_VISIBLE,
-                     pack_bool(visible),
-                     pack_vint(animation.id))
+            self.put(CMD_VIEW_SET_VISIBLE, 'bi',
+                     visible, animation.id)
             self.visible = visible
 
     def set_painting(self, painting=True):
@@ -951,7 +951,7 @@ class View(HMEObject):
 
         """
         if self.painting != painting:
-            self.put(CMD_VIEW_SET_PAINTING, pack_bool(painting))
+            self.put(CMD_VIEW_SET_PAINTING, 'b', painting)
             self.painting = painting
 
     def set_resource(self, resource, flags=0):
@@ -960,9 +960,7 @@ class View(HMEObject):
 
         """
         if self.resource is not resource:
-            self.put(CMD_VIEW_SET_RESOURCE,
-                     pack_vint(resource.id),
-                     pack_vint(flags))
+            self.put(CMD_VIEW_SET_RESOURCE, 'ii', resource.id, flags)
             self.resource = resource
 
     def remove(self, animation=None, animtime=0):
@@ -972,7 +970,7 @@ class View(HMEObject):
                 animation = Animation(self.app, animtime)
             else:
                 animation = self.app.immediate
-        self.put(CMD_VIEW_REMOVE, pack_vint(animation.id))
+        self.put(CMD_VIEW_REMOVE, 'i', animation.id)
         if self.parent:
             self.parent.children.remove(self)
 
@@ -1131,13 +1129,10 @@ class Application(Resource):
 
         ev = EventData(data)
 
-        evnum = ev.unpack_vint()
-        resource = ev.unpack_vint()
+        evnum, resource = ev.unpack('ii')
 
         if evnum == EVT_KEY:
-            action = ev.unpack_vint()
-            keynum = ev.unpack_vint()
-            rawcode = ev.unpack_vint()
+            action, keynum, rawcode = ev.unpack('iii')
 
             if action == KEY_PRESS:
                 handle = getattr(self.focus, 'handle_key_press',
@@ -1152,10 +1147,9 @@ class Application(Resource):
 
         elif evnum == EVT_DEVICE_INFO:
             info = {}
-            count = ev.unpack_vint()
+            count = ev.unpack('i')[0]
             for i in xrange(count):
-                key = ev.unpack_string()
-                value = ev.unpack_string()
+                key, value = ev.unpack('ss')
                 info[key] = value
             handle = getattr(self.focus, 'handle_device_info',
                              self.handle_device_info)
@@ -1163,10 +1157,9 @@ class Application(Resource):
 
         elif evnum == EVT_APP_INFO:
             info = {}
-            count = ev.unpack_vint()
+            count = ev.unpack('i')[0]
             for i in xrange(count):
-                key = ev.unpack_string()
-                value = ev.unpack_string()
+                key, value = ev.unpack('ss')
                 info[key] = value
             if 'error.code' in info:
                 code = info['error.code']
@@ -1191,35 +1184,29 @@ class Application(Resource):
 
         elif evnum == EVT_RSRC_INFO:
             info = {}
-            status = ev.unpack_vint()
-            count = ev.unpack_vint()
+            status, count = ev.unpack('ii')
             for i in xrange(count):
-                key = ev.unpack_string()
-                value = ev.unpack_string()
+                key, value = ev.unpack('ss')
                 info[key] = value
             handle = getattr(self.focus, 'handle_resource_info',
                              self.handle_resource_info)
             handle(resource, status, info)
 
         elif evnum == EVT_IDLE:
-            idle = ev.unpack_bool()
+            idle = ev.unpack('b')[0]
             handle = getattr(self.focus, 'handle_idle', self.handle_idle)
             handled = handle(idle)
-            self.put(CMD_RECEIVER_ACKNOWLEDGE_IDLE, pack_bool(handled))
+            self.put(CMD_RECEIVER_ACKNOWLEDGE_IDLE, 'b', handled)
 
         elif evnum == EVT_FONT_INFO:
             font = self.resources[resource]
-            font.ascent = ev.unpack_float()
-            font.descent = ev.unpack_float()
-            font.height = ev.unpack_float()
-            font.line_gap = ev.unpack_float()
-            extras = ev.unpack_vint() - 3
-            count = ev.unpack_vint()
+            font.ascent, font.descent, \
+                font.height, font.line_gap, \
+                extras, count = ev.unpack('ffffii')
+            extras -= 3
             font.glyphs = {}
             for i in xrange(count):
-                id = ev.unpack_vint()
-                advance = ev.unpack_float()
-                bounding = ev.unpack_float()
+                id, advance, bounding = ev.unpack('iff')
                 ev.index += 4 * extras
                 font.glyphs[unichr(id)] = (advance, bounding)
             handle = getattr(self.focus, 'handle_font_info',
@@ -1227,27 +1214,23 @@ class Application(Resource):
             handle(font)
 
         elif evnum == EVT_INIT_INFO:
-            params = ev.unpack_dict()
-            memento = ev.unpack_vdata()
+            params, memento = ev.unpack('dv')
             handle = getattr(self.focus, 'handle_init_info',
                              self.handle_init_info)
             handle(params, memento)
 
         elif evnum == EVT_RESOLUTION_INFO:
             def unpack_res(ev, field_count):
-                width = ev.unpack_vint()
-                height = ev.unpack_vint()
-                aspect_y = ev.unpack_vint()
-                aspect_x = ev.unpack_vint()
+                width, height, aspect_y, aspect_x = ev.unpack('iiii')
                 if field_count > 4:
                     for i in xrange(field_count - 4):
-                        junk = ev.unpack_vint()
+                        junk = ev.unpack('i')[0]
                 return (width, height, aspect_y, aspect_x)
 
             self.resolutions = []
-            field_count = ev.unpack_vint()
+            field_count = ev.unpack('i')[0]
             self.current_resolution = unpack_res(ev, field_count)
-            res_count = ev.unpack_vint()
+            res_count = ev.unpack('i')[0]
             for i in xrange(res_count):
                 self.resolutions.append(unpack_res(ev, field_count))
 
@@ -1267,13 +1250,8 @@ class Application(Resource):
                 animation = Animation(self, animtime)
             else:
                 animation = self.immediate
-        self.put(CMD_RSRC_SEND_EVENT,
-                 pack_vint(animation.id),
-                 pack_vint(EVT_KEY),
-                 pack_vint(self.id),
-                 pack_vint(KEY_PRESS),
-                 pack_vint(keynum),
-                 pack_vint(rawcode))
+        self.put(CMD_RSRC_SEND_EVENT, 'iiiiii', animation.id, EVT_KEY,
+                 self.id, KEY_PRESS, keynum, rawcode)
 
     def set_focus(self, focus):
         """ Set the focus to a new object, and notify both the old and
@@ -1311,11 +1289,8 @@ class Application(Resource):
         """
         if len(memento) > 10240:
             raise Exception, 'memento too large'
-        self.put(CMD_RECEIVER_TRANSITION,
-                 pack_string(url),
-                 pack_vint(direction),
-                 pack_dict(params),
-                 pack_vdata(memento))
+        self.put(CMD_RECEIVER_TRANSITION, 'sidv',
+                 url, direction, params, memento)
 
     def set_resolution(self, resolution):
         """ Change the screen resolution.
@@ -1326,11 +1301,9 @@ class Application(Resource):
         """
         if resolution in self.resolutions and \
            resolution != self.current_resolution:
-            self.put(CMD_RECEIVER_SET_RESOLUTION,
-                     pack_vint(resolution[0]),
-                     pack_vint(resolution[1]),
-                     pack_vint(resolution[2]),
-                     pack_vint(resolution[3]))
+            self.put(CMD_RECEIVER_SET_RESOLUTION, 'iiii',
+                     resolution[0], resolution[1],
+                     resolution[2], resolution[3])
             self.current_resolution = resolution
             self.root.set_bounds(width=resolution[0],
                                  height=resolution[1])
