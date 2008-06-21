@@ -1219,11 +1219,10 @@ class Application(Resource):
 
         elif evnum == EVT_RESOLUTION_INFO:
             def unpack_res(ev, field_count):
-                width, height, aspect_y, aspect_x = ev.unpack('iiii')
+                resolution = ev.unpack('iiii')
                 if field_count > 4:
-                    for i in xrange(field_count - 4):
-                        junk = ev.unpack('i')[0]
-                return (width, height, aspect_y, aspect_x)
+                    ev.unpack('i' * (field_count - 4))
+                return tuple(resolution)
 
             self.resolutions = []
             field_count = ev.unpack('i')[0]
