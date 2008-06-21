@@ -1161,10 +1161,7 @@ class Application(Resource):
                 info[key] = value
             if 'error.code' in info:
                 code = info['error.code']
-                if 'error.text' in info:
-                    text = info['error.text']
-                else:
-                    text = ''
+                text = info.get('error.text', '')
                 handle = getattr(self.focus, 'handle_error',
                                  self.handle_error)
                 handle(code, text)
