@@ -93,7 +93,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     MIMEFALLBACK = 'application/octet-stream'
 
-    BADEXTS = ('.py', '.pyc')  # Don't send back the code
+    BADEXTS = ('.py', '.pyc', '.pyo')  # Don't send back the code
 
     XML_HEADER = """<TiVoContainer><Details>
         <ContentType>x-container/tivo-server</ContentType>
