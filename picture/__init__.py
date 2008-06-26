@@ -6,6 +6,7 @@
 # demo.
 
 import os
+import random
 import time
 from cStringIO import StringIO
 
@@ -42,7 +43,8 @@ class Picture(hme.Application):
         for base, dirs, files in os.walk(ROOT):
             self.files.extend([os.path.join(base, x) for x in files 
                                if os.path.splitext(x)[1].lower() in goodexts])
-        self.files.sort()
+
+        random.shuffle(self.files)
 
         self.old = None
         self.count = -1
