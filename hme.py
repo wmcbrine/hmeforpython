@@ -1216,10 +1216,10 @@ class Application(Resource):
 
         elif evnum == EVT_RESOLUTION_INFO:
             def unpack_res(ev, field_count):
-                resolution = ev.unpack('iiii')
+                resolution = tuple(ev.unpack('iiii'))
                 if field_count > 4:
                     ev.unpack('i' * (field_count - 4))
-                return tuple(resolution)
+                return resolution
 
             self.resolutions = []
             field_count = ev.unpack('i')[0]
