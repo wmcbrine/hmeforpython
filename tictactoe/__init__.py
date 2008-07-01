@@ -137,5 +137,5 @@ class TicTacToe(Application):
 class Piece(View):
     def __init__(self, parent, x, y, w, h, player):
         View.__init__(self, parent.app, x, y, w, h, parent=parent)
-        self.player = player;
-        self.child().set_resource(self.app.tokens[player])
+        self.player = player
+        self.child(resource=self.app.tokens[player])
