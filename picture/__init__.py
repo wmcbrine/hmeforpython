@@ -44,6 +44,12 @@ class Picture(hme.Application):
             self.files.extend([os.path.join(base, x) for x in files 
                                if os.path.splitext(x)[1].lower() in goodexts])
 
+        if not self.files:
+            self.root.set_text('No pictures found!')
+            time.sleep(5)
+            self.active = False
+            return
+
         random.shuffle(self.files)
 
         self.old = None
