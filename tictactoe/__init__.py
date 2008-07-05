@@ -21,9 +21,7 @@ class TicTacToe(Application):
         self.pieces_view = View(self)
 
         # the pieces themselves
-        self.pieces = [[None, None, None],
-                       [None, None, None],
-                       [None, None, None]]
+        self.pieces = [[None] * 3, [None] * 3, [None] * 3]
 
         # the origin of the pieces grid on screen
         self.gridx = (self.root.width - 300) / 2
