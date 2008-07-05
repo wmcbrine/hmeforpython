@@ -500,14 +500,14 @@ def _put_chunked(stream, data):
 
 #--- Resource classes -------------------------------------------------
 
-class HMEObject:
+class _HMEObject:
     """ Base class for Resources and Views
-        If the id is specified, it's used; otherwise the next available 
+        If the id is specified, it's used; otherwise the next available
         id is fetched from the app.
 
-        The need to specify the app here results in a slew of "self" 
-        parameters when HMEObjects are being constructed -- probably the 
-        ugliest aspect of this module.
+        The need to specify the app here results in a slew of "self"
+        parameters when _HMEObjects are being constructed -- probably
+        the ugliest aspect of this module.
 
     """
     def __init__(self, app, id=None):
@@ -524,9 +524,9 @@ class HMEObject:
 
         """
         _put_chunked(self.app.wfile,
-                    _pack('ii' + format, cmd, self.id, *params))
+                     _pack('ii' + format, cmd, self.id, *params))
 
-class Resource(HMEObject):
+class Resource(_HMEObject):
     """ Base class for Resources
         Note that in this implementation, resources are never removed 
         automatically; you have to call the remove() method. Each 
@@ -534,7 +534,7 @@ class Resource(HMEObject):
 
     """
     def __init__(self, app, id=None):
-        HMEObject.__init__(self, app, id)
+        _HMEObject.__init__(self, app, id)
         if self.id >= ID_CLIENT:
             app.resources[self.id] = self
 
@@ -768,7 +768,7 @@ class Animation(Resource):
 
 #--- The View class ---------------------------------------------------
 
-class View(HMEObject):
+class View(_HMEObject):
     """ The View class
         A view is the basic unit of the HME display. It has a size,
         position, and can have an associated resource, which is either a
@@ -793,7 +793,7 @@ class View(HMEObject):
     def __init__(self, app, xpos=0, ypos=0, width=None, height=None,
                  visible=True, parent=None, id=None, resource=None, 
                  text=None, colornum=None, image=None, flags=0):
-        HMEObject.__init__(self, app, id)
+        _HMEObject.__init__(self, app, id)
         self.children = []
         self.resource = None
         self.xscale = 1
