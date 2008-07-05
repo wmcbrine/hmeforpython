@@ -279,7 +279,7 @@ FONT_METRICS_GLYPH = 2
 
 #--- Low-level stream handling ----------------------------------------
 
-class EventData:
+class _EventData:
     """ Take raw event data and allow various Python types to be 
         extracted from it.
 
@@ -1125,7 +1125,7 @@ class Application(Resource):
         if not data:
             return False
 
-        ev = EventData(data)
+        ev = _EventData(data)
 
         evnum, resource = ev.unpack('ii')
 
