@@ -96,36 +96,36 @@ ID_CLIENT = 2048
 
 # Commands
 
-CMD_VIEW_ADD = 1
-CMD_VIEW_SET_BOUNDS = 2
-CMD_VIEW_SET_SCALE = 3
-CMD_VIEW_SET_TRANSLATION = 4
-CMD_VIEW_SET_TRANSPARENCY = 5
-CMD_VIEW_SET_VISIBLE = 6
-CMD_VIEW_SET_PAINTING = 7
-CMD_VIEW_SET_RESOURCE = 8
-CMD_VIEW_REMOVE = 9
+_CMD_VIEW_ADD = 1
+_CMD_VIEW_SET_BOUNDS = 2
+_CMD_VIEW_SET_SCALE = 3
+_CMD_VIEW_SET_TRANSLATION = 4
+_CMD_VIEW_SET_TRANSPARENCY = 5
+_CMD_VIEW_SET_VISIBLE = 6
+_CMD_VIEW_SET_PAINTING = 7
+_CMD_VIEW_SET_RESOURCE = 8
+_CMD_VIEW_REMOVE = 9
 
-CMD_RSRC_ADD_COLOR = 20
-CMD_RSRC_ADD_TTF = 21
-CMD_RSRC_ADD_FONT = 22
-CMD_RSRC_ADD_TEXT = 23
-CMD_RSRC_ADD_IMAGE = 24
-CMD_RSRC_ADD_SOUND = 25
-CMD_RSRC_ADD_STREAM = 26
-CMD_RSRC_ADD_ANIM = 27
+_CMD_RSRC_ADD_COLOR = 20
+_CMD_RSRC_ADD_TTF = 21
+_CMD_RSRC_ADD_FONT = 22
+_CMD_RSRC_ADD_TEXT = 23
+_CMD_RSRC_ADD_IMAGE = 24
+_CMD_RSRC_ADD_SOUND = 25
+_CMD_RSRC_ADD_STREAM = 26
+_CMD_RSRC_ADD_ANIM = 27
 
-CMD_RSRC_SET_ACTIVE = 40
-CMD_RSRC_SET_POSITION = 41
-CMD_RSRC_SET_SPEED = 42
+_CMD_RSRC_SET_ACTIVE = 40
+_CMD_RSRC_SET_POSITION = 41
+_CMD_RSRC_SET_SPEED = 42
 
-CMD_RSRC_SEND_EVENT = 44
-CMD_RSRC_CLOSE = 45
-CMD_RSRC_REMOVE = 46
+_CMD_RSRC_SEND_EVENT = 44
+_CMD_RSRC_CLOSE = 45
+_CMD_RSRC_REMOVE = 46
 
-CMD_RECEIVER_ACKNOWLEDGE_IDLE = 60
-CMD_RECEIVER_TRANSITION = 61
-CMD_RECEIVER_SET_RESOLUTION = 62
+_CMD_RECEIVER_ACKNOWLEDGE_IDLE = 60
+_CMD_RECEIVER_TRANSITION = 61
+_CMD_RECEIVER_SET_RESOLUTION = 62
 
 # Events
 
@@ -270,7 +270,7 @@ FONT_BOLD = 1
 FONT_ITALIC = 2
 FONT_BOLDITALIC = 3
 
-# Bitwise flags for CMD_RSRC_ADD_FONT: data to return in EVT_FONT_INFO. 
+# Bitwise flags for _CMD_RSRC_ADD_FONT: data to return in EVT_FONT_INFO. 
 # (This is not documented in the HME spec.) Without setting one or both 
 # of these flags, no EVT_FONT_INFO is returned.
 
@@ -376,7 +376,7 @@ class EventData:
 
         return [func[i]() for i in format]
 
-def get_chunked(stream):
+def _get_chunked(stream):
     """ Read HME-style chunked event data from the input stream. """
     data = ''
     while True:
@@ -396,11 +396,11 @@ def get_chunked(stream):
         except:
             return None
 
-def pack_bool(value):
+def _pack_bool(value):
     """ bool to HME boolean """
     return chr(value)
 
-def pack_vint(value):
+def _pack_vint(value):
     """ int to HME variable-length integer """
     value = int(value)
     result = ''
@@ -415,7 +415,7 @@ def pack_vint(value):
     result += chr(value | 0x80)
     return result
 
-def pack_vuint(value):
+def _pack_vuint(value):
     """ int to HME variable-length unsigned integer """
     value = int(value)
     result = ''
@@ -425,21 +425,21 @@ def pack_vuint(value):
     result += chr(value | 0x80)
     return result
 
-def pack_float(value):
+def _pack_float(value):
     """ float to HME float """
     return struct.pack('!f', float(value))
 
-def pack_vdata(value):
+def _pack_vdata(value):
     """ str to HME variable-length data """
-    return pack_vuint(len(value)) + value
+    return _pack_vuint(len(value)) + value
 
-def pack_string(value):
+def _pack_string(value):
     """ unicode to HME string """
     if not type(value) in (str, unicode):
         value = str(value)
-    return pack_vdata(value.encode('utf-8'))
+    return _pack_vdata(value.encode('utf-8'))
 
-def pack_dict(value):
+def _pack_dict(value):
     """ dict (of lists) to HME dict """
     result = ''
     if type(value) != dict:
@@ -448,38 +448,38 @@ def pack_dict(value):
     keys = value.keys()
     keys.sort()
     for key in keys:
-        result += pack_string(key)
+        result += _pack_string(key)
         items = value[key]
         if type(items) != list:
             items = [items]
         for item in items:
             if type(item) == dict:
                 result += chr(2)
-                result += pack_dict(item)
+                result += _pack_dict(item)
             else:
                 result += chr(1)
-                result += pack_string(item)
+                result += _pack_string(item)
         result += chr(0)
-    result += pack_string('')
+    result += _pack_string('')
     return result
 
-def pack_raw(value):
+def _pack_raw(value):
     """ Return the data as-is. """
     return value
 
-def pack(format, *values):
+def _pack(format, *values):
     """ Pack a list of types, based on a format string. """
-    func = {'b': pack_bool,
-            'i': pack_vint,
-            'f': pack_float,
-            'v': pack_vdata,
-            's': pack_string,
-            'd': pack_dict,
-            'r': pack_raw}
+    func = {'b': _pack_bool,
+            'i': _pack_vint,
+            'f': _pack_float,
+            'v': _pack_vdata,
+            's': _pack_string,
+            'd': _pack_dict,
+            'r': _pack_raw}
 
     return ''.join([func[i](value) for i, value in zip(format, values)])
 
-def put_chunked(stream, data):
+def _put_chunked(stream, data):
     """ Write HME-style chunked data to the output stream. """
     MAXSIZE = 0xfffe
     size = len(data)
@@ -523,8 +523,8 @@ class HMEObject:
             according to the format string.
 
         """
-        put_chunked(self.app.wfile,
-                    pack('ii' + format, cmd, self.id, *params))
+        _put_chunked(self.app.wfile,
+                    _pack('ii' + format, cmd, self.id, *params))
 
 class Resource(HMEObject):
     """ Base class for Resources
@@ -539,19 +539,19 @@ class Resource(HMEObject):
             app.resources[self.id] = self
 
     def set_active(self, make_active=True):
-        self.put(CMD_RSRC_SET_ACTIVE, 'b', make_active)
+        self.put(_CMD_RSRC_SET_ACTIVE, 'b', make_active)
 
     def set_position(self, position):
-        self.put(CMD_RSRC_SET_POSITION, 'i', position)
+        self.put(_CMD_RSRC_SET_POSITION, 'i', position)
 
     def set_speed(self, speed):
-        self.put(CMD_RSRC_SET_SPEED, 'f', speed)
+        self.put(_CMD_RSRC_SET_SPEED, 'f', speed)
 
     def close(self):
-        self.put(CMD_RSRC_CLOSE)
+        self.put(_CMD_RSRC_CLOSE)
 
     def remove(self):
-        self.put(CMD_RSRC_REMOVE)
+        self.put(_CMD_RSRC_REMOVE)
         if self.id >= ID_CLIENT:
             self.app.resources.pop(self.id)
 
@@ -584,7 +584,7 @@ class Color(Resource):
             Resource.__init__(self, app, app.colors[colornum].id)
         else:
             Resource.__init__(self, app)
-            self.put(CMD_RSRC_ADD_COLOR, 'r', struct.pack('!I', colornum))
+            self.put(_CMD_RSRC_ADD_COLOR, 'r', struct.pack('!I', colornum))
             app.colors[colornum] = self
         app.last_color = self
 
@@ -615,7 +615,7 @@ class TTF(Resource):
                     if f is None:
                         f = open(name, 'rb')
                     data = f.read()
-                self.put(CMD_RSRC_ADD_TTF, 'r', data)
+                self.put(_CMD_RSRC_ADD_TTF, 'r', data)
                 if name:
                     app.ttfs[name] = self
         app.last_ttf = self
@@ -646,7 +646,7 @@ class Font(Resource):
             Resource.__init__(self, app, app.fonts[self.key].id)
         else:
             Resource.__init__(self, app)
-            self.put(CMD_RSRC_ADD_FONT, 'iifi', ttf.id, style, size, flags)
+            self.put(_CMD_RSRC_ADD_FONT, 'iifi', ttf.id, style, size, flags)
             app.fonts[self.key] = self
         app.last_font = self
 
@@ -679,7 +679,7 @@ class Text(Resource):
             font = app.last_font
             if font is None:
                 font = Font(app)
-        self.put(CMD_RSRC_ADD_TEXT, 'iis', font.id, color.id, text)
+        self.put(_CMD_RSRC_ADD_TEXT, 'iis', font.id, color.id, text)
 
 class Image(Resource):
     """ Image resource
@@ -700,7 +700,7 @@ class Image(Resource):
                 if f is None:
                     f = open(name, 'rb')
                 data = f.read()
-            self.put(CMD_RSRC_ADD_IMAGE, 'r', data)
+            self.put(_CMD_RSRC_ADD_IMAGE, 'r', data)
             if name:
                 app.images[name] = self
 
@@ -728,7 +728,7 @@ class Sound(Resource):
                 if f is None:
                     f = open(name, 'rb')
                 data = f.read()
-            self.put(CMD_RSRC_ADD_SOUND, 'r', data)
+            self.put(_CMD_RSRC_ADD_SOUND, 'r', data)
 
 class Stream(Resource):
     """ Stream resource
@@ -741,7 +741,7 @@ class Stream(Resource):
     """
     def __init__(self, app, url, mime='', play=True):
         Resource.__init__(self, app)
-        self.put(CMD_RSRC_ADD_STREAM, 'ssb', url, mime, play)
+        self.put(_CMD_RSRC_ADD_STREAM, 'ssb', url, mime, play)
 
 class Animation(Resource):
     """ Animation resource
@@ -757,7 +757,7 @@ class Animation(Resource):
                 Resource.__init__(self, app, app.anims[self.key].id)
             else:
                 Resource.__init__(self, app)
-                self.put(CMD_RSRC_ADD_ANIM, 'if', duration * 1000, ease)
+                self.put(_CMD_RSRC_ADD_ANIM, 'if', duration * 1000, ease)
                 app.anims[self.key] = self
         else:
             Resource.__init__(self, app, id)
@@ -818,7 +818,7 @@ class View(HMEObject):
         self.width = width
         self.height = height
         if parent:
-            self.put(CMD_VIEW_ADD, 'iiiiib', parent.id, xpos, ypos,
+            self.put(_CMD_VIEW_ADD, 'iiiiib', parent.id, xpos, ypos,
                      width, height, visible)
             parent.children.append(self)
         else:
@@ -855,7 +855,7 @@ class View(HMEObject):
                 animation = Animation(self.app, animtime)
             else:
                 animation = self.app.immediate
-        self.put(CMD_VIEW_SET_BOUNDS, 'iiiii', xpos, ypos, width, height,
+        self.put(_CMD_VIEW_SET_BOUNDS, 'iiiii', xpos, ypos, width, height,
                  animation.id)
         self.xpos = xpos
         self.ypos = ypos
@@ -876,7 +876,7 @@ class View(HMEObject):
                 animation = Animation(self.app, animtime)
             else:
                 animation = self.app.immediate
-        self.put(CMD_VIEW_SET_SCALE, 'ffi', xscale, yscale,
+        self.put(_CMD_VIEW_SET_SCALE, 'ffi', xscale, yscale,
                  animation.id)
         self.xscale = xscale
         self.yscale = yscale
@@ -895,7 +895,7 @@ class View(HMEObject):
                     animation = Animation(self.app, animtime)
                 else:
                     animation = self.app.immediate
-            self.put(CMD_VIEW_SET_TRANSLATION, 'iii',
+            self.put(_CMD_VIEW_SET_TRANSLATION, 'iii',
                      xtranslation, ytranslation, animation.id)
             self.xtranslation = xtranslation
             self.ytranslation = ytranslation
@@ -921,7 +921,7 @@ class View(HMEObject):
                     animation = Animation(self.app, animtime)
                 else:
                     animation = self.app.immediate
-            self.put(CMD_VIEW_SET_TRANSPARENCY, 'fi',
+            self.put(_CMD_VIEW_SET_TRANSPARENCY, 'fi',
                      transparency, animation.id)
             self.transparency = transparency
 
@@ -936,7 +936,7 @@ class View(HMEObject):
                     animation = Animation(self.app, animtime)
                 else:
                     animation = self.app.immediate
-            self.put(CMD_VIEW_SET_VISIBLE, 'bi',
+            self.put(_CMD_VIEW_SET_VISIBLE, 'bi',
                      visible, animation.id)
             self.visible = visible
 
@@ -949,7 +949,7 @@ class View(HMEObject):
 
         """
         if self.painting != painting:
-            self.put(CMD_VIEW_SET_PAINTING, 'b', painting)
+            self.put(_CMD_VIEW_SET_PAINTING, 'b', painting)
             self.painting = painting
 
     def set_resource(self, resource, flags=0):
@@ -958,7 +958,7 @@ class View(HMEObject):
 
         """
         if self.resource is not resource:
-            self.put(CMD_VIEW_SET_RESOURCE, 'ii', resource.id, flags)
+            self.put(_CMD_VIEW_SET_RESOURCE, 'ii', resource.id, flags)
             self.resource = resource
 
     def remove(self, animation=None, animtime=0):
@@ -968,7 +968,7 @@ class View(HMEObject):
                 animation = Animation(self.app, animtime)
             else:
                 animation = self.app.immediate
-        self.put(CMD_VIEW_REMOVE, 'i', animation.id)
+        self.put(_CMD_VIEW_REMOVE, 'i', animation.id)
         if self.parent:
             self.parent.children.remove(self)
 
@@ -1121,7 +1121,7 @@ class Application(Resource):
         except:
             return False
 
-        data = get_chunked(self.rfile)
+        data = _get_chunked(self.rfile)
         if not data:
             return False
 
@@ -1191,7 +1191,7 @@ class Application(Resource):
             idle = ev.unpack('b')[0]
             handle = getattr(self.focus, 'handle_idle', self.handle_idle)
             handled = handle(idle)
-            self.put(CMD_RECEIVER_ACKNOWLEDGE_IDLE, 'b', handled)
+            self.put(_CMD_RECEIVER_ACKNOWLEDGE_IDLE, 'b', handled)
 
         elif evnum == EVT_FONT_INFO:
             font = self.resources[resource]
@@ -1243,7 +1243,7 @@ class Application(Resource):
                 animation = Animation(self, animtime)
             else:
                 animation = self.immediate
-        self.put(CMD_RSRC_SEND_EVENT, 'iiiiii', animation.id, EVT_KEY,
+        self.put(_CMD_RSRC_SEND_EVENT, 'iiiiii', animation.id, EVT_KEY,
                  self.id, KEY_PRESS, keynum, rawcode)
 
     def set_focus(self, focus):
@@ -1282,7 +1282,7 @@ class Application(Resource):
         """
         if len(memento) > 10240:
             raise Exception, 'memento too large'
-        self.put(CMD_RECEIVER_TRANSITION, 'sidv',
+        self.put(_CMD_RECEIVER_TRANSITION, 'sidv',
                  url, direction, params, memento)
 
     def set_resolution(self, resolution):
@@ -1294,7 +1294,7 @@ class Application(Resource):
         """
         if (resolution in self.resolutions and
             resolution != self.current_resolution):
-            self.put(CMD_RECEIVER_SET_RESOLUTION, 'iiii', *resolution)
+            self.put(_CMD_RECEIVER_SET_RESOLUTION, 'iiii', *resolution)
             self.current_resolution = resolution
             self.root.set_bounds(width=resolution[0],
                                  height=resolution[1])
