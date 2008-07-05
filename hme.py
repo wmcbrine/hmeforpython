@@ -888,8 +888,8 @@ class View(HMEObject):
             view, while the view itself stays in the same place.
 
         """
-        if self.xtranslation != xtranslation or \
-           self.ytranslation != ytranslation:
+        if (self.xtranslation != xtranslation or
+            self.ytranslation != ytranslation):
             if animation is None:
                 if animtime:
                     animation = Animation(self.app, animtime)
@@ -1195,9 +1195,8 @@ class Application(Resource):
 
         elif evnum == EVT_FONT_INFO:
             font = self.resources[resource]
-            font.ascent, font.descent, \
-                font.height, font.line_gap, \
-                extras, count = ev.unpack('ffffii')
+            (font.ascent, font.descent, font.height, font.line_gap,
+                extras, count) = ev.unpack('ffffii')
             extras -= 3
             font.glyphs = {}
             for i in xrange(count):
@@ -1293,8 +1292,8 @@ class Application(Resource):
             directly.
 
         """
-        if resolution in self.resolutions and \
-           resolution != self.current_resolution:
+        if (resolution in self.resolutions and
+            resolution != self.current_resolution):
             self.put(CMD_RECEIVER_SET_RESOLUTION, 'iiii', *resolution)
             self.current_resolution = resolution
             self.root.set_bounds(width=resolution[0],

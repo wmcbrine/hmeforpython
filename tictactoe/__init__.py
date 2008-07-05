@@ -97,12 +97,12 @@ class TicTacToe(Application):
 
     def is_victory(self):
         for i in xrange(3):
-            if self.is_victory_run(0, i, 1, 0) or \
-               self.is_victory_run(i, 0, 0, 1):
+            if (self.is_victory_run(0, i, 1, 0) or
+                self.is_victory_run(i, 0, 0, 1)):
                 return True
 
-        return self.is_victory_run(0, 0, 1, 1) or \
-               self.is_victory_run(0, 2, 1, -1)
+        return (self.is_victory_run(0, 0, 1, 1) or
+                self.is_victory_run(0, 2, 1, -1))
 
     # Return true if there is a victory (three pieces in a row) starting 
     # at ox,oy and proceeding according to dx,dy. This will highlight 
@@ -114,8 +114,8 @@ class TicTacToe(Application):
         for i in xrange(3):
             if self.pieces[x][y] is None:
                 return False
-            if i and self.pieces[x][y].player != \
-                     self.pieces[x - dx][y - dy].player:
+            if (i and self.pieces[x][y].player !=
+                      self.pieces[x - dx][y - dy].player):
                 return False
             x += dx
             y += dy
