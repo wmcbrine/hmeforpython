@@ -20,9 +20,10 @@ from hme import *
 
 class Animate(Application):
     def handle_device_info(self, info):
-        if 'version' in info and info['version'].startswith('9.1'):
+        ver = info.get('version', '')
+        if ver[:3] in ('9.1', '9.3') and not ver[-3:] in ('648', '652'):
             self.root.set_text('Sorry, this program is not compatible\n' +
-                               'with TiVo software version 9.1.')
+                               'with this TiVo software/hardware version.')
             return
 
         self.sprites = []
