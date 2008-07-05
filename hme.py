@@ -129,14 +129,14 @@ _CMD_RECEIVER_SET_RESOLUTION = 62
 
 # Events
 
-EVT_DEVICE_INFO = 1
-EVT_APP_INFO = 2
-EVT_RSRC_INFO = 3
-EVT_KEY = 4
-EVT_IDLE = 5
-EVT_FONT_INFO = 6
-EVT_INIT_INFO = 7
-EVT_RESOLUTION_INFO = 8
+_EVT_DEVICE_INFO = 1
+_EVT_APP_INFO = 2
+_EVT_RSRC_INFO = 3
+_EVT_KEY = 4
+_EVT_IDLE = 5
+_EVT_FONT_INFO = 6
+_EVT_INIT_INFO = 7
+_EVT_RESOLUTION_INFO = 8
 
 # Key actions
 
@@ -270,9 +270,9 @@ FONT_BOLD = 1
 FONT_ITALIC = 2
 FONT_BOLDITALIC = 3
 
-# Bitwise flags for _CMD_RSRC_ADD_FONT: data to return in EVT_FONT_INFO. 
+# Bitwise flags for _CMD_RSRC_ADD_FONT: data to return in _EVT_FONT_INFO. 
 # (This is not documented in the HME spec.) Without setting one or both 
-# of these flags, no EVT_FONT_INFO is returned.
+# of these flags, no _EVT_FONT_INFO is returned.
 
 FONT_METRICS_BASIC = 1
 FONT_METRICS_GLYPH = 2
@@ -1112,8 +1112,8 @@ class Application(Resource):
         """ The main event handler/dispatcher. Attempts to get one 
             event; returns False if it can't. Otherwise, unpacks the 
             event data, calls the handler function (see below), 
-            processes the return value (in the case of EVT_IDLE or 
-            EVT_RESOLUTION_INFO), and returns True.
+            processes the return value (in the case of _EVT_IDLE or 
+            _EVT_RESOLUTION_INFO), and returns True.
 
         """
         try:
@@ -1129,7 +1129,7 @@ class Application(Resource):
 
         evnum, resource = ev.unpack('ii')
 
-        if evnum == EVT_KEY:
+        if evnum == _EVT_KEY:
             action, keynum, rawcode = ev.unpack('iii')
 
             if action == KEY_PRESS:
@@ -1143,7 +1143,7 @@ class Application(Resource):
                                  self.handle_key_release)
             handle(keynum, rawcode)
 
-        elif evnum == EVT_DEVICE_INFO:
+        elif evnum == _EVT_DEVICE_INFO:
             info = {}
             count = ev.unpack('i')[0]
             for i in xrange(count):
@@ -1153,7 +1153,7 @@ class Application(Resource):
                              self.handle_device_info)
             handle(info)
 
-        elif evnum == EVT_APP_INFO:
+        elif evnum == _EVT_APP_INFO:
             info = {}
             count = ev.unpack('i')[0]
             for i in xrange(count):
@@ -1177,7 +1177,7 @@ class Application(Resource):
                                  self.handle_app_info)
                 handle(info)
 
-        elif evnum == EVT_RSRC_INFO:
+        elif evnum == _EVT_RSRC_INFO:
             info = {}
             status, count = ev.unpack('ii')
             for i in xrange(count):
@@ -1187,13 +1187,13 @@ class Application(Resource):
                              self.handle_resource_info)
             handle(resource, status, info)
 
-        elif evnum == EVT_IDLE:
+        elif evnum == _EVT_IDLE:
             idle = ev.unpack('b')[0]
             handle = getattr(self.focus, 'handle_idle', self.handle_idle)
             handled = handle(idle)
             self.put(_CMD_RECEIVER_ACKNOWLEDGE_IDLE, 'b', handled)
 
-        elif evnum == EVT_FONT_INFO:
+        elif evnum == _EVT_FONT_INFO:
             font = self.resources[resource]
             (font.ascent, font.descent, font.height, font.line_gap,
                 extras, count) = ev.unpack('ffffii')
@@ -1207,13 +1207,13 @@ class Application(Resource):
                              self.handle_font_info)
             handle(font)
 
-        elif evnum == EVT_INIT_INFO:
+        elif evnum == _EVT_INIT_INFO:
             params, memento = ev.unpack('dv')
             handle = getattr(self.focus, 'handle_init_info',
                              self.handle_init_info)
             handle(params, memento)
 
-        elif evnum == EVT_RESOLUTION_INFO:
+        elif evnum == _EVT_RESOLUTION_INFO:
             def unpack_res(ev, field_count):
                 resolution = tuple(ev.unpack('iiii'))
                 if field_count > 4:
@@ -1243,7 +1243,7 @@ class Application(Resource):
                 animation = Animation(self, animtime)
             else:
                 animation = self.immediate
-        self.put(_CMD_RSRC_SEND_EVENT, 'iiiiii', animation.id, EVT_KEY,
+        self.put(_CMD_RSRC_SEND_EVENT, 'iiiiii', animation.id, _EVT_KEY,
                  self.id, KEY_PRESS, keynum, rawcode)
 
     def set_focus(self, focus):
@@ -1309,35 +1309,35 @@ class Application(Resource):
         pass
 
     def handle_key_press(self, keynum, rawcode=None):
-        """ Override this to handle key presses. (EVT_KEY, KEY_PRESS) """
+        """ Override this to handle key presses. (_EVT_KEY, KEY_PRESS) """
         pass
 
     def handle_key_repeat(self, keynum, rawcode=None):
-        """ Override this to handle key repeats. (EVT_KEY, KEY_REPEAT) """
+        """ Override this to handle key repeats. (_EVT_KEY, KEY_REPEAT) """
         self.handle_key_press(keynum, rawcode)
 
     def handle_key_release(self, keynum, rawcode=None):
-        """ Override this to handle key releases. (EVT_KEY, KEY_RELEASE) """
+        """ Override this to handle key releases. (_EVT_KEY, KEY_RELEASE) """
         pass
 
     def handle_active(self):
-        """ Override this to handle "active = true" from EVT_APP_INFO. """
+        """ Override this to handle "active = true" from _EVT_APP_INFO. """
         pass
 
     def handle_error(self, code, text):
-        """ Override this to handle errors from EVT_APP_INFO. """
+        """ Override this to handle errors from _EVT_APP_INFO. """
         pass
 
     def handle_app_info(self, info):
-        """ Override this to handle anything else from EVT_APP_INFO. """
+        """ Override this to handle anything else from _EVT_APP_INFO. """
         pass
 
     def handle_device_info(self, info):
-        """ Override this to handle EVT_DEVICE_INFO. """
+        """ Override this to handle _EVT_DEVICE_INFO. """
         pass
 
     def handle_resource_info(self, resource, status, info):
-        """ Override this if you want to handle EVT_RSRC_INFO. resource 
+        """ Override this if you want to handle _EVT_RSRC_INFO. resource 
             is the resource id number, status is the status code, and 
             info is a dict with whatever else the event returned.
 
@@ -1346,7 +1346,7 @@ class Application(Resource):
 
     def handle_font_info(self, font):
         """ Override this if you want to do something on getting an 
-            EVT_FONT_INFO event. font is the Font object, with the new 
+            _EVT_FONT_INFO event. font is the Font object, with the new 
             details (ascent, descent, height, line_gap, and a glyphs 
             dict) added.
 
@@ -1362,7 +1362,7 @@ class Application(Resource):
         return False
 
     def handle_init_info(self, params, memento):
-        """ Override this to handle EVT_INIT_INFO. params and memento 
+        """ Override this to handle _EVT_INIT_INFO. params and memento 
             are as created by the transition() method in the parent app.
 
         """
