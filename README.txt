@@ -1,6 +1,6 @@
 HME for Python, v0.12
 by William McBrine <wmcbrine@gmail.com>
-May 24, 2008
+July 24, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -43,6 +43,25 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.12 --  Barred effects and animate from all non-S3/HD TiVos running 9.1
+         or 9.3. This may be overbroad, but I can't confirm that any
+         S2's can handle these apps with 9.x.
+
+         Made some things "private", so they won't be imported by "from
+         hme import *".
+
+         Added ".pyo" to the list of file types not to send.
+
+         In the picture viewer, shuffle the pictures instead of sorting
+         them; also, check not only for a valid directory, but for one
+         containing pictures.
+
+         Miscellaneous internal reworking and simplification.
+
+         Tested under more versions.
+
+         Typo: had "LPGL" instead of "LGPL".
 
 0.11  -- Added a simple slideshow Picture Viewer to the included apps.
          It depends on the Python Imaging Library, and you'll have to
