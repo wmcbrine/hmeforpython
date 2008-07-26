@@ -51,13 +51,9 @@ import BaseHTTPServer
 # Version of the protocol implemented
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
-HOST = ''      # By default, attach to all available interfaces
-PORT = 9042    # TiVo Inc. uses 7288. But set it to 80 to make "Manually 
-               # add a server" work.
-ROOT = os.path.abspath(os.path.dirname(__file__))   # You are here
-
 class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
-    def __init__(self, addr, handler, apptitles):
+    def __init__(self, addr, handler, basepath, apptitles):
+        self.basepath = basepath
         self.apptitles = apptitles
         BaseHTTPServer.HTTPServer.__init__(self, addr, handler)
 
@@ -139,7 +135,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             print time.asctime(), 'Ending HME: %s' % name
 
         else:
-            path = ROOT + urllib.unquote(self.path).replace('/..', '')
+            path = (self.server.basepath +
+                    urllib.unquote(self.path).replace('/..', ''))
             if os.path.isdir(path):
                 self.send_error(403)
                 return
@@ -213,6 +210,11 @@ class Broadcast:
         return socket.inet_aton(self.addr)
 
 if __name__ == '__main__':
+    HOST = ''      # By default, attach to all available interfaces
+    PORT = 9042    # TiVo Inc. uses 7288. But set it to 80 to make
+                   # "Manually add a server" work.
+    ROOT = os.path.abspath(os.path.dirname(__file__))   # You are here
+
     have_zc = True
 
     try:
@@ -236,7 +238,7 @@ if __name__ == '__main__':
             apptitles[name] = getattr(app, 'TITLE', name.title())
 
     print time.asctime(), 'Server Starts'
-    httpd = Server((HOST, PORT), Handler, apptitles)
+    httpd = Server((HOST, PORT), Handler, ROOT, apptitles)
     if have_zc:
         bd = Broadcast((HOST, PORT), apptitles)
     try:
