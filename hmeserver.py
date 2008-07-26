@@ -173,7 +173,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 class Broadcast:
     def __init__(self, addr, apptitles):
         self.addr, self.port = addr
-        self.apps = sorted(apptitles.keys())
+        self.apps = apptitles.keys()
+        self.apps.sort()
         self.appinfo = []
         self.rz = Zeroconf.Zeroconf()
         for name in self.apps:
