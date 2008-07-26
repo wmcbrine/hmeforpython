@@ -48,13 +48,6 @@ import urllib
 import SocketServer
 import BaseHTTPServer
 
-have_zc = True
-
-try:
-    import Zeroconf
-except:
-    have_zc = False
-
 # Version of the protocol implemented
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
@@ -63,23 +56,10 @@ PORT = 9042    # TiVo Inc. uses 7288. But set it to 80 to make "Manually
                # add a server" work.
 ROOT = os.path.abspath(os.path.dirname(__file__))   # You are here
 
-apps = [name for name in os.listdir(ROOT) if 
-        os.path.isdir(os.path.join(ROOT, name))]
-# Or, set apps to the list of modules you want to serve.
-
-apptitles = {}
-
-for name in apps[:]:
-    try:
-        app = __import__(name)
-    except (ValueError, ImportError), msg:
-        print 'Skipping:', name, '-', msg
-        apps.remove(name)
-    else:
-        apptitles[name] = getattr(app, 'TITLE', name.title())
-
 class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
-    pass
+    def __init__(self, addr, handler, apptitles):
+        self.apptitles = apptitles
+        BaseHTTPServer.HTTPServer.__init__(self, addr, handler)
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     server_version = 'HMEPython/%s' % __version__
@@ -125,6 +105,9 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def _page(self, body):
         name = self.path.strip('/')
+        apps = self.server.apptitles.keys()
+        apptitles = self.server.apptitles
+
         if name.startswith('TiVoConnect'):
             self.send_response(200)
             self.send_header('Content-type', 'text/xml')
@@ -190,10 +173,12 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self._page(True)
 
 class Broadcast:
-    def __init__(self):
+    def __init__(self, addr, apptitles):
+        self.addr, self.port = addr
+        self.apps = sorted(apptitles.keys())
         self.appinfo = []
         self.rz = Zeroconf.Zeroconf()
-        for name in apps:
+        for name in self.apps:
             print 'Registering:', name
             desc = {'path': '/%s/' % name,
                     'version': '%d.%d' % (HME_MAJOR_VERSION,
@@ -201,39 +186,59 @@ class Broadcast:
             info = Zeroconf.ServiceInfo('_tivo-hme._tcp.local.',
                                         '%s._tivo-hme._tcp.local.' %
                                         apptitles[name],
-                                        self.get_address(), PORT,
+                                        self.get_address(), self.port,
                                         0, 0, desc)
             self.rz.registerService(info)
             self.appinfo.append(info)
 
     def shutdown(self):
-        print 'Unregistering:', ' '.join(apps)
+        print 'Unregistering:', ' '.join(self.apps)
         for info in self.appinfo:
             self.rz.unregisterService(info)
         self.rz.close()
 
     def get_address(self):
-        if HOST:
-            addr = HOST
-        else:
+        if not self.addr:
             try:
-                addr = socket.gethostbyname(socket.gethostname())
+                self.addr = socket.gethostbyname(socket.gethostname())
                 # On my system, this always gives me 127.0.0.1. Hence...
             except:
-                addr = ''
-            if not addr or addr.startswith('127.'):
+                self.addr = ''
+            if not self.addr or self.addr.startswith('127.'):
                 # ...the hard way. This may not be the right interface, 
                 # either; if not, set HOST to the desired address.
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.connect(('4.2.2.1', 0))
-                addr = s.getsockname()[0]
-        return socket.inet_aton(addr)
+                self.addr = s.getsockname()[0]
+        return socket.inet_aton(self.addr)
 
 if __name__ == '__main__':
+    have_zc = True
+
+    try:
+        import Zeroconf
+    except ImportError, msg:
+        print 'Not using Zeroconf:', msg
+        have_zc = False
+
+    apps = [name for name in os.listdir(ROOT) if 
+            os.path.isdir(os.path.join(ROOT, name))]
+    # Or, set apps to the list of modules you want to serve.
+
+    apptitles = {}
+
+    for name in apps:
+        try:
+            app = __import__(name)
+        except (ValueError, ImportError), msg:
+            print 'Skipping:', name, '-', msg
+        else:
+            apptitles[name] = getattr(app, 'TITLE', name.title())
+
     print time.asctime(), 'Server Starts'
-    httpd = Server((HOST, PORT), Handler)
+    httpd = Server((HOST, PORT), Handler, apptitles)
     if have_zc:
-        bd = Broadcast()
+        bd = Broadcast((HOST, PORT), apptitles)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
