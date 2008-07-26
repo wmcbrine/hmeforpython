@@ -41,8 +41,10 @@ __author__ = 'William McBrine <wmcbrine@gmail.com>'
 __version__ = '0.13'
 __license__ = 'LGPL'
 
+import getopt
 import os
 import socket
+import sys
 import time
 import urllib
 import SocketServer
@@ -210,22 +212,41 @@ class Broadcast:
         return socket.inet_aton(self.addr)
 
 if __name__ == '__main__':
-    HOST = ''      # By default, attach to all available interfaces
-    PORT = 9042    # TiVo Inc. uses 7288. But set it to 80 to make
+    host = ''      # By default, attach to all available interfaces
+    port = 9042    # TiVo Inc. uses 7288. But set it to 80 to make
                    # "Manually add a server" work.
-    ROOT = os.path.abspath(os.path.dirname(__file__))   # You are here
+    root = os.path.abspath(os.path.dirname(__file__))   # You are here
 
     have_zc = True
+    apps = []
+    opts = []
 
     try:
+        opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:z', ['address=',
+                                   'port=', 'basepath=', 'nozeroconf'])
+    except getopt.GetoptError, msg:
+        print msg
+
+    for opt, value in opts:
+        if opt in ('-a', '--address'):
+            host = value
+        elif opt in ('-p', '--port'):
+            port = int(value)
+        elif opt in ('-b', '--basepath'):
+            root = value
+        elif opt in ('-z', '--nozeroconf'):
+            have_zc = False
+
+    try:
+        assert(have_zc)
         import Zeroconf
-    except ImportError, msg:
+    except Exception, msg:
         print 'Not using Zeroconf:', msg
         have_zc = False
 
-    apps = [name for name in os.listdir(ROOT) if 
-            os.path.isdir(os.path.join(ROOT, name))]
-    # Or, set apps to the list of modules you want to serve.
+    if not apps:
+        apps = [name for name in os.listdir(root) if 
+                os.path.isdir(os.path.join(root, name))]
 
     apptitles = {}
 
@@ -238,9 +259,9 @@ if __name__ == '__main__':
             apptitles[name] = getattr(app, 'TITLE', name.title())
 
     print time.asctime(), 'Server Starts'
-    httpd = Server((HOST, PORT), Handler, ROOT, apptitles)
+    httpd = Server((host, port), Handler, root, apptitles)
     if have_zc:
-        bd = Broadcast((HOST, PORT), apptitles)
+        bd = Broadcast((host, port), apptitles)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
