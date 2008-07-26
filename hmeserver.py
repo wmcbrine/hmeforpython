@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.12
+# HME Server for Python, v0.13
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.12'
+__version__ = '0.13'
 __license__ = 'LGPL'
 
 import os
@@ -48,7 +48,12 @@ import urllib
 import SocketServer
 import BaseHTTPServer
 
-import Zeroconf
+have_zc = True
+
+try:
+    import Zeroconf
+except:
+    have_zc = False
 
 # Version of the protocol implemented
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
@@ -227,10 +232,12 @@ class Broadcast:
 if __name__ == '__main__':
     print time.asctime(), 'Server Starts'
     httpd = Server((HOST, PORT), Handler)
-    bd = Broadcast()
+    if have_zc:
+        bd = Broadcast()
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
-        bd.shutdown()
+        if have_zc:
+            bd.shutdown()
     print time.asctime(), 'Server Stops'
