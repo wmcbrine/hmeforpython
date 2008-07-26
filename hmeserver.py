@@ -101,15 +101,18 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         host, port = self.client_address[:2]
         return host
 
+    def _ok(self, mime):
+        self.send_response(200)
+        self.send_header('Content-type', mime)
+        self.end_headers()
+
     def _page(self, body):
         name = self.path.strip('/')
         apps = self.server.apptitles.keys()
         apptitles = self.server.apptitles
 
         if name.startswith('TiVoConnect'):
-            self.send_response(200)
-            self.send_header('Content-type', 'text/xml')
-            self.end_headers()
+            self._ok('text/xml')
 
             self.wfile.write(self.XML_HEADER % (len(apps), len(apps)))
             host, port = self.connection.getsockname()
@@ -127,9 +130,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
                 self.send_error(403)
                 raise Exception, "Can't find application class for %s" % name
 
-            self.send_response(200)
-            self.send_header('Content-type', 'application/x-hme')
-            self.end_headers()
+            self._ok('application/x-hme')
 
             print time.asctime(), 'Starting HME: %s' % name
             appinst = appclass(context=self)
@@ -155,9 +156,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             except IOError:
                 self.send_error(404)
                 return
-            self.send_response(200)
-            self.send_header('Content-type', mime)
-            self.end_headers()
+            self._ok(mime)
             while body:
                 block = page.read(self.BUFSIZE)
                 if not block:
