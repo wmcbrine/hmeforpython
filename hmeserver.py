@@ -18,22 +18,50 @@
 
 """ HME Server for Python
 
-    A simple HTTP server and Zeroconf announcer for use in conjunction 
-    with the HME module. It serves both HME apps (implemented as Python 
-    modules), and arbitrary files in the same directory or subdirectories
-    (with Python source and byte-code excluded), so that it can provide 
-    streaming resources for HME apps. It also supports the TiVo's 
-    "Manually add a server..." option when run on port 80.
+    A simple HTTP server and Zeroconf announcer for use in conjunction
+    with the HME module. It serves both HME apps (implemented as Python
+    modules), and arbitrary files (with Python source and byte-code
+    excluded), so that it can provide streaming resources for HME apps.
+    It also supports the TiVo's "Manually add a server..." option when
+    run on port 80.
 
-    Each directory under this one is checked for a loadable module, and
-    a TITLE and CLASS_NAME attribute therein. (If either TITLE or 
-    CLASS_NAME is absent, the module name is used.)
+    Each module is checked for a TITLE and CLASS_NAME attribute. If
+    either is absent, the module name is used instead.
 
     While the samples have all been done as 'module/__init__.py' for
     neatness, they could just as well be named 'module.py' in this
     directory. And the subdirectories can be omitted if you don't need
     icons. (Other resources can be placed anywhere, but the TiVo always
     requests '/module/icon.png'.)
+
+    Command-line options:
+
+    -a, --address     Specify the address to bind to. The default is ''
+                      (bind to all interfaces).
+
+    -p, --port        Specify the port to bind to. The default is 9042.
+
+    -b, --basepath    Specify the path to use as the base path when
+                      sending regular files. The default is the location
+                      of this file. Note that this doesn't specify the
+                      path to the modules, which are just imported.
+
+    -z, --nozeroconf  Disable Zeroconf broadcasts. Normally, Zeroconf is
+                      used to announce the availability of new apps at
+                      startup, and their removal at shutdown. When
+                      disabled, the only way to access the apps is via
+                      "Manually add a server...". Zeroconf is disabled
+                      automatically if the Zeroconf module is not
+                      present, or can't be loaded.
+
+    -h, --help        Print help and exit.
+
+    -v, --version     Print the version and exit.
+
+    <app> <app>       Any other command-line option is treated as the
+                      name of a module to load. If none are given, each
+                      directory under this one is checked for a loadable
+                      module.
 
 """
 
@@ -221,9 +249,12 @@ if __name__ == '__main__':
     apps = []
     opts = []
 
+    print 'HME Server for Python', __version__
+
     try:
-        opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:z', ['address=',
-                                   'port=', 'basepath=', 'nozeroconf'])
+        opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:zvh',
+                                   ['address=', 'port=', 'basepath=',
+                                    'nozeroconf', 'version', 'help'])
     except getopt.GetoptError, msg:
         print msg
 
@@ -236,6 +267,11 @@ if __name__ == '__main__':
             root = value
         elif opt in ('-z', '--nozeroconf'):
             have_zc = False
+        elif opt in ('-v', '--version'):
+            exit()
+        elif opt in ('-h', '--help'):
+            print __doc__
+            exit()
 
     try:
         assert(have_zc)
