@@ -58,7 +58,7 @@
 
     -v, --version     Print the version and exit.
 
-    <app> <app>       Any other command-line option is treated as the
+    <app> <app> ...   Any other command-line option is treated as the
                       name of a module to load. If none are given, each
                       directory under this one is checked for a loadable
                       module.
