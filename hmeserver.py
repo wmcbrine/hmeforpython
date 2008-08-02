@@ -126,8 +126,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             reverse lookup. Suggestion of Jason Michalski.
 
         """
-        host, port = self.client_address[:2]
-        return host
+        return '%s:%s' % self.client_address
 
     def _ok(self, mime):
         self.send_response(200)
