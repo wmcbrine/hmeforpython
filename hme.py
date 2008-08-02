@@ -1,4 +1,4 @@
-# HME for Python, v0.12
+# HME for Python, v0.13
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.12'
+__version__ = '0.13'
 __license__ = 'LGPL'
 
 import struct
@@ -61,7 +61,7 @@ import struct
 # Mostly as defined in the HME Protocol Specification.
 
 HME_MAJOR_VERSION = 0
-HME_MINOR_VERSION = 44
+HME_MINOR_VERSION = 45
 
 SAFE_ACTION_H = 32
 SAFE_ACTION_V = 24
@@ -741,9 +741,9 @@ class Stream(Resource):
         only once. Stream objects are not cached, except in app.resources.
 
     """
-    def __init__(self, app, url, mime='', play=True):
+    def __init__(self, app, url, mime='', play=True, params={}):
         Resource.__init__(self, app)
-        self.put(_CMD_RSRC_ADD_STREAM, 'ssb', url, mime, play)
+        self.put(_CMD_RSRC_ADD_STREAM, 'ssbd', url, mime, play, params)
 
 class Animation(Resource):
     """ Animation resource
