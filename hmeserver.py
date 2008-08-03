@@ -130,9 +130,11 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         """
         return '%s:%s' % self.client_address
 
-    def _ok(self, mime):
+    def _ok(self, mime, size=0):
         self.send_response(200)
-        self.send_header('Content-type', mime)
+        self.send_header('Content-Type', mime)
+        if size:
+            self.send_header('Content-Length:', str(size))
         self.end_headers()
 
     def _page(self, body):
@@ -161,10 +163,10 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
             self._ok('application/x-hme')
 
-            print time.asctime(), 'Starting HME: %s' % name
+            self.log_message('Starting HME: %s', name)
             appinst = appclass(context=self)
             appinst.mainloop()
-            print time.asctime(), 'Ending HME: %s' % name
+            self.log_message('Ending HME: %s', name)
 
         else:
             path = (self.server.basepath +
@@ -181,16 +183,24 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             except:
                 mime = self.MIMEFALLBACK
             try:
+                size = os.path.getsize(path)
+            except:
+                size = 0
+            try:
                 page = open(path, 'rb')
             except IOError:
                 self.send_error(404)
                 return
-            self._ok(mime)
-            while body:
-                block = page.read(self.BUFSIZE)
-                if not block:
-                    break
-                self.wfile.write(block)
+            self._ok(mime, size)
+            try:
+                while body:
+                    block = page.read(self.BUFSIZE)
+                    if not block:
+                        break
+                    self.wfile.write(block)
+                self.wfile.close()
+            except socket.error, msg:
+                self.log_error('socket.error %s - %s', *msg)
             page.close()
 
     def do_HEAD(self):
