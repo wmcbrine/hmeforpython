@@ -61,7 +61,7 @@ import struct
 # Mostly as defined in the HME Protocol Specification.
 
 HME_MAJOR_VERSION = 0
-HME_MINOR_VERSION = 45
+HME_MINOR_VERSION = 44
 
 SAFE_ACTION_H = 32
 SAFE_ACTION_V = 24
@@ -741,9 +741,9 @@ class Stream(Resource):
         only once. Stream objects are not cached, except in app.resources.
 
     """
-    def __init__(self, app, url, mime='', play=True, params={}):
+    def __init__(self, app, url, mime='', play=True):
         Resource.__init__(self, app)
-        self.put(_CMD_RSRC_ADD_STREAM, 'ssbd', url, mime, play, params)
+        self.put(_CMD_RSRC_ADD_STREAM, 'ssb', url, mime, play)
 
 class Animation(Resource):
     """ Animation resource
