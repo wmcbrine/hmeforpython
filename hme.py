@@ -539,6 +539,7 @@ class Resource(_HMEObject):
         _HMEObject.__init__(self, app, id)
         if self.id >= ID_CLIENT:
             app.resources[self.id] = self
+        self.speed = 0
 
     def set_active(self, make_active=True):
         self.put(_CMD_RSRC_SET_ACTIVE, 'b', make_active)
@@ -548,6 +549,7 @@ class Resource(_HMEObject):
 
     def set_speed(self, speed):
         self.put(_CMD_RSRC_SET_SPEED, 'f', speed)
+        self.speed = speed
 
     def close(self):
         self.put(_CMD_RSRC_CLOSE)
@@ -744,6 +746,7 @@ class Stream(Resource):
     def __init__(self, app, url, mime='', play=True):
         Resource.__init__(self, app)
         self.put(_CMD_RSRC_ADD_STREAM, 'ssb', url, mime, play)
+        self.speed = int(play)
 
 class Animation(Resource):
     """ Animation resource
