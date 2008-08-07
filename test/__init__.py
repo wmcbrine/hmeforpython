@@ -61,7 +61,7 @@ class Test(Application):
 
     def handle_key_release(self, keynum, rawcode):
         if keynum == KEY_LEFT:
-            self.sound(ID_LEFT_SOUND)
+            self.sound('left')
             self.safe.set_transparency(1, animtime=0.5)
             time.sleep(0.5)
             self.active = False

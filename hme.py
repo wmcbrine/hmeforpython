@@ -75,6 +75,7 @@ ID_ROOT_STREAM = 1
 ID_ROOT_VIEW = 	2
 ID_DEFAULT_TTF = 10
 ID_SYSTEM_TTF = 11
+
 ID_BONK_SOUND = 20
 ID_UPDOWN_SOUND = 21
 ID_THUMBSUP_SOUND = 22
@@ -92,6 +93,7 @@ ID_SLOWDOWN1_SOUND = 33
 ID_SPEEDUP1_SOUND = 34
 ID_SPEEDUP2_SOUND = 35
 ID_SPEEDUP3_SOUND = 36
+
 ID_CLIENT = 2048
 
 # Key actions
@@ -1268,10 +1270,31 @@ class Application(Resource):
                 getattr(focus, 'handle_focus')(True)
 
     def sound(self, id=None):
-        """ Shorter form for playing sounds based on the id (the only 
-            ones that actually work).
+        """ Shorter form for playing sounds based on the id (the only
+            ones that actually work). Can be specified by name or by
+            number.
 
         """
+        names = {'bonk': ID_BONK_SOUND,
+                 'updown': ID_UPDOWN_SOUND,
+                 'thumbsup': ID_THUMBSUP_SOUND,
+                 'thumbsdown': ID_THUMBSDOWN_SOUND,
+                 'select': ID_SELECT_SOUND,
+                 'tivo': ID_TIVO_SOUND,
+                 'left': ID_LEFT_SOUND,
+                 'right': ID_RIGHT_SOUND,
+                 'pageup': ID_PAGEUP_SOUND,
+                 'pagedown': ID_PAGEDOWN_SOUND,
+                 'alert': ID_ALERT_SOUND,
+                 'deselect': ID_DESELECT_SOUND,
+                 'error': ID_ERROR_SOUND,
+                 'slowdown1': ID_SLOWDOWN1_SOUND,
+                 'speedup1': ID_SPEEDUP1_SOUND,
+                 'speedup2': ID_SPEEDUP2_SOUND,
+                 'speedup3': ID_SPEEDUP3_SOUND}
+
+        if type(id) == str:
+            id = names[id]
         Sound(self, id=id).play()
 
     def transition(self, direction, params, url='', memento=''):

@@ -67,16 +67,16 @@ class Picture(hme.Application):
             if self.in_slideshow:
                 self.exit_slideshow()
             else:
-                self.sound(hme.ID_SELECT_SOUND)
+                self.sound('select')
                 self.start_slideshow()
         else:
             if self.in_slideshow:
                 self.exit_slideshow()
             if code == hme.KEY_FORWARD:
-                self.sound(hme.ID_RIGHT_SOUND)
+                self.sound('right')
                 self.newpic(1)
             elif code == hme.KEY_REVERSE:
-                self.sound(hme.ID_LEFT_SOUND)
+                self.sound('left')
                 self.newpic(-1)
 
     def handle_idle(self, idle):
@@ -155,5 +155,5 @@ class Picture(hme.Application):
         self.send_key(hme.KEY_TIVO, animtime=5)
 
     def exit_slideshow(self):
-        self.sound(hme.ID_SLOWDOWN1_SOUND)
+        self.sound('slowdown1')
         self.in_slideshow = False
