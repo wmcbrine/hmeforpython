@@ -1,6 +1,6 @@
-HME for Python, v0.12
+HME for Python, v0.13
 by William McBrine <wmcbrine@gmail.com>
-July 24, 2008
+August 8, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -28,7 +28,7 @@ In Windows:
   python hmeserver.py
 
 This will serve the example apps. The default port is 9042 (not TiVo's 
-7288).
+7288). To see more options, run "./hmeserver.py --help".
 
 
 Quick Stop
@@ -44,7 +44,40 @@ window, neither of which does an orderly shutdown.
 Changes
 -------
 
-0.12 --  Barred effects and animate from all non-S3/HD TiVos running 9.1
+0.13  -- Added a new method for specifying sounds, by name. (The old
+         method, by number, will also still work.) The symbolic names
+         were a bit cumbersome, but I didn't feel that I could shorten
+         them... hence, this. It's similar to how it works in the Java
+         SDK, but without the fake ".snd" extension. See examples.
+
+         Added a "speed" attribute for to the Resource class -- only
+         meaningful for Streams.
+
+         In hmeserver, send size information with regular files where
+         available; catch and report socket errors on sending regular
+         files; use log_error() and log_message() instead of print where
+         appropriate.
+
+         Added MIME types for video, since it can now be Streamed.
+
+         Added port number to logged address, for help in debugging.
+
+         Startup banner for hmeserver; "help" and "version" options.
+
+         Removed "sorted()" for compatibility with older versions of
+         Python (or Jython).
+
+         Some new command-line options for hmeserver, to set host, port,
+         path, and/or zeroconf off, and to allow specific modules to be 
+         named. (See "./hmeserver.py --help".)
+
+         The HME server classes now depend only on the values passed
+         to __init__(), not the globals. In principle, you can import
+         hmeserver and use the classes from another program.
+
+         Skip Zeroconf functions if the module is missing.
+
+0.12  -- Barred effects and animate from all non-S3/HD TiVos running 9.1
          or 9.3. This may be overbroad, but I can't confirm that any
          S2's can handle these apps with 9.x.
 
