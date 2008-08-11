@@ -39,11 +39,9 @@ class Test(Application):
 
         safe = View(self, SAFE_TITLE_H, SAFE_TITLE_V,
                     self.root.width - SAFE_TITLE_H * 2,
-                    self.root.height - SAFE_TITLE_V * 2)
-        safe.set_transparency(1)
+                    self.root.height - SAFE_TITLE_V * 2, transparency=1)
 
-        shade = safe.child(colornum=0)
-        shade.set_transparency(0.5)
+        shade = safe.child(colornum=0, transparency=0.5)
 
         #TTF(self, 'test/VeraMono.ttf')
         Font(self, size=30)

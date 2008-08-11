@@ -1,4 +1,4 @@
-# HME for Python, v0.13
+# HME for Python, v0.14
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.13'
+__version__ = '0.14'
 __license__ = 'LGPL'
 
 import struct
@@ -799,7 +799,8 @@ class View(_HMEObject):
     """
     def __init__(self, app, xpos=0, ypos=0, width=None, height=None,
                  visible=True, parent=None, id=None, resource=None, 
-                 text=None, colornum=None, image=None, flags=0):
+                 text=None, colornum=None, image=None, flags=0,
+                 transparency=0):
         _HMEObject.__init__(self, app, id)
         self.children = []
         self.resource = None
@@ -832,6 +833,8 @@ class View(_HMEObject):
             visible = False  # root view starts out not visible
         self.parent = parent
         self.visible = visible
+        if transparency:
+            self.set_transparency(transparency)
         if resource:
             self.set_resource(resource, flags)
         elif text:
@@ -1001,9 +1004,7 @@ class View(_HMEObject):
         """
         self.set_resource(Color(self.app, colornum))
 
-    def child(self, xpos=0, ypos=0, width=None, height=None,
-              visible=True, id=None, resource=None, 
-              text=None, colornum=None, image=None, flags=0):
+    def child(self, *args, **kwargs):
         """ Create a child View of this one. This is just slightly
             easier to use than calling the View constructor directly:
 
@@ -1017,8 +1018,7 @@ class View(_HMEObject):
             the default parent.
 
         """
-        return View(self.app, xpos, ypos, width, height, visible,
-                    self, id, resource, text, colornum, image, flags)
+        return View(self.app, parent=self, *args, **kwargs)
 
 #--- The Application class --------------------------------------------
 
