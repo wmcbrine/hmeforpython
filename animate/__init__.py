@@ -26,8 +26,6 @@ class Animate(Application):
                                'with this TiVo software/hardware version.')
             return
 
-        self.sprites = []
-
         # create a container view that will hold everything else, sized 
         # to the safe action bounds.
         content = View(self, SAFE_ACTION_H / 2, SAFE_ACTION_V / 2,
@@ -35,12 +33,12 @@ class Animate(Application):
                        self.root.height - SAFE_ACTION_V)
 
         # create the set of animated squares
-        for i in xrange(16):
-            self.sprites.append(SpriteView(content, i,
-                                random.randrange(content.width),
-                                random.randrange(content.height),
-                                random.randrange(8, 72),
-                                random.randrange(8, 72)))
+        self.sprites = [SpriteView(content, i,
+                                   random.randrange(content.width),
+                                   random.randrange(content.height),
+                                   random.randrange(8, 72),
+                                   random.randrange(8, 72))
+                        for i in xrange(16)]
 
     # Listen for our special "animation ended" event.
 
