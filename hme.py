@@ -1227,13 +1227,11 @@ class Application(Resource):
                     ev.unpack('i' * (field_count - 4))
                 return resolution
 
-            self.resolutions = []
             field_count = ev.unpack('i')[0]
             self.current_resolution = unpack_res(ev, field_count)
             res_count = ev.unpack('i')[0]
-            for i in xrange(res_count):
-                self.resolutions.append(unpack_res(ev, field_count))
-
+            self.resolutions = [unpack_res(ev, field_count)
+                                for i in xrange(res_count)]
             handle = getattr(self.focus, 'handle_resolution',
                              self.handle_resolution)
             self.set_resolution(handle())
