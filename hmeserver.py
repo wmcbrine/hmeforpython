@@ -177,10 +177,10 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.log_message('Ending HME: %s', name)
 
         else:
-            base = self.path.split('/')[0]
+            base = self.path.split('/')[1]
             url = urllib.unquote(self.path).replace('/..', '')
             if base in apps:
-                path = self.sever.basepath + url
+                path = self.server.basepath + url
             else:
                 if not self.server.datapath:
                     self.send_error(403)
