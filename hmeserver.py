@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.13
+# HME Server for Python, v0.14
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -41,10 +41,17 @@
 
     -p, --port        Specify the port to bind to. The default is 9042.
 
-    -b, --basepath    Specify the path to use as the base path when
-                      sending regular files. The default is the location
-                      of this file. Note that this doesn't specify the
-                      path to the modules, which are just imported.
+    -b, --basepath    Specify the base path for regular files that have
+                      URLs underneath an app name. The default is the
+                      location of this file. Note that this doesn't
+                      specify the path to the modules, which are just
+                      imported.
+
+    -d, --datapath    Specify the base path for files that aren't within
+                      apps, so that icons, etc., can be kept together
+                      with apps, while the data is elsewhere. The
+                      default is to not allow any access outside of the
+                      app directories.
 
     -z, --nozeroconf  Disable Zeroconf broadcasts. Normally, Zeroconf is
                       used to announce the availability of new apps at
@@ -66,7 +73,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.13'
+__version__ = '0.14'
 __license__ = 'LGPL'
 
 import getopt
@@ -82,8 +89,9 @@ import BaseHTTPServer
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
 class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
-    def __init__(self, addr, handler, basepath, apptitles):
+    def __init__(self, addr, handler, basepath, datapath, apptitles):
         self.basepath = basepath
+        self.datapath = datapath
         self.apptitles = apptitles
         BaseHTTPServer.HTTPServer.__init__(self, addr, handler)
 
@@ -169,8 +177,15 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.log_message('Ending HME: %s', name)
 
         else:
-            path = (self.server.basepath +
-                    urllib.unquote(self.path).replace('/..', ''))
+            base = self.path.split('/')[0]
+            url = urllib.unquote(self.path).replace('/..', '')
+            if base in apps:
+                path = self.sever.basepath + url
+            else:
+                if not self.server.datapath:
+                    self.send_error(403)
+                    return
+                path = self.server.datapath + url
             if os.path.isdir(path):
                 self.send_error(403)
                 return
@@ -254,7 +269,8 @@ if __name__ == '__main__':
     host = ''      # By default, attach to all available interfaces
     port = 9042    # TiVo Inc. uses 7288. But set it to 80 to make
                    # "Manually add a server" work.
-    root = os.path.abspath(os.path.dirname(__file__))   # You are here
+    app_root = os.path.abspath(os.path.dirname(__file__))   # You are here
+    data_root = None
 
     have_zc = True
     apps = []
@@ -263,9 +279,10 @@ if __name__ == '__main__':
     print 'HME Server for Python', __version__
 
     try:
-        opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:zvh',
+        opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:d:zvh',
                                    ['address=', 'port=', 'basepath=',
-                                    'nozeroconf', 'version', 'help'])
+                                    'datapath=', 'nozeroconf',
+                                    'version', 'help'])
     except getopt.GetoptError, msg:
         print msg
 
@@ -275,7 +292,9 @@ if __name__ == '__main__':
         elif opt in ('-p', '--port'):
             port = int(value)
         elif opt in ('-b', '--basepath'):
-            root = value
+            app_root = value
+        elif opt in ('-d', '--datapath'):
+            data_root = value
         elif opt in ('-z', '--nozeroconf'):
             have_zc = False
         elif opt in ('-v', '--version'):
@@ -306,7 +325,7 @@ if __name__ == '__main__':
             apptitles[name] = getattr(app, 'TITLE', name.title())
 
     print time.asctime(), 'Server Starts'
-    httpd = Server((host, port), Handler, root, apptitles)
+    httpd = Server((host, port), Handler, app_root, data_root, apptitles)
     if have_zc:
         bd = Broadcast((host, port), apptitles)
     try:
