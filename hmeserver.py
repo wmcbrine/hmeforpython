@@ -311,8 +311,8 @@ if __name__ == '__main__':
         have_zc = False
 
     if not apps:
-        apps = [name for name in os.listdir(root) if 
-                os.path.isdir(os.path.join(root, name))]
+        apps = [name for name in os.listdir(app_root) if 
+                os.path.isdir(os.path.join(app_root, name))]
 
     apptitles = {}
 
