@@ -1,4 +1,4 @@
-# HME for Python, v0.14
+# HME for Python, v0.15
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.14'
+__version__ = '0.15'
 __license__ = 'LGPL'
 
 import struct
@@ -970,6 +970,12 @@ class View(_HMEObject):
         if self.resource is not resource:
             self.put(_CMD_VIEW_SET_RESOURCE, 'ii', resource.id, flags)
             self.resource = resource
+
+    def clear_resource(self):
+        """ Disassociate the view from its resource. """
+        if self.resource:
+            self.put(_CMD_VIEW_SET_RESOURCE, 'ii', ID_NULL, 0)
+            self.resource = None
 
     def remove(self, animation=None, animtime=0):
         """ Remove the view, optionally after a period of time. """
