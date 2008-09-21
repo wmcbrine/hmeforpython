@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.14
+# HME Server for Python, v0.15
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -73,7 +73,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.14'
+__version__ = '0.15'
 __license__ = 'LGPL'
 
 import getopt
@@ -178,14 +178,22 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         else:
             base = self.path.split('/')[1]
-            url = urllib.unquote(self.path).replace('/..', '')
+            url = os.path.normpath(urllib.unquote(self.path))
             if base in apps:
-                path = self.server.basepath + url
+                path = os.path.abspath(os.path.join(self.server.basepath, url))
+                path = os.path.normcase(path)
+                if not path.startswith(self.server.basepath):
+                    self.send_error(403)
+                    return
             else:
                 if not self.server.datapath:
                     self.send_error(403)
                     return
-                path = self.server.datapath + url
+                path = os.path.abspath(os.path.join(self.server.datapath, url))
+                path = os.path.normcase(path)
+                if not path.startswith(self.server.datapath):
+                    self.send_error(403)
+                    return
             if os.path.isdir(path):
                 self.send_error(403)
                 return
@@ -269,7 +277,7 @@ if __name__ == '__main__':
     host = ''      # By default, attach to all available interfaces
     port = 9042    # TiVo Inc. uses 7288. But set it to 80 to make
                    # "Manually add a server" work.
-    app_root = os.path.abspath(os.path.dirname(__file__))   # You are here
+    app_root = os.path.dirname(__file__)   # You are here
     data_root = None
 
     have_zc = True
@@ -302,6 +310,9 @@ if __name__ == '__main__':
         elif opt in ('-h', '--help'):
             print __doc__
             exit()
+
+    for path in app_root, data_root:
+        path = os.path.normcase(os.path.abspath(os.path.normpath(path)))
 
     try:
         assert(have_zc)
