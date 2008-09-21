@@ -88,6 +88,9 @@ import BaseHTTPServer
 # Version of the protocol implemented
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
+def norm(path): 
+    return os.path.normcase(os.path.abspath(os.path.normpath(path)))
+
 class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
     def __init__(self, addr, handler, basepath, datapath, apptitles):
         self.basepath = basepath
@@ -178,23 +181,15 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         else:
             base = self.path.split('/')[1]
-            url = os.path.normpath(urllib.unquote(self.path))
             if base in apps:
-                path = os.path.abspath(os.path.join(self.server.basepath, url))
-                path = os.path.normcase(path)
-                if not path.startswith(self.server.basepath):
-                    self.send_error(403)
-                    return
+                basepath = self.server.basepath
             else:
-                if not self.server.datapath:
-                    self.send_error(403)
-                    return
-                path = os.path.abspath(os.path.join(self.server.datapath, url))
-                path = os.path.normcase(path)
-                if not path.startswith(self.server.datapath):
-                    self.send_error(403)
-                    return
-            if os.path.isdir(path):
+                basepath = self.server.datapath
+            if not basepath:
+                self.send_error(403)
+                return
+            path = norm(os.path.join(basepath, urllib.unquote(self.path)[1:]))
+            if not path.startswith(basepath) or os.path.isdir(path):
                 self.send_error(403)
                 return
             ext = os.path.splitext(path)[1].lower()
@@ -311,8 +306,9 @@ if __name__ == '__main__':
             print __doc__
             exit()
 
-    for path in app_root, data_root:
-        path = os.path.normcase(os.path.abspath(os.path.normpath(path)))
+    app_root = norm(app_root)
+    if data_root:
+        data_root = norm(data_root)
 
     try:
         assert(have_zc)
