@@ -1,6 +1,6 @@
-HME for Python, v0.13
+HME for Python, v0.14
 by William McBrine <wmcbrine@gmail.com>
-August 8, 2008
+September 7, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (hmeserver.py), and 
@@ -43,6 +43,18 @@ window, neither of which does an orderly shutdown.
 
 Changes
 -------
+
+0.14 --  hmeserver now separates the app and data roots, to allow
+         keeping icons etc. together with their apps, while having data
+         elsewhere. The new command-line option "--datapath" specifies
+         the data root, while "--basepath" still sets the app root.
+         Files outside of app directories (including those in the app
+         root, which had previously been allowed) are now forbidden
+         unless the datapath is set.
+
+         The initial transparency of a View can now be set via the
+         "transparency" keyword parameter when creating it, instead of
+         being settable only by a call to set_transparency().
 
 0.13  -- Added a new method for specifying sounds, by name. (The old
          method, by number, will also still work.) The symbolic names
