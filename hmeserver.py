@@ -166,11 +166,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         elif name in apps:
             app = __import__(name)
             appname = getattr(app, 'CLASS_NAME', name.title())
-            try:
-                appclass = getattr(app, appname)
-            except AttributeError:
-                self.send_error(403)
-                raise Exception, "Can't find application class for %s" % name
+            appclass = getattr(app, appname)
 
             self._ok('application/x-hme')
 
@@ -329,7 +325,13 @@ if __name__ == '__main__':
         except (ValueError, ImportError), msg:
             print 'Skipping:', name, '-', msg
         else:
-            apptitles[name] = getattr(app, 'TITLE', name.title())
+            appname = getattr(app, 'CLASS_NAME', name.title())
+            try:
+                appclass = getattr(app, appname)
+            except AttributeError:
+                print 'Skipping:', name, '- no application class'
+            else:
+                apptitles[name] = getattr(app, 'TITLE', name.title())
 
     print time.asctime(), 'Server Starts'
     httpd = Server((host, port), Handler, app_root, data_root, apptitles)
