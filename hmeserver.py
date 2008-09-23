@@ -329,7 +329,7 @@ if __name__ == '__main__':
             try:
                 appclass = getattr(app, appname)
             except AttributeError:
-                print 'Skipping:', name, '- no application class'
+                print 'Skipping:', name, '- No application class'
             else:
                 apptitles[name] = getattr(app, 'TITLE', name.title())
 
