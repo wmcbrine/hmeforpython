@@ -972,9 +972,18 @@ class View(_HMEObject):
             self.resource = resource
 
     def clear_resource(self):
-        """ Disassociate the view from its resource. """
+        """ Disassociate the view from its resource. Does not remove
+            the resource.
+
+        """
         if self.resource:
             self.put(_CMD_VIEW_SET_RESOURCE, 'ii', ID_NULL, 0)
+            self.resource = None
+
+    def remove_resource(self):
+        """ Remove the view's associated resource. """
+        if self.resource:
+            self.resource.remove()
             self.resource = None
 
     def remove(self, animation=None, animtime=0):
