@@ -84,6 +84,7 @@ import time
 import urllib
 import SocketServer
 import BaseHTTPServer
+from ConfigParser import SafeConfigParser
 
 # Version of the protocol implemented
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
@@ -270,12 +271,29 @@ if __name__ == '__main__':
                    # "Manually add a server" work.
     app_root = os.path.dirname(__file__)   # You are here
     data_root = None
+    config_apps = None
 
     have_zc = True
     apps = []
     opts = []
 
     print 'HME Server for Python', __version__
+
+    config = SafeConfigParser()
+    config.read('config.ini')
+    if config.has_section('hmeserver'):
+        if config.has_option('hmeserver', 'apps'):
+            config_apps = config.get('hmeserver', 'apps').split()
+        if config.has_option('hmeserver', 'address'):
+            host = config.get('hmeserver', 'address')
+        if config.has_option('hmeserver', 'port'):
+            port = config.getint('hmeserver', 'port')
+        if config.has_option('hmeserver', 'basepath'):
+            app_root = config.get('hmeserver', 'basepath')
+        if config.has_option('hmeserver', 'datapath'):
+            data_root = config.get('hmeserver', 'datapath')
+        if config.has_option('hmeserver', 'zeroconf'):
+            have_zc = config.getboolean('hmeserver', 'zeroconf')
 
     try:
         opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:d:zvh',
@@ -313,6 +331,8 @@ if __name__ == '__main__':
         print 'Not using Zeroconf:', msg
         have_zc = False
 
+    if not apps:
+        apps = config_apps
     if not apps:
         apps = [name for name in os.listdir(app_root) if 
                 os.path.isdir(os.path.join(app_root, name))]
