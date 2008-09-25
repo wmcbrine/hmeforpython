@@ -1,6 +1,6 @@
-HME for Python, v0.14
+HME for Python, v0.15
 by William McBrine <wmcbrine@gmail.com>
-September 7, 2008
+September 25, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (start.py), and examples 
@@ -40,8 +40,53 @@ In Windows, you're stuck with either Ctrl-Break, or closing the command
 window, neither of which does an orderly shutdown.
 
 
+Config
+------
+
+You can optionally create a file named "config.ini" to specify the same 
+kind of options as on the command line. The contents also become part of 
+the context passed on to each app, so apps can store their own 
+preferences there. See the picture viewer for an example -- it now 
+checks the config for optional root path, delay and extension list 
+options. (You'll almost certainly want to change the path.)
+
+Here's an example config.ini, showing all the possible keywords for the 
+server and the picture app. (The values shown here are purely for 
+illustrative purposes.)
+
+[hmeserver]
+port=7288
+address=192.168.1.1
+zeroconf=False
+basepath=c:\hme
+datapath=c:\
+apps=picture clock
+
+[picture]
+path=c:\pictures
+delay=2
+exts=.jpg .png
+
+
 Changes
 -------
+
+0.15 --  Added clear_resource() and remove_resource() methods for Views.
+         clear_resource() disassociates the View from its resource,
+         without removing the resource. remove_resource() is kind of
+         trivial -- equivalent to "resource.remove(); resource = None" --
+         but is included for completeness.
+
+         Optional config file parsing for hmeserver -- see above.
+
+         Moved check for application class from Handler to startup.
+
+         Slightly more robust path handling for hmeserver -- works
+         better in Windows, and the disallowed-directory check is less
+         kludgy.
+
+         Renamed hmeserver.py to start.py. But note that it's still
+         "hmeserver" for purposes of config.ini.
 
 0.14 --  hmeserver now separates the app and data roots, to allow
          keeping icons etc. together with their apps, while having data
