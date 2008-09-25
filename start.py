@@ -93,10 +93,11 @@ def norm(path):
     return os.path.normcase(os.path.abspath(os.path.normpath(path)))
 
 class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
-    def __init__(self, addr, handler, basepath, datapath, apptitles):
+    def __init__(self, addr, handler, basepath, datapath, apptitles, config):
         self.basepath = basepath
         self.datapath = datapath
         self.apptitles = apptitles
+        self.config = config
         BaseHTTPServer.HTTPServer.__init__(self, addr, handler)
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -355,7 +356,8 @@ if __name__ == '__main__':
                 apptitles[name] = getattr(app, 'TITLE', name.title())
 
     print time.asctime(), 'Server Starts'
-    httpd = Server((host, port), Handler, app_root, data_root, apptitles)
+    httpd = Server((host, port), Handler, app_root, data_root, apptitles,
+                   config)
     if have_zc:
         bd = Broadcast((host, port), apptitles)
     try:
