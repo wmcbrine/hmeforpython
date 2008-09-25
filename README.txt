@@ -3,17 +3,16 @@ by William McBrine <wmcbrine@gmail.com>
 September 7, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
-Python, as a module (hme.py), a simple server (hmeserver.py), and 
-examples (mostly ported from TiVo's Java HME SDK). Everything is 
-released under the LGPL 2.1+, except where noted. (Most of the examples 
-are Common Public License.)
+Python, as a module (hme.py), a simple server (start.py), and examples 
+(mostly ported from TiVo's Java HME SDK). Everything is released under 
+the LGPL 2.1+, except where noted. (Most of the examples are Common 
+Public License.)
 
 I developed this in Python 2.5.2, and tested it in Linux, Mac OS X, and 
 Windows XP, and with Python 2.4.5 and 2.3.5. It even mostly works under 
 Jython 2.2.1, if you disable Zeroconf and use the manual connect method. 
 The requirements are minimal. (hme.py depends only on the struct module. 
-hmeserver.py is a bit more demanding, but uses only the standard 
-library.)
+start.py is a bit more demanding, but uses only the standard library.)
 
 
 Quick Start
@@ -21,14 +20,14 @@ Quick Start
 
 In Linux, Mac OS X, etc.:
 
-  ./hmeserver.py
+  ./start.py
 
 In Windows:
 
-  python hmeserver.py
+  python start.py
 
 This will serve the example apps. The default port is 9042 (not TiVo's 
-7288). To see more options, run "./hmeserver.py --help".
+7288). To see more options, run "./start.py --help".
 
 
 Quick Stop
