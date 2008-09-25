@@ -282,18 +282,19 @@ if __name__ == '__main__':
     config = SafeConfigParser()
     config.read('config.ini')
     if config.has_section('hmeserver'):
-        if config.has_option('hmeserver', 'apps'):
-            config_apps = config.get('hmeserver', 'apps').split()
-        if config.has_option('hmeserver', 'address'):
-            host = config.get('hmeserver', 'address')
-        if config.has_option('hmeserver', 'port'):
-            port = config.getint('hmeserver', 'port')
-        if config.has_option('hmeserver', 'basepath'):
-            app_root = config.get('hmeserver', 'basepath')
-        if config.has_option('hmeserver', 'datapath'):
-            data_root = config.get('hmeserver', 'datapath')
-        if config.has_option('hmeserver', 'zeroconf'):
-            have_zc = config.getboolean('hmeserver', 'zeroconf')
+        for opt, value in config.items('hmeserver'):
+            if opt == 'apps':
+                config_apps = value.split()
+            elif opt == 'address':
+                host = value
+            elif opt == 'port':
+                port = int(value)
+            elif opt == 'basepath':
+                app_root = value
+            elif opt == 'datapath':
+                data_root = value
+            elif opt == 'zeroconf':
+                have_zc = config.getboolean('hmeserver', 'zeroconf')
 
     try:
         opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:d:zvh',
