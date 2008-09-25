@@ -9,10 +9,9 @@ the LGPL 2.1+, except where noted. (Most of the examples are Common
 Public License.)
 
 I developed this in Python 2.5.2, and tested it in Linux, Mac OS X, and 
-Windows XP, and with Python 2.4.5 and 2.3.5. It even mostly works under 
-Jython 2.2.1, if you disable Zeroconf and use the manual connect method. 
-The requirements are minimal. (hme.py depends only on the struct module. 
-start.py is a bit more demanding, but uses only the standard library.)
+Windows XP, and with Python 2.4.5 and 2.3.5. The requirements are 
+minimal. (hme.py depends only on the struct module. start.py is a bit 
+more demanding, but uses only the standard library.)
 
 
 Quick Start
@@ -87,6 +86,8 @@ Changes
 
          Renamed hmeserver.py to start.py. But note that it's still
          "hmeserver" for purposes of config.ini.
+
+         Support for Python < 2.3 is dropped.
 
 0.14 --  hmeserver now separates the app and data roots, to allow
          keeping icons etc. together with their apps, while having data
