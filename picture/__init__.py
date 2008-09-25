@@ -15,7 +15,7 @@ import Image
 import hme
 
 TITLE = 'Picture Viewer'
-ROOT = '/home/wmcbrine/pictures'
+rootpath = '/home/wmcbrine/pictures'
 
 """ Simple slideshow picture viewer. Automatically uses high-def mode
     when available and appropriate, based on the TiVo's notion of the
@@ -25,9 +25,6 @@ ROOT = '/home/wmcbrine/pictures'
 
 """
 
-if not os.path.isdir(ROOT):
-    raise ImportError, 'Please set ROOT to a valid directory'
-
 class Picture(hme.Application):
     def handle_resolution(self):
         """ Choose the 'optimal' resolution. """
@@ -35,12 +32,24 @@ class Picture(hme.Application):
 
     def handle_active(self):
         """ Build the list of pictures, and start the slideshow. """
+        global rootpath
         goodexts = ('.jpg', '.gif', '.png', '.bmp', '.tif', '.xbm',
                     '.xpm', '.pgm', '.pbm', '.ppm', '.pcx', '.tga',
                     '.fpx', '.ico', '.pcd', '.jpeg', '.tiff')
 
+        config = self.context.server.config
+        if config.has_section('picture'):
+            if config.has_option('picture', 'path'):
+                rootpath = config.get('picture', 'path')
+
+        if not os.path.isdir(rootpath):
+            self.root.set_text('Path not found: ' + rootpath)
+            time.sleep(5)
+            self.active = False
+            return
+
         self.files = []
-        for base, dirs, files in os.walk(ROOT):
+        for base, dirs, files in os.walk(rootpath):
             self.files.extend([os.path.join(base, x) for x in files 
                                if os.path.splitext(x)[1].lower() in goodexts])
 
