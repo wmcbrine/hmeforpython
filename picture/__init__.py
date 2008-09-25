@@ -11,7 +11,12 @@ import Image
 import hme
 
 TITLE = 'Picture Viewer'
+
 rootpath = '/home/wmcbrine/pictures'
+goodexts = ['.jpg', '.gif', '.png', '.bmp', '.tif', '.xbm', '.xpm', 
+            '.pgm', '.pbm', '.ppm', '.pcx', '.tga', '.fpx', '.ico', 
+            '.pcd', '.jpeg', '.tiff']
+delay = 5
 
 """ Simple slideshow picture viewer. Automatically uses high-def mode
     when available and appropriate, based on the TiVo's notion of the
@@ -28,15 +33,17 @@ class Picture(hme.Application):
 
     def handle_active(self):
         """ Build the list of pictures, and start the slideshow. """
-        global rootpath
-        goodexts = ('.jpg', '.gif', '.png', '.bmp', '.tif', '.xbm',
-                    '.xpm', '.pgm', '.pbm', '.ppm', '.pcx', '.tga',
-                    '.fpx', '.ico', '.pcd', '.jpeg', '.tiff')
+        global rootpath, goodexts, delay
 
         config = self.context.server.config
         if config.has_section('picture'):
-            if config.has_option('picture', 'path'):
-                rootpath = config.get('picture', 'path')
+            for opt, value in config.items('picture'):
+                if opt == 'path':
+                    rootpath = value
+                if opt == 'exts':
+                    goodexts = value.split()
+                if opt == 'delay':
+                    delay = float(value)
 
         if not os.path.isdir(rootpath):
             self.root.set_text('Path not found: ' + rootpath)
@@ -157,7 +164,7 @@ class Picture(hme.Application):
 
     def next_slide(self):
         self.newpic(1)
-        self.send_key(hme.KEY_TIVO, animtime=5)
+        self.send_key(hme.KEY_TIVO, animtime=delay)
 
     def exit_slideshow(self):
         self.sound('slowdown1')
