@@ -1,9 +1,5 @@
 # This one is NOT ported from the Java SDK. But portions are based on my 
 # Photo module for pyTivo.
-#
-# Set ROOT to the directory you want to view. Yeah, if this were a 
-# full-blown app, you'd want a better way to do that. But this is just a 
-# demo.
 
 import os
 import random
