@@ -151,7 +151,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.end_headers()
 
     def _page(self, body):
-        name = self.path.strip('/')
+        path = self.path.split('?')[0]
+        name = path.strip('/')
         apps = self.server.apptitles.keys()
         apptitles = self.server.apptitles
 
@@ -178,7 +179,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.log_message('Ending HME: %s', name)
 
         else:
-            base = self.path.split('/')[1]
+            base = path.split('/')[1]
             if base in apps:
                 basepath = self.server.basepath
             else:
@@ -186,7 +187,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             if not basepath:
                 self.send_error(403)
                 return
-            path = norm(os.path.join(basepath, urllib.unquote(self.path)[1:]))
+            path = norm(os.path.join(basepath, urllib.unquote(path)[1:]))
             if not path.startswith(basepath) or os.path.isdir(path):
                 self.send_error(403)
                 return
