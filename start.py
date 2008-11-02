@@ -156,7 +156,11 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         apps = self.server.apptitles.keys()
         apptitles = self.server.apptitles
 
-        if name.startswith('TiVoConnect'):
+        if name == 'robots.txt':
+            self._ok('text/plain')
+            self.wfile.write('User-agent: *\nDisallow: /\n')
+
+        elif name == 'TiVoConnect':
             self._ok('text/xml')
 
             self.wfile.write(self.XML_HEADER % (len(apps), len(apps)))
