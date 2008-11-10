@@ -575,16 +575,16 @@ class Color(Resource):
         objects are cached in the app.colors dict, and the last one set 
         is also stored in app.last_color.
 
-        Note that according to the spec, you can include an alpha value 
-        as the MSB, but this doesn't work except in the simulator.
+        You can include an alpha value as the MSB. Zero is treated as
+        0xff (fully opacity) by this library; otherwise, lower numbers
+        mean greater transparency.
 
     """
     def __init__(self, app, colornum=None):
         if colornum is None:
             colornum = 0xffffffff
-        # I set the alpha to full opacity here for the sake of the 
-        # simulator.
-        colornum |= 0xff000000
+        if not (colornum & 0xff000000):
+            colornum |= 0xff000000
         self.colornum = colornum
         if colornum in app.colors:
             Resource.__init__(self, app, app.colors[colornum].id)
