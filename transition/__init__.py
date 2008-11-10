@@ -11,10 +11,9 @@ from hme import *
 
 """ Simple application to test new transition feature. """
 
+COLORS = (0xff0000, 0xffff00, 0x00ff00, 0x0000ff)
+
 class Transition(Application):
-
-    COLORS = (0xff0000, 0xffff00, 0x00ff00, 0x0000ff)
-
     def startup(self):    
     	self.depth = 0
         self.entry_color = -1
@@ -39,16 +38,13 @@ class Transition(Application):
 
         x = SAFE_ACTION_H + 75
         w = self.root.width - 2 * x
-        h = 50
-        self.hilight_view = View(self, x, 175, w, h, colornum=0xffffff)
+        self.hilight_view = View(self, x, 175, w, 50, colornum=0xffffff)
         self.update_hilight()
 
         x = SAFE_ACTION_H + 80
         w = self.root.width - 2 * x
-        h = 40
-        for c in xrange(len(self.COLORS)):
-            y = 180 + c * 50
-            View(self, x, y, w, h, colornum=self.COLORS[c])
+        for i, col in enumerate(COLORS):
+            View(self, x, 180 + i * 50, w, 40, colornum=col)
 
         self.error_view = TextView(self, x, 440, w, 40, 
                                    fontsize=18, textcolor=0xff0000)
@@ -79,10 +75,10 @@ class Transition(Application):
 
     def handle_key_press(self, code, rawcode):
         if code == KEY_UP:
-            self.cur_color = (self.cur_color - 1) % len(self.COLORS)
+            self.cur_color = (self.cur_color - 1) % len(COLORS)
             self.update_hilight()
         elif code == KEY_DOWN:
-            self.cur_color = (self.cur_color + 1) % len(self.COLORS)
+            self.cur_color = (self.cur_color + 1) % len(COLORS)
             self.update_hilight()
         elif code == KEY_RIGHT:
             mem = chr(self.cur_color)
@@ -103,23 +99,21 @@ class Transition(Application):
         if self.entry_color < 0:
             self.entry_view.set_value('No entry color.', 0x7f7f7f)
         else:
-            self.entry_view.set_value('%#08x' %
-                                      self.COLORS[self.entry_color],
-                                      self.COLORS[self.entry_color])
+            self.entry_view.set_value('%#08x' % COLORS[self.entry_color],
+                                      COLORS[self.entry_color])
 
         if self.return_color < 0:
             self.return_view.set_value('No return color', 0x7f7f7f)
         else:
-            self.return_view.set_value('%#08x' %
-                                       self.COLORS[self.return_color],
-                                       self.COLORS[self.return_color])
+            self.return_view.set_value('%#08x' % COLORS[self.return_color],
+                                       COLORS[self.return_color])
 
     def update_hilight(self):
         y = 180 + self.cur_color * 50 - 5
         self.hilight_view.set_bounds(ypos=y, animtime=0.25)
         self.color_view.set_value('The currently selected color is %#08x' %
-                                  self.COLORS[self.cur_color],
-                                  self.COLORS[self.cur_color])
+                                  COLORS[self.cur_color],
+                                  COLORS[self.cur_color])
 
 
 class TextView(View):
