@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.15
+# HME Server for Python, v0.16
 # Copyright 2008 William McBrine
 #
 # This program is free software; you can redistribute it and/or
@@ -73,7 +73,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.15'
+__version__ = '0.16'
 __license__ = 'LGPL'
 
 import getopt

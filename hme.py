@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.15'
+__version__ = '0.16'
 __license__ = 'LGPL'
 
 import struct
