@@ -1,4 +1,4 @@
-# HME for Python, v0.15
+# HME for Python, v0.16
 # Copyright 2008 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -788,13 +788,6 @@ class View(_HMEObject):
         associated resource can be set on initialization; all have
         default values. Each View maintains a list of child Views,
         scale, transparency and translation.
-
-        A note about color resources and high definition: There seems to
-        be a limit on the size of the area that can be set to a color.
-        This only becomes apparent when you switch to high definition.
-        The limit appears to be 704x480, with the colored area centered
-        in the view. The same problem doesn't occur with images, which
-        can fill the entire view.
 
     """
     def __init__(self, app, xpos=0, ypos=0, width=None, height=None,
