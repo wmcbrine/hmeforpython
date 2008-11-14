@@ -70,12 +70,8 @@ class FontInfo(Application):
 
     def measure_text_width(self, string, font):
         width = 0
-        info = (0, 0)
         for c in string:
-            try:
-                info = font.glyphs[c]
-            except KeyError:
-                continue
+            info = font.glyphs.get(c, (0, 0))
             width += info[0]    # advance
         if info[1] > info[0]:   # bounding
             width += (info[1] - info[0])
