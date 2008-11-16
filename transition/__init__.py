@@ -14,8 +14,8 @@ from hme import *
 COLORS = (0xff0000, 0xffff00, 0x00ff00, 0x0000ff)
 
 class Transition(Application):
-    def startup(self):    
-    	self.depth = 0
+    def startup(self):
+        self.depth = 0
         self.entry_color = -1
         self.return_color = -1
         self.cur_color = 0
