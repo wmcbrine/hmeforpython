@@ -115,7 +115,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
                  '.pdf': 'application/pdf',
                  '.mp3': 'audio/mpeg',
                  '.mpg': 'video/mpeg',
-                 '.mp4': 'video/mp4'}
+                 '.mp4': 'video/mp4',
+                 '.wmv': 'video/x-ms-wmv'}
 
     MIMEFALLBACK = 'application/octet-stream'
 
