@@ -1,6 +1,6 @@
-HME for Python, v0.15
+HME for Python, v0.16
 by William McBrine <wmcbrine@gmail.com>
-September 25, 2008
+December 1, 2008
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (start.py), and examples 
@@ -9,7 +9,8 @@ the LGPL 2.1+, except where noted. (Most of the examples are Common
 Public License.)
 
 I developed this in Python 2.5.2, and tested it in Linux, Mac OS X, and 
-Windows XP, and with Python 2.4.5 and 2.3.5. The requirements are 
+Windows XP, and with Python 2.3 through 2.6. (I've also tested a Python 
+3.0 version, but it's not quite ready for release.) The requirements are 
 minimal. (hme.py depends only on the struct module. start.py is a bit 
 more demanding, but uses only the standard library.)
 
@@ -69,6 +70,40 @@ exts=.jpg .png
 
 Changes
 -------
+
+0.16 --  Support for alpha values in colors -- apparently this was fixed
+         in TiVo software 9.3. (?) Reported by TCF user "Allanon". The
+         way this works is, wherever you previously could specify a
+         color number in RGB form, you can now do it as ARGB, where "A"
+         (alpha), the most significant byte, represents the opacity --
+         _except_ that an alpha value of 0 is treated as full opacity
+         (equivalent to 0xff), for the sake of simplicity and backwards
+         compatibility. (So, if you don't want to mess with alpha 
+         values, you can continue using plain RGB values.) Otherwise, 
+         the higher the number, the more opaque.
+
+         Removed the note about limits on the size of color resources --
+         fixed in 9.4 (or earlier?). A color assigned to an HD view will
+         now fill the whole view.
+
+         hmeserver (start.py) now responds to requests for robots.txt,
+         with no permission. (No good can come of trying to crawl an HME
+         app.)
+
+         Taiwanese TiVos append "?width=704&height=480" to their app
+         requests. Previously, this would make hmeserver send back a
+         403. Now, it ignores these parameters, so the app will work.
+         (And perhaps in the future, hmeserver will actually support
+         this undocumented feature of TiVo's SDK.)
+
+         Added MIME type for WMV video.
+
+         Minor changes to demo apps: made a few bits more Pythonic, and
+         fixed some erroneous spacing that was only apparent with Python
+         3.0.
+
+         Minor changes to the Zeroconf module: untabbed, and removed the
+         deprecated has_key().
 
 0.15 --  Added clear_resource() and remove_resource() methods for Views.
          clear_resource() disassociates the View from its resource,
