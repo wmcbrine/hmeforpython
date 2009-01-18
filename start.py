@@ -105,18 +105,17 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     BUFSIZE = 0x10000
 
-    MIMETYPES = {'.html': 'text/html',
-                 '.xml': 'text/xml',
-                 '.css': 'text/css',
-                 '.gif': 'image/gif',
-                 '.jpg': 'image/jpeg',
-                 '.png': 'image/png',
-                 '.txt': 'text/plain',
-                 '.pdf': 'application/pdf',
-                 '.mp3': 'audio/mpeg',
-                 '.mpg': 'video/mpeg',
-                 '.mp4': 'video/mp4',
-                 '.wmv': 'video/x-ms-wmv'}
+    MIMETYPES = {'.html': 'text/html',      '.xml': 'text/xml',
+                 '.css': 'text/css',        '.gif': 'image/gif',
+                 '.jpg': 'image/jpeg',      '.png': 'image/png',
+                 '.txt': 'text/plain',      '.pdf': 'application/pdf',
+                 '.mp3': 'audio/mpeg',      '.mpg': 'video/mpeg',
+                 '.vob': 'video/mpeg',      '.mpeg': 'video/mpeg',
+                 '.m2v': 'video/mpeg',      '.mp4': 'video/mp4',
+                 '.m4v': 'video/mp4',       '.mov': 'video/quicktime',
+                 '.flv': 'video/x-flv',     '.wmv': 'video/x-ms-wmv',
+                 '.avi': 'video/x-msvideo', '.asf': 'video/x-ms-asf',
+                 '.mkv': 'video/x-matroska'}
 
     MIMEFALLBACK = 'application/octet-stream'
 
