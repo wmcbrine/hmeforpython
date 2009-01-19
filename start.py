@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.16
-# Copyright 2008 William McBrine
+# HME Server for Python, v0.17
+# Copyright 2009 William McBrine
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -73,7 +73,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.16'
+__version__ = '0.17'
 __license__ = 'LGPL'
 
 import getopt
@@ -115,7 +115,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
                  '.m4v': 'video/mp4',       '.mov': 'video/quicktime',
                  '.flv': 'video/x-flv',     '.wmv': 'video/x-ms-wmv',
                  '.avi': 'video/x-msvideo', '.asf': 'video/x-ms-asf',
-                 '.mkv': 'video/x-matroska'}
+                 '.mkv': 'video/x-matroska','.tivo': 'video/x-tivo-mpeg'}
 
     MIMEFALLBACK = 'application/octet-stream'
 
