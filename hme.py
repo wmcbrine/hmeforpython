@@ -1,5 +1,5 @@
-# HME for Python, v0.16
-# Copyright 2008 William McBrine
+# HME for Python, v0.17
+# Copyright 2009 William McBrine
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.16'
+__version__ = '0.17'
 __license__ = 'LGPL'
 
 import struct
@@ -347,7 +347,7 @@ class _EventData:
         return self.unpack_vdata().decode('utf-8')
 
     def unpack_dict(self):
-        """ HME dict to dict (each value is a list)
+        """ HME dict to dict (each value may be a list)
             Note that the HME dict type is referred to, but not
             documented, in the HME protocol specification.
 
@@ -366,6 +366,8 @@ class _EventData:
                     value.append(self.unpack_string())
                 else:
                     value.append(self.unpack_dict())
+            if len(value) == 1:
+                value = value[0]
             d[key] = value
         return d
 

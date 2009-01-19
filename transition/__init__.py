@@ -5,7 +5,7 @@
 # Original version Copyright 2004, 2005 TiVo Inc.
 # No credited authors
 #
-# This version: William McBrine, 2008
+# This version: William McBrine, 2009
 
 from hme import *
 
@@ -59,13 +59,13 @@ class Transition(Application):
 
         if params:
             if 'entry' in params:
-                self.entry_color = int(params['entry'][0])
+                self.entry_color = int(params['entry'])
 
             if 'return' in params:
-                self.return_color = int(params['return'][0])
+                self.return_color = int(params['return'])
 
             if 'depth' in params:
-                self.depth = int(params['depth'][0])
+                self.depth = int(params['depth'])
 
         self.update_inits()
 
