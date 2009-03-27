@@ -136,6 +136,12 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     XML_CLOSER = '</TiVoContainer>'
 
+    def __init__(self, request, client_address, server):
+        """ Set up a 64K output buffer before initializing. """
+        self.wbufsize = 0x10000
+        BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, request,
+            client_address, server)
+
     def address_string(self):
         """ Override address_string() with a version that skips the 
             reverse lookup. Suggestion of Jason Michalski.
