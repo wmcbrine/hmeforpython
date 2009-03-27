@@ -8,8 +8,6 @@
 #
 # This version: William McBrine, 2008
 
-import time
-
 from hme import *
 
 TITLE = 'Tic Tac Toe'
@@ -72,7 +70,7 @@ class TicTacToe(Application):
                 snd = 'thumbsdown'
             self.sound(snd)
 
-            time.sleep(2)
+            self.sleep(2)
 
             # if this is a victory, explode the pieces
             # if this is a victory or a draw, make the pieces fade away

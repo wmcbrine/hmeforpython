@@ -3,7 +3,6 @@
 
 import os
 import random
-import time
 from cStringIO import StringIO
 
 import Image
@@ -47,7 +46,7 @@ class Picture(hme.Application):
 
         if not os.path.isdir(rootpath):
             self.root.set_text('Path not found: ' + rootpath)
-            time.sleep(5)
+            self.sleep(5)
             self.active = False
             return
 
@@ -58,7 +57,7 @@ class Picture(hme.Application):
 
         if not self.files:
             self.root.set_text('No pictures found!')
-            time.sleep(5)
+            self.sleep(5)
             self.active = False
             return
 
@@ -153,8 +152,7 @@ class Picture(hme.Application):
         if self.old:
             self.old.set_transparency(1, animtime=0.5)
             self.old.remove(animtime=0.5)
-            self.wfile.flush()
-            time.sleep(0.75)
+            self.sleep(0.75)
             self.old.resource.remove()
         self.old = new
 

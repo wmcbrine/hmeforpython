@@ -54,6 +54,7 @@ __author__ = 'William McBrine <wmcbrine@gmail.com>'
 __version__ = '0.17'
 __license__ = 'LGPL'
 
+import time
 import struct
 
 #--- Constants --------------------------------------------------------
@@ -1276,6 +1277,14 @@ class Application(Resource):
             self.focus = focus
             if hasattr(focus, 'handle_focus'):
                 getattr(focus, 'handle_focus')(True)
+
+    def sleep(self, interval):
+        """ Flush the write buffer, then sleep for interval seconds. """
+        try:
+            self.wfile.flush()
+        except:
+            self.active = False
+        time.sleep(interval)
 
     def sound(self, id=None):
         """ Shorter form for playing sounds based on the id (the only

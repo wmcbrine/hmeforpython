@@ -3,7 +3,6 @@
 # sometimes not.
 
 import random
-import time
 
 from hme import *
 
@@ -61,7 +60,7 @@ class Test(Application):
         if keynum == KEY_LEFT:
             self.sound('left')
             self.safe.set_transparency(1, animtime=0.5)
-            time.sleep(0.5)
+            self.sleep(0.5)
             self.active = False
 
     def handle_key_press(self, keynum, rawcode=None):

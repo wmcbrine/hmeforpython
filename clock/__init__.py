@@ -44,8 +44,7 @@ class Clock(Application):
 
             # Manually flush HME commands. This has to be done since 
             # we're issuing commands in a separate thread.
-            self.wfile.flush()
 
             # now sleep
             tm += 1
-            time.sleep(tm - time.time())
+            self.sleep(tm - time.time())

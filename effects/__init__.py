@@ -9,7 +9,6 @@
 # This version: William McBrine, 2008
 
 import thread
-import time
 
 from hme import *
 
@@ -42,7 +41,7 @@ class Effects(Application):
         if ver[:3] in ('9.1', '9.3') and not ver[-3:] in ('648', '652'):
             self.root.set_text('Sorry, this program is not compatible\n' +
                                'with this TiVo software/hardware version.')
-            time.sleep(5)
+            self.sleep(5)
             self.active = False
             return
 
@@ -145,11 +144,7 @@ class Effects(Application):
             # it has taken effect.
             self.show_settings(0)
 
-            # Must be called to update the display when changes are made 
-            # from another thread
-            self.wfile.flush()
-
-            time.sleep(self.anim_time / 1000.0)
+            self.sleep(self.anim_time / 1000.0)
 
 
     # Display the value of the ease and animTime in the given color.
