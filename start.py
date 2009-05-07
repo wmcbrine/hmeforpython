@@ -264,17 +264,9 @@ class Broadcast:
 
     def get_address(self):
         if not self.addr:
-            try:
-                self.addr = socket.gethostbyname(socket.gethostname())
-                # On my system, this always gives me 127.0.0.1. Hence...
-            except:
-                self.addr = ''
-            if not self.addr or self.addr.startswith('127.'):
-                # ...the hard way. This may not be the right interface, 
-                # either; if not, set HOST to the desired address.
-                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                s.connect(('4.2.2.1', 0))
-                self.addr = s.getsockname()[0]
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(('4.2.2.1', 123))
+            self.addr = s.getsockname()[0]
         return socket.inet_aton(self.addr)
 
 if __name__ == '__main__':
