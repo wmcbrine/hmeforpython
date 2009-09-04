@@ -1,6 +1,6 @@
-HME for Python, v0.16
+HME for Python, v0.17
 by William McBrine <wmcbrine@gmail.com>
-December 1, 2008
+September 3, 2009
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (start.py), and examples 
@@ -71,7 +71,34 @@ exts=.jpg .png
 Changes
 -------
 
-0.16 --  Support for alpha values in colors -- apparently this was fixed
+0.17  -- Set up a 64K output buffer before initializing. This will cut
+         down on the number of packets sent, as well as forestalling any
+         potential "#3-5-6"-style errors, as in pyTivo (though I haven't
+         observed those in HME). But it also means that you have to
+         flush the output to be sure all commands are sent. The buffer
+         is flushed automatically when waiting for events; the only time
+         this is an issue is when sleep()ing instead of returning from
+         the event handler. To deal with this, I've added a sleep()
+         method to the Application class; just use it in place of
+         time.sleep(). All it does is flush the output, then sleep. You
+         could also do this manually. The example programs have been
+         modified to use the new method.
+
+         When unpacking an HME dict, if a list contains only a single
+         item, take it out of list form. This makes it more symmetrical
+         with what was done for packing in 0.8, although if any actual
+         one-item lists were packed, the list will be lost in that case,
+         too.
+
+         Added MIME types for .tivo files, and some other video types.
+
+         When the address isn't specified, to find it, skip
+         gethostbyname(), and just use the default route method; use
+         port 123 instead of 0 (the Mac doesn't like 0).
+
+         Supress Zeroconf.py's useless "NonLocalNameException".
+
+0.16  -- Support for alpha values in colors -- apparently this was fixed
          in TiVo software 9.3. (?) Reported by TCF user "Allanon". The
          way this works is, wherever you previously could specify a
          color number in RGB form, you can now do it as ARGB, where "A"
@@ -105,7 +132,7 @@ Changes
          Minor changes to the Zeroconf module: untabbed, and removed the
          deprecated has_key().
 
-0.15 --  Added clear_resource() and remove_resource() methods for Views.
+0.15  -- Added clear_resource() and remove_resource() methods for Views.
          clear_resource() disassociates the View from its resource,
          without removing the resource. remove_resource() is kind of
          trivial -- equivalent to "resource.remove(); resource = None" --
@@ -124,7 +151,7 @@ Changes
 
          Support for Python < 2.3 is dropped.
 
-0.14 --  hmeserver now separates the app and data roots, to allow
+0.14  -- hmeserver now separates the app and data roots, to allow
          keeping icons etc. together with their apps, while having data
          elsewhere. The new command-line option "--datapath" specifies
          the data root, while "--basepath" still sets the app root.
