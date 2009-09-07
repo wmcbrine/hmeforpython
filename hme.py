@@ -1,4 +1,4 @@
-# HME for Python, v0.17
+# HME for Python, v0.18
 # Copyright 2009 William McBrine
 #
 # This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.17'
+__version__ = '0.18'
 __license__ = 'LGPL'
 
 import time
@@ -536,14 +536,11 @@ class _HMEObject:
 class Resource(_HMEObject):
     """ Base class for Resources
         Note that in this implementation, resources are never removed 
-        automatically; you have to call the remove() method. Each 
-        app-allocated resource is stored in the app.resources dict.
+        automatically; you have to call the remove() method.
 
     """
     def __init__(self, app, id=None):
         _HMEObject.__init__(self, app, id)
-        if self.id >= ID_CLIENT:
-            app.resources[self.id] = self
         self.speed = 0
 
     def set_active(self, make_active=True):
@@ -560,9 +557,9 @@ class Resource(_HMEObject):
         self.put(_CMD_RSRC_CLOSE)
 
     def remove(self):
-        self.put(_CMD_RSRC_REMOVE)
         if self.id >= ID_CLIENT:
-            self.app.resources.pop(self.id)
+            self.put(_CMD_RSRC_REMOVE)
+            self.id = -1
 
     def play(self):
         self.set_speed(1)
@@ -670,9 +667,7 @@ class Text(Resource):
         If either the color or font is unspecified, the last ones set in 
         the app are used. The color can be specified by number (using 
         colornum=), or as an object of the Color class (color=). The 
-        font can only be specified as an object of the Font class. Text 
-        objects are not cached, except in app.resources (and that object 
-        doesn't include the text itself, only the id).
+        font can only be specified as an object of the Font class.
 
     """
     def __init__(self, app, text, font=None, color=None, colornum=None):
@@ -721,8 +716,7 @@ class Image(Resource):
 class Sound(Resource):
     """ Sound resource
         Specified by data, file object, file name or id. If none is
-        given, ID_UPDOWN_SOUND is used. Sound objects are not cached,
-        except in app.resources.
+        given, ID_UPDOWN_SOUND is used.
 
         Note that, on a real TiVo, only the predefined sounds seem to
         work. Use a Stream to play your own sounds.
@@ -745,7 +739,7 @@ class Stream(Resource):
         it doesn't seem to be used. The default is to play the stream 
         automatically when the event is sent; you can change this by 
         specifying "play=False". However, streams seem to be playable 
-        only once. Stream objects are not cached, except in app.resources.
+        only once.
 
     """
     def __init__(self, app, url, mime='', play=True):
@@ -1060,7 +1054,6 @@ class Application(Resource):
             self.wfile = outfile
 
         # Resource caches
-        self.resources = {}
         self.colors = {}
         self.ttfs = {}
         self.fonts = {}
@@ -1212,7 +1205,9 @@ class Application(Resource):
             self.put(_CMD_RECEIVER_ACKNOWLEDGE_IDLE, 'b', handled)
 
         elif evnum == _EVT_FONT_INFO:
-            font = self.resources[resource]
+            for font in self.fonts.values():
+                if font.id == resource:
+                    break
             (font.ascent, font.descent, font.height, font.line_gap,
                 extras, count) = ev.unpack('ffffii')
             extras -= 3
