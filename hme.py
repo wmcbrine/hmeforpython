@@ -685,6 +685,9 @@ class Text(Resource):
                 font = Font(app)
         self.put(_CMD_RSRC_ADD_TEXT, 'iis', font.id, color.id, text)
 
+    def __del__(self):
+        Resource.remove(self)
+
 class Image(Resource):
     """ Image resource
         Specified by data, file object or file name, one of which must 
@@ -746,6 +749,9 @@ class Stream(Resource):
         Resource.__init__(self, app)
         self.put(_CMD_RSRC_ADD_STREAM, 'ssb', url, mime, play)
         self.speed = int(play)
+
+    def __del__(self):
+        Resource.remove(self)
 
 class Animation(Resource):
     """ Animation resource
