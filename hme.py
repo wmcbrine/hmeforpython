@@ -633,6 +633,10 @@ class TTF(Resource):
             if self.app.last_ttf == self:
                 self.app.last_ttf = None
 
+    def __del__(self):
+        if not self.name:
+            Resource.remove(self)
+
 class Font(Resource):
     """ Font resource (with chosen point size and style)
         ttf specifies an object of the TTF class, and defaults to the 
@@ -715,6 +719,10 @@ class Image(Resource):
         Resource.remove(self)
         if self.name:
             self.app.images.pop(self.name)
+
+    def __del__(self):
+        if not self.name:
+            Resource.remove(self)
 
 class Sound(Resource):
     """ Sound resource
