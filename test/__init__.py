@@ -68,7 +68,10 @@ class Test(Application):
             self.update_silly(rawcode)
         elif keynum != KEY_LEFT:
             self.text.resource.remove()
-            self.text.set_text(KEY_NAMES[keynum])
+            if keynum in KEY_NAMES:
+                self.text.set_text(KEY_NAMES[keynum])
+            else:
+                self.text.set_text(str(keynum))
             if keynum == KEY_RIGHT:
                 self.text.translate(xincrement=10)
             elif keynum == KEY_DOWN:
