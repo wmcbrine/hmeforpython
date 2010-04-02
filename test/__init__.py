@@ -20,7 +20,8 @@ KEY_NAMES = {0: 'KEY_UNKNOWN', 2: 'KEY_UP', 3: 'KEY_DOWN', 4:
              'KEY_NUM2', 43: 'KEY_NUM3', 44: 'KEY_NUM4', 45: 'KEY_NUM5', 
              46: 'KEY_NUM6', 47: 'KEY_NUM7', 48: 'KEY_NUM8', 49: 
              'KEY_NUM9', 51: 'KEY_OPT_STOP', 52: 'KEY_OPT_MENU', 53: 
-             'KEY_OPT_TOP_MENU', 54: 'KEY_OPT_ANGLE'}
+             'KEY_OPT_TOP_MENU', 54: 'KEY_OPT_ANGLE', 56: 'KEY_OPT_A',
+             57: 'KEY_OPT_B', 58: 'KEY_OPT_C', 59: 'KEY_OPT_D'}
 
 class Test(Application):
     def startup(self):
