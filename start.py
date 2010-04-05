@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-# HME Server for Python, v0.17
-# Copyright 2009 William McBrine
+# HME Server for Python, v0.18
+# Copyright 2010 William McBrine
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -73,7 +73,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.17'
+__version__ = '0.18'
 __license__ = 'LGPL'
 
 import getopt
@@ -153,7 +153,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', mime)
         if size:
-            self.send_header('Content-Length:', str(size))
+            self.send_header('Content-Length', str(size))
         self.end_headers()
 
     def _page(self, body):
