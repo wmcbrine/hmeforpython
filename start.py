@@ -77,6 +77,7 @@ __version__ = '0.18'
 __license__ = 'LGPL'
 
 import getopt
+import mimetypes
 import os
 import socket
 import sys
@@ -105,17 +106,10 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     BUFSIZE = 0x10000
 
-    MIMETYPES = {'.html': 'text/html',      '.xml': 'text/xml',
-                 '.css': 'text/css',        '.gif': 'image/gif',
-                 '.jpg': 'image/jpeg',      '.png': 'image/png',
-                 '.txt': 'text/plain',      '.pdf': 'application/pdf',
-                 '.mp3': 'audio/mpeg',      '.mpg': 'video/mpeg',
-                 '.vob': 'video/mpeg',      '.mpeg': 'video/mpeg',
-                 '.m2v': 'video/mpeg',      '.mp4': 'video/mp4',
-                 '.m4v': 'video/mp4',       '.mov': 'video/quicktime',
-                 '.flv': 'video/x-flv',     '.wmv': 'video/x-ms-wmv',
-                 '.avi': 'video/x-msvideo', '.asf': 'video/x-ms-asf',
-                 '.mkv': 'video/x-matroska','.tivo': 'video/x-tivo-mpeg'}
+    MIMETYPES = {'.xml': 'text/xml',        '.vob': 'video/mpeg',
+                 '.m2v': 'video/mpeg',      '.m4v': 'video/mp4',
+                 '.flv': 'video/x-flv',     '.mkv': 'video/x-matroska',
+                 '.tivo': 'video/x-tivo-mpeg'}
 
     MIMEFALLBACK = 'application/octet-stream'
 
@@ -205,10 +199,12 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             if ext in self.BADEXTS:
                 self.send_error(404)
                 return
-            try:
-                mime = self.MIMETYPES[ext]
-            except:
-                mime = self.MIMEFALLBACK
+
+            mime = self.MIMETYPES.get(ext)
+            if not mime:
+                mime = mimetypes.guess_type(path)[0]
+                if not mime:
+                    mime = self.MIMEFALLBACK
             try:
                 size = os.path.getsize(path)
             except:
