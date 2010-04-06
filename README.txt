@@ -1,6 +1,6 @@
-HME for Python, v0.17
+HME for Python, v0.18
 by William McBrine <wmcbrine@gmail.com>
-September 3, 2009
+April 6, 2010
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (start.py), and examples 
@@ -70,6 +70,27 @@ exts=.jpg .png
 
 Changes
 -------
+
+0.18  -- More automatic removal of some resources when they go out of
+         scope: nameless Image, TTF (named ones are cached, and may
+         be duplicate references to the same TiVo-side resource --
+         should probably rework this), Text and Stream resources. (Other
+         resources are still cached.) As part of these changes,
+         app.resources has been removed.
+
+         "Test" app: Add KEY_OPT_A, B, C, and D button names; for key
+         codes that aren't in the list of names, print the number.
+
+         Stupid bug: extra colon in Content-Length header. Revealed by
+         the new HD UI on the TiVo Premiere.
+
+         Use the mimetypes module instead of hardwiring quite so many
+         MIME types in start.py.
+
+         Various minor fixes for Zeroconf (mainly cosmetic).
+
+         Icons resaved as RGB for the sake of the new UI on the 
+         Premiere, which can't handle indexed or greyscale PNGs.
 
 0.17  -- Set up a 64K output buffer before initializing. This will cut
          down on the number of packets sent, as well as forestalling any
