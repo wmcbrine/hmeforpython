@@ -106,10 +106,12 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     BUFSIZE = 0x10000
 
-    MIMETYPES = {'.xml': 'text/xml',        '.vob': 'video/mpeg',
-                 '.m2v': 'video/mpeg',      '.m4v': 'video/mp4',
-                 '.flv': 'video/x-flv',     '.mkv': 'video/x-matroska',
-                 '.tivo': 'video/x-tivo-mpeg'}
+    MIMETYPES = {}
+    MIMETYPES.update(mimetypes.types_map)
+    MIMETYPES.update({'.xml': 'text/xml',        '.vob': 'video/mpeg',
+                      '.m2v': 'video/mpeg',      '.m4v': 'video/mp4',
+                      '.flv': 'video/x-flv',     '.mkv': 'video/x-matroska',
+                      '.tivo': 'video/x-tivo-mpeg'})
 
     MIMEFALLBACK = 'application/octet-stream'
 
@@ -199,12 +201,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             if ext in self.BADEXTS:
                 self.send_error(404)
                 return
-
-            mime = self.MIMETYPES.get(ext)
-            if not mime:
-                mime = mimetypes.guess_type(path)[0]
-                if not mime:
-                    mime = self.MIMEFALLBACK
+            mime = self.MIMETYPES.get(ext, self.MIMEFALLBACK)
             try:
                 size = os.path.getsize(path)
             except:
