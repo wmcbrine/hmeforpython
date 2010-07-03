@@ -552,6 +552,10 @@ class Resource(_HMEObject):
     def set_speed(self, speed):
         self.put(_CMD_RSRC_SET_SPEED, 'f', speed)
         self.speed = speed
+        try:
+            self.app.wfile.flush()
+        except:
+            pass
 
     def close(self):
         self.put(_CMD_RSRC_CLOSE)
