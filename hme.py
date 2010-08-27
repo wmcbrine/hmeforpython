@@ -55,6 +55,7 @@ __version__ = '0.19'
 __license__ = 'LGPL'
 
 import time
+import string
 import struct
 
 #--- Constants --------------------------------------------------------
@@ -281,6 +282,10 @@ _EVT_IDLE = 5
 _EVT_FONT_INFO = 6
 _EVT_INIT_INFO = 7
 _EVT_RESOLUTION_INFO = 8
+
+# Characters for codes returned by QWERTY input
+
+_QWERTY_MAP = string.uppercase + "-=[]\;',./` "
 
 #--- Low-level stream handling ----------------------------------------
 
@@ -1163,14 +1168,10 @@ class Application(Resource):
 
             if keynum == KEY_UNKNOWN:
                 key = ((rawcode & 0xff00) >> 8) - 0x3c
-                if key < 26:
-                    key = chr(ord('A') + key)
-                else:
-                    key = ' '
-                if action in (KEY_REPEAT, KEY_RELEASE):
+                if 0 <= key <= 37 and action in (KEY_REPEAT, KEY_RELEASE):
                     handle = getattr(self.focus, 'handle_qwerty',
                                      self.handle_qwerty)
-                    handle(key)
+                    handle(_QWERTY_MAP[key])
             else:
                 if action == KEY_PRESS:
                     handle = getattr(self.focus, 'handle_key_press',
