@@ -11,8 +11,8 @@ Public License.)
 I developed this in Python 2.5.2, and tested it in Linux, Mac OS X, and 
 Windows XP, and with Python 2.3 through 2.6. (I've also tested a Python 
 3.0 version, but it's not quite ready for release.) The requirements are 
-minimal. (hme.py depends only on the struct module. start.py is a bit 
-more demanding, but uses only the standard library.)
+minimal. (hme.py depends only on the string, struct and time modules. 
+start.py is a bit more demanding, but uses only the standard library.)
 
 
 Quick Start
