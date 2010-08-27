@@ -81,6 +81,11 @@ class Test(Application):
                 self.text.translate(yincrement=-10)
             self.sound()
 
+    def handle_qwerty(self, key):
+        self.text.resource.remove()
+        self.text.set_text(key)
+        self.sound()
+
     def handle_resolution(self):
         for res in self.resolutions:
             if res == self.current_resolution:

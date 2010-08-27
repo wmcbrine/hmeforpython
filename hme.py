@@ -1,5 +1,5 @@
-# HME for Python, v0.18
-# Copyright 2009 William McBrine
+# HME for Python, v0.19
+# Copyright 2010 William McBrine
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -51,7 +51,7 @@
 """
 
 __author__ = 'William McBrine <wmcbrine@gmail.com>'
-__version__ = '0.18'
+__version__ = '0.19'
 __license__ = 'LGPL'
 
 import time
@@ -1161,16 +1161,27 @@ class Application(Resource):
         if evnum == _EVT_KEY:
             action, keynum, rawcode = ev.unpack('iii')
 
-            if action == KEY_PRESS:
-                handle = getattr(self.focus, 'handle_key_press',
-                                 self.handle_key_press)
-            elif action == KEY_REPEAT:
-                handle = getattr(self.focus, 'handle_key_repeat',
-                                 self.handle_key_repeat)
-            elif action == KEY_RELEASE:
-                handle = getattr(self.focus, 'handle_key_release',
-                                 self.handle_key_release)
-            handle(keynum, rawcode)
+            if keynum == KEY_UNKNOWN:
+                key = ((rawcode & 0xff00) >> 8) - 0x3c
+                if key < 26:
+                    key = chr(ord('A') + key)
+                else:
+                    key = ' '
+                if action in (KEY_REPEAT, KEY_RELEASE):
+                    handle = getattr(self.focus, 'handle_qwerty',
+                                     self.handle_qwerty)
+                    handle(key)
+            else:
+                if action == KEY_PRESS:
+                    handle = getattr(self.focus, 'handle_key_press',
+                                     self.handle_key_press)
+                elif action == KEY_REPEAT:
+                    handle = getattr(self.focus, 'handle_key_repeat',
+                                     self.handle_key_repeat)
+                elif action == KEY_RELEASE:
+                    handle = getattr(self.focus, 'handle_key_release',
+                                     self.handle_key_release)
+                handle(keynum, rawcode)
 
         elif evnum == _EVT_DEVICE_INFO:
             info = {}
@@ -1376,6 +1387,10 @@ class Application(Resource):
 
     def handle_key_release(self, keynum, rawcode=None):
         """ Override this to handle key releases. (_EVT_KEY, KEY_RELEASE) """
+        pass
+
+    def handle_qwerty(self, key):
+        """ Override this to handle QWERTY input. """
         pass
 
     def handle_active(self):
