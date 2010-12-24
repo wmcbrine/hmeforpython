@@ -287,7 +287,14 @@ _EVT_RESOLUTION_INFO = 8
 
 # Characters for codes returned by QWERTY input
 
-QWERTY_MAP = string.uppercase + "-=[]\;',./` "
+_QWERTY_MAP = string.uppercase + "-=[]\;',./` "
+
+def qwerty_map(rawcode):
+    try:
+        key = _QWERTY_MAP[((rawcode & 0xff00) >> 8) - 0x3c]
+    except:
+        key = '?'
+    return key
 
 #--- Low-level stream handling ----------------------------------------
 

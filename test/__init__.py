@@ -72,10 +72,7 @@ class Test(Application):
         elif keynum != KEY_LEFT:
             self.text.resource.remove()
             if keynum == KEY_UNKNOWN:
-                try:
-                    key = QWERTY_MAP[((rawcode & 0xff00) >> 8) - 0x3c]
-                except:
-                    key = KEY_NAMES[keynum]
+                key = qwerty_map(rawcode)
             elif keynum in KEY_NAMES:
                 key = KEY_NAMES[keynum]
             elif keynum > 0x10000:
