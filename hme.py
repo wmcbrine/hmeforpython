@@ -63,7 +63,7 @@ import struct
 # Mostly as defined in the HME Protocol Specification.
 
 HME_MAJOR_VERSION = 0
-HME_MINOR_VERSION = 44
+HME_MINOR_VERSION = 49
 
 SAFE_ACTION_H = 32
 SAFE_ACTION_V = 24
@@ -162,6 +162,8 @@ KEY_OPT_TV_POWER = 60
 KEY_OPT_TV_INPUT = 61
 KEY_OPT_VOD = 62
 KEY_OPT_POWER = 63
+
+KEY_BACKSPACE = 65
 
 # Transitions
 
@@ -762,9 +764,9 @@ class Stream(Resource):
         only once.
 
     """
-    def __init__(self, app, url, mime='', play=True):
+    def __init__(self, app, url, mime='', play=True, params={}):
         Resource.__init__(self, app)
-        self.put(_CMD_RSRC_ADD_STREAM, 'ssb', url, mime, play)
+        self.put(_CMD_RSRC_ADD_STREAM, 'ssbd', url, mime, play, params)
         self.speed = int(play)
 
     def __del__(self):
