@@ -287,7 +287,7 @@ _EVT_RESOLUTION_INFO = 8
 
 # Characters for codes returned by QWERTY input
 
-_QWERTY_MAP = string.uppercase + "-=[]\;',./` "
+QWERTY_MAP = string.uppercase + "-=[]\;',./` "
 
 #--- Low-level stream handling ----------------------------------------
 
@@ -1167,13 +1167,6 @@ class Application(Resource):
 
         if evnum == _EVT_KEY:
             action, keynum, rawcode = ev.unpack('iii')
-
-            if keynum == KEY_UNKNOWN:
-                key = ((rawcode & 0xff00) >> 8) - 0x3c
-                if 0 <= key <= 37:
-                    keynum = ord(_QWERTY_MAP[key]) + 0x10000
-
-            print action, keynum, rawcode
 
             if action == KEY_PRESS:
                 handle = getattr(self.focus, 'handle_key_press',

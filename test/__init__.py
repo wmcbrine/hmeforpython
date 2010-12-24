@@ -71,12 +71,18 @@ class Test(Application):
             self.update_silly(rawcode)
         elif keynum != KEY_LEFT:
             self.text.resource.remove()
-            if keynum in KEY_NAMES:
-                self.text.set_text(KEY_NAMES[keynum])
+            if keynum == KEY_UNKNOWN:
+                try:
+                    key = QWERTY_MAP[((rawcode & 0xff00) >> 8) - 0x3c]
+                except:
+                    key = KEY_NAMES[keynum]
+            elif keynum in KEY_NAMES:
+                key = KEY_NAMES[keynum]
             elif keynum > 0x10000:
-                self.text.set_text(chr(keynum - 0x10000))
+                key = chr(keynum - 0x10000)
             else:
-                self.text.set_text(str(keynum))
+                key = str(keynum)
+            self.text.set_text(key)
             if keynum == KEY_RIGHT:
                 self.text.translate(xincrement=10)
             elif keynum == KEY_DOWN:
