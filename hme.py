@@ -1170,21 +1170,21 @@ class Application(Resource):
 
             if keynum == KEY_UNKNOWN:
                 key = ((rawcode & 0xff00) >> 8) - 0x3c
-                if 0 <= key <= 37 and action in (KEY_REPEAT, KEY_RELEASE):
-                    handle = getattr(self.focus, 'handle_qwerty',
-                                     self.handle_qwerty)
-                    handle(_QWERTY_MAP[key])
-            else:
-                if action == KEY_PRESS:
-                    handle = getattr(self.focus, 'handle_key_press',
-                                     self.handle_key_press)
-                elif action == KEY_REPEAT:
-                    handle = getattr(self.focus, 'handle_key_repeat',
-                                     self.handle_key_repeat)
-                elif action == KEY_RELEASE:
-                    handle = getattr(self.focus, 'handle_key_release',
-                                     self.handle_key_release)
-                handle(keynum, rawcode)
+                if 0 <= key <= 37:
+                    keynum = ord(_QWERTY_MAP[key]) + 0x10000
+
+            print action, keynum, rawcode
+
+            if action == KEY_PRESS:
+                handle = getattr(self.focus, 'handle_key_press',
+                                 self.handle_key_press)
+            elif action == KEY_REPEAT:
+                handle = getattr(self.focus, 'handle_key_repeat',
+                                 self.handle_key_repeat)
+            elif action == KEY_RELEASE:
+                handle = getattr(self.focus, 'handle_key_release',
+                                 self.handle_key_release)
+            handle(keynum, rawcode)
 
         elif evnum == _EVT_DEVICE_INFO:
             info = {}
@@ -1390,10 +1390,6 @@ class Application(Resource):
 
     def handle_key_release(self, keynum, rawcode=None):
         """ Override this to handle key releases. (_EVT_KEY, KEY_RELEASE) """
-        pass
-
-    def handle_qwerty(self, key):
-        """ Override this to handle QWERTY input. """
         pass
 
     def handle_active(self):

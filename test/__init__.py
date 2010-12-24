@@ -73,6 +73,8 @@ class Test(Application):
             self.text.resource.remove()
             if keynum in KEY_NAMES:
                 self.text.set_text(KEY_NAMES[keynum])
+            elif keynum > 0x10000:
+                self.text.set_text(chr(keynum - 0x10000))
             else:
                 self.text.set_text(str(keynum))
             if keynum == KEY_RIGHT:
@@ -82,11 +84,6 @@ class Test(Application):
             elif keynum == KEY_UP:
                 self.text.translate(yincrement=-10)
             self.sound()
-
-    def handle_qwerty(self, key):
-        self.text.resource.remove()
-        self.text.set_text(key)
-        self.sound()
 
     def handle_resolution(self):
         for res in self.resolutions:
