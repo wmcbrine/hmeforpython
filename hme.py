@@ -290,6 +290,10 @@ _EVT_RESOLUTION_INFO = 8
 _QWERTY_MAP = string.uppercase + "-=[]\;',./` "
 
 def qwerty_map(rawcode):
+    """ Take the rawcode from a type 1 (KEY_UNKNOWN) direct text key
+        event, and return the ASCII equivalent, or "?" on error.
+
+    """
     try:
         key = _QWERTY_MAP[((rawcode & 0xff00) >> 8) - 0x3c]
     except:
