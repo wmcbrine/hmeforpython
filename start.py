@@ -90,6 +90,8 @@ from ConfigParser import SafeConfigParser
 # Version of the protocol implemented
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
+HME_ZC = '_tivo-hme._tcp.local.'
+
 def norm(path): 
     return os.path.normcase(os.path.abspath(os.path.normpath(path)))
 
@@ -229,6 +231,16 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
         self._page(True)
 
+class ZCListener:
+    def __init__(self, names):
+        self.names = names
+
+    def removeService(self, server, type, name):
+        self.names.remove(name.replace('.' + type, ''))
+
+    def addService(self, server, type, name):
+        self.names.append(name.replace('.' + type, ''))
+
 class Broadcast:
     def __init__(self, addr, apptitles):
         self.addr, self.port = addr
@@ -236,18 +248,34 @@ class Broadcast:
         self.apps.sort()
         self.appinfo = []
         self.rz = Zeroconf.Zeroconf()
+        old_titles = self.find_hme()
         for name in self.apps:
             print 'Registering:', name
             desc = {'path': '/%s/' % name,
                     'version': '%d.%d' % (HME_MAJOR_VERSION,
                                           HME_MINOR_VERSION)}
-            info = Zeroconf.ServiceInfo('_tivo-hme._tcp.local.',
-                                        '%s._tivo-hme._tcp.local.' %
-                                        apptitles[name],
+            title = apptitles[name]
+            count = 1
+            while title in old_titles:
+                count += 1
+                title = '%s [%d]' % (apptitles[name], count)
+
+            info = Zeroconf.ServiceInfo(HME_ZC, '%s.%s' % (title, HME_ZC),
                                         self.get_address(), self.port,
                                         0, 0, desc)
             self.rz.registerService(info)
             self.appinfo.append(info)
+
+    def find_hme(self):
+        """ Get the titles of running HME apps. """
+        titles = []
+        try:
+            browser = Zeroconf.ServiceBrowser(self.rz, HME_ZC,
+                                              ZCListener(titles))
+        except:
+            return titles
+        time.sleep(0.5)    # Give them half a second to respond
+        return titles
 
     def shutdown(self):
         print 'Unregistering:', ' '.join(self.apps)
