@@ -1293,6 +1293,10 @@ class Application(Resource):
                 animation = self.immediate
         self.put(_CMD_RSRC_SEND_EVENT, 'iiiiii', animation.id, _EVT_KEY,
                  self.id, KEY_PRESS, keynum, rawcode)
+        try:
+            self.wfile.flush()
+        except:
+            pass
 
     def set_focus(self, focus):
         """ Set the focus to a new object, and notify both the old and
