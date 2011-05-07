@@ -341,10 +341,10 @@ if __name__ == '__main__':
         elif opt in ('-z', '--nozeroconf'):
             have_zc = False
         elif opt in ('-v', '--version'):
-            exit()
+            sys.exit()
         elif opt in ('-h', '--help'):
             print __doc__
-            exit()
+            sys.exit()
 
     app_root = norm(app_root)
     if data_root:
