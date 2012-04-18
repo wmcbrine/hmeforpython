@@ -262,7 +262,7 @@ Changes
          them... hence, this. It's similar to how it works in the Java
          SDK, but without the fake ".snd" extension. See examples.
 
-         Added a "speed" attribute for to the Resource class -- only
+         Added a "speed" attribute to the Resource class -- only
          meaningful for Streams.
 
          In hmeserver, send size information with regular files where
