@@ -5,7 +5,10 @@ import os
 import random
 from cStringIO import StringIO
 
-import Image
+try:
+    from PIL import Image
+except ImportError:
+    import Image
 
 import hme
 
