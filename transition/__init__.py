@@ -5,7 +5,7 @@
 # Original version Copyright 2004, 2005 TiVo Inc.
 # No credited authors
 #
-# This version: William McBrine, 2009
+# This version: William McBrine, 2009-2012
 
 from hme import *
 
@@ -15,9 +15,7 @@ COLORS = (0xff0000, 0xffff00, 0x00ff00, 0x0000ff)
 
 class Transition(Application):
     def startup(self):
-        self.depth = 0
-        self.entry_color = -1
-        self.return_color = -1
+        self.params = {'depth': 0, 'entry': -1, 'return': -1}
         self.cur_color = 0
 
         x = SAFE_ACTION_H
@@ -57,16 +55,7 @@ class Transition(Application):
         print params
         print repr(memento)
 
-        if params:
-            if 'entry' in params:
-                self.entry_color = int(params['entry'])
-
-            if 'return' in params:
-                self.return_color = int(params['return'])
-
-            if 'depth' in params:
-                self.depth = int(params['depth'])
-
+        self.params.update(params)
         self.update_inits()
 
         if memento:
@@ -82,31 +71,34 @@ class Transition(Application):
             self.update_hilight()
         elif code == KEY_RIGHT:
             mem = chr(self.cur_color)
-            params = {'entry': self.cur_color, 'depth': self.depth + 1}
+            params = {'entry': self.cur_color,
+                      'depth': int(self.params['depth']) + 1}
             self.transition(TRANSITION_FORWARD, params,
                             'http://%s/transition/' %
                             self.context.headers['host'], mem)
         elif code == KEY_LEFT:
-            params = {'return': self.cur_color, 'depth': self.depth - 1}
+            params = {'return': self.cur_color,
+                      'depth': int(self.params['depth']) - 1}
             self.transition(TRANSITION_BACK, params)
 
     def handle_error(self, code, text):
         self.error_view.set_value(text)
 
     def update_inits(self):
-        self.depth_view.set_value('Current depth is %d.' % self.depth)
+        self.depth_view.set_value('Current depth is %s.' %
+                                  self.params['depth'])
 
-        if self.entry_color < 0:
+        ec = int(self.params['entry'])
+        if ec < 0:
             self.entry_view.set_value('No entry color.', 0x7f7f7f)
         else:
-            self.entry_view.set_value('%#08x' % COLORS[self.entry_color],
-                                      COLORS[self.entry_color])
+            self.entry_view.set_value('%#08x' % COLORS[ec], COLORS[ec])
 
-        if self.return_color < 0:
+        rc = int(self.params['return'])
+        if rc < 0:
             self.return_view.set_value('No return color', 0x7f7f7f)
         else:
-            self.return_view.set_value('%#08x' % COLORS[self.return_color],
-                                       COLORS[self.return_color])
+            self.return_view.set_value('%#08x' % COLORS[rc], COLORS[rc])
 
     def update_hilight(self):
         y = 180 + self.cur_color * 50 - 5
