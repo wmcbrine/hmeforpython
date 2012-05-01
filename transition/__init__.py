@@ -7,21 +7,21 @@
 #
 # This version: William McBrine, 2009-2012
 
-from hme import *
+import hme
 
 """ Simple application to test new transition feature. """
 
 COLORS = (0xff0000, 0xffff00, 0x00ff00, 0x0000ff)
 
-class Transition(Application):
+class Transition(hme.Application):
     def startup(self):
         self.params = {'depth': 0, 'entry': -1, 'return': -1}
         self.cur_color = 0
 
-        x = SAFE_ACTION_H
+        x = hme.SAFE_ACTION_H
         w = self.root.width - 2 * x
 
-        TextView(self, x, SAFE_ACTION_V, w, 40, fontsize=30,
+        TextView(self, x, hme.SAFE_ACTION_V, w, 40, fontsize=30,
                  text='HME Transition Test')
 
         self.depth_view = TextView(self, x, 70, w, 40)
@@ -34,15 +34,15 @@ class Transition(Application):
                  text='Move up and down to select a color.  ' +
                       'Move left to go back, right to go forward.')
 
-        x = SAFE_ACTION_H + 75
+        x = hme.SAFE_ACTION_H + 75
         w = self.root.width - 2 * x
-        self.hilight_view = View(self, x, 175, w, 50, colornum=0xffffff)
+        self.hilight_view = hme.View(self, x, 175, w, 50, colornum=0xffffff)
         self.update_hilight()
 
-        x = SAFE_ACTION_H + 80
+        x = hme.SAFE_ACTION_H + 80
         w = self.root.width - 2 * x
         for i, col in enumerate(COLORS):
-            View(self, x, 180 + i * 50, w, 40, colornum=col)
+            hme.View(self, x, 180 + i * 50, w, 40, colornum=col)
 
         self.error_view = TextView(self, x, 440, w, 40, 
                                    fontsize=18, textcolor=0xff0000)
@@ -63,23 +63,23 @@ class Transition(Application):
             self.update_hilight()
 
     def handle_key_press(self, code, rawcode):
-        if code == KEY_UP:
+        if code == hme.KEY_UP:
             self.cur_color = (self.cur_color - 1) % len(COLORS)
             self.update_hilight()
-        elif code == KEY_DOWN:
+        elif code == hme.KEY_DOWN:
             self.cur_color = (self.cur_color + 1) % len(COLORS)
             self.update_hilight()
-        elif code == KEY_RIGHT:
+        elif code == hme.KEY_RIGHT:
             mem = chr(self.cur_color)
             params = {'entry': self.cur_color,
                       'depth': int(self.params['depth']) + 1}
-            self.transition(TRANSITION_FORWARD, params,
+            self.transition(hme.TRANSITION_FORWARD, params,
                             'http://%s/transition/' %
                             self.context.headers['host'], mem)
-        elif code == KEY_LEFT:
+        elif code == hme.KEY_LEFT:
             params = {'return': self.cur_color,
                       'depth': int(self.params['depth']) - 1}
-            self.transition(TRANSITION_BACK, params)
+            self.transition(hme.TRANSITION_BACK, params)
 
     def handle_error(self, code, text):
         self.error_view.set_value(text)
@@ -108,15 +108,15 @@ class Transition(Application):
                                   COLORS[self.cur_color])
 
 
-class TextView(View):
+class TextView(hme.View):
     def __init__(self, app, x, y, width, height,
                  text='', fontsize=20, textcolor=0xffffff):
-        View.__init__(self, app, x, y, width, height)
-        self.font = Font(self.app, size=fontsize)
+        hme.View.__init__(self, app, x, y, width, height)
+        self.font = hme.Font(self.app, size=fontsize)
         self.set_value(text, textcolor)
 
     def set_value(self, text, colornum=None):
         self.value = text
         if colornum is not None:
-            self.fg = Color(self.app, colornum)
+            self.fg = hme.Color(self.app, colornum)
         self.set_text(self.value, self.font, self.fg)

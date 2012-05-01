@@ -1,8 +1,8 @@
-from hme import *
+import hme
 
 TITLE = 'Hello World'
 
-class Hello(Application):
+class Hello(hme.Application):
     def startup(self):
-        Font(self, size=36, style=FONT_BOLD)
+        hme.Font(self, size=36, style=hme.FONT_BOLD)
         self.root.set_text('Hello, world!')

@@ -6,17 +6,17 @@
 # Brigham Stevens, Jonathan Payne, Steven Samorodin
 # Copyright 2004, 2005 TiVo Inc.
 #
-# This version: William McBrine, 2008
+# This version: William McBrine, 2008-2012
 
-from hme import *
+import hme
 
 TITLE = 'Tic Tac Toe'
 CLASS_NAME = 'TicTacToe'
 
-class TicTacToe(Application):
+class TicTacToe(hme.Application):
     def startup(self):
         # a View to contain all the pieces
-        self.pieces_view = View(self)
+        self.pieces_view = hme.View(self)
 
         # the pieces themselves
         self.pieces = [[None] * 3, [None] * 3, [None] * 3]
@@ -34,15 +34,15 @@ class TicTacToe(Application):
                         image='tictactoe/grid.png')
 
         # the X and O pieces
-        Font(self, size=72, style=FONT_BOLD)
-        self.tokens = [Text(self, 'X'), Text(self, 'O')]
+        hme.Font(self, size=72, style=hme.FONT_BOLD)
+        self.tokens = [hme.Text(self, 'X'), hme.Text(self, 'O')]
 
     def handle_key_press(self, keynum, rawcode):
-        if KEY_NUM1 <= keynum <= KEY_NUM9:
-            pos = keynum - KEY_NUM1;
+        if hme.KEY_NUM1 <= keynum <= hme.KEY_NUM9:
+            pos = keynum - hme.KEY_NUM1;
             # convert pos to x/y and make a move
             self.make_move(pos % 3, pos / 3);
-        elif keynum == KEY_LEFT:
+        elif keynum == hme.KEY_LEFT:
             self.active = False
         else:
             self.sound('bonk')
@@ -74,7 +74,7 @@ class TicTacToe(Application):
 
             # if this is a victory, explode the pieces
             # if this is a victory or a draw, make the pieces fade away
-            anim = Animation(self, 1)
+            anim = hme.Animation(self, 1)
             for i in xrange(3):
                 for j in xrange(3):
                     v = self.pieces[i][j]
@@ -130,8 +130,8 @@ class TicTacToe(Application):
 # in the view itself. We do this so that we can highlight the background
 # of the piece later by calling set_resource().
 
-class Piece(View):
+class Piece(hme.View):
     def __init__(self, parent, x, y, w, h, player):
-        View.__init__(self, parent.app, x, y, w, h, parent=parent)
+        hme.View.__init__(self, parent.app, x, y, w, h, parent=parent)
         self.player = player
         self.child(resource=self.app.tokens[player])

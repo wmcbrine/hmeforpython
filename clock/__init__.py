@@ -6,28 +6,29 @@
 # Brigham Stevens, Jonathan Payne, Steven Samorodin
 # Copyright 2004, 2005 TiVo Inc.
 #
-# This version: William McBrine, 2008
+# This version: William McBrine, 2008-2012
 
 import thread
 import time
 
-from hme import *
+import hme
 
 """This sample illustrates animation in a separate thread."""
 
-class Clock(Application):
+class Clock(hme.Application):
     def startup(self):
         self.root.set_color()
-        self.time_views = [View(self, 0, 100, height=280) for i in xrange(2)]
+        self.time_views = [hme.View(self, 0, 100, height=280)]
+                           for i in xrange(2)]
 
-        Font(self, size=96, style=FONT_BOLD)
-        Color(self, 0)
+        hme.Font(self, size=96, style=hme.FONT_BOLD)
+        hme.Color(self, 0)
 
         # start a separate thread to update the time
         thread.start_new_thread(self.update, ())
 
     def update(self):
-        fade = Animation(self, 0.75)
+        fade = hme.Animation(self, 0.75)
         tm = time.time()
         n = 0
 
@@ -41,9 +42,6 @@ class Clock(Application):
             # show the current time
             self.time_views[n].set_text(time.strftime('%H:%M:%S'))
             self.time_views[n].set_transparency(0, fade)
-
-            # Manually flush HME commands. This has to be done since 
-            # we're issuing commands in a separate thread.
 
             # now sleep
             tm += 1

@@ -6,11 +6,11 @@
 # Brigham Stevens, Jonathan Payne, Steven Samorodin
 # Copyright 2004, 2005 TiVo Inc.
 #
-# This version: William McBrine, 2008
+# This version: William McBrine, 2008-2012
 
 import random
 
-from hme import *
+import hme
 
 """A simple demonstration of how to perform animations with View classes.
    This sample shows how to use Application.send_key() to receive a 
@@ -18,7 +18,7 @@ from hme import *
 
 """
 
-class Animate(Application):
+class Animate(hme.Application):
     def handle_device_info(self, info):
         ver = info.get('version', '')
         if ver[:3] in ('9.1', '9.3') and not ver[-3:] in ('648', '652'):
@@ -28,9 +28,9 @@ class Animate(Application):
 
         # create a container view that will hold everything else, sized 
         # to the safe action bounds.
-        content = View(self, SAFE_ACTION_H / 2, SAFE_ACTION_V / 2,
-                       self.root.width - SAFE_ACTION_H,
-                       self.root.height - SAFE_ACTION_V)
+        content = hme.View(self, hme.SAFE_ACTION_H / 2, hme.SAFE_ACTION_V / 2,
+                           self.root.width - hme.SAFE_ACTION_H,
+                           self.root.height - hme.SAFE_ACTION_V)
 
         # create the set of animated squares
         self.sprites = [SpriteView(content, i,
@@ -43,7 +43,7 @@ class Animate(Application):
     # Listen for our special "animation ended" event.
 
     def handle_key_press(self, keynum, index):
-        if keynum == KEY_TIVO:
+        if keynum == hme.KEY_TIVO:
             self.sprites[index].animate()
 
     # If this ain't a screensaver, I don't know what is. -- wmcbrine
@@ -52,9 +52,9 @@ class Animate(Application):
         return True
 
 
-class SpriteView(View):
+class SpriteView(hme.View):
     def __init__(self, parent, index, x, y, width, height):
-        View.__init__(self, parent.app, x, y, width, height, parent=parent)
+        hme.View.__init__(self, parent.app, x, y, width, height, parent=parent)
 
         self.index = index
         self.set_color(random.randrange(0xffffff))
@@ -74,4 +74,4 @@ class SpriteView(View):
         self.set_bounds(dest_x, dest_y, animtime=speed)
 
         # send a special event
-        self.app.send_key(KEY_TIVO, self.index, animtime=speed)
+        self.app.send_key(hme.KEY_TIVO, self.index, animtime=speed)

@@ -5,9 +5,9 @@
 # Original version credited author: Brigham Stevens
 # Copyright 2004, 2005 TiVo Inc.
 #
-# This version: William McBrine, 2008
+# This version: William McBrine, 2008-2012
 
-from hme import *
+import hme
 
 TITLE = 'Font Info'
 CLASS_NAME = 'FontInfo'
@@ -17,15 +17,15 @@ CLASS_NAME = 'FontInfo'
 
 """
 
-class FontInfo(Application):
+class FontInfo(hme.Application):
     def startup(self):
         # create the main view which will display the font info
-        self.fv = View(self)
+        self.fv = hme.View(self)
 
         # create the font and ... Use new font flags to indicate to the 
         # reciever to send back metrics for this font
-        Font(self, style=FONT_BOLD, size=36,
-             flags=FONT_METRICS_BASIC|FONT_METRICS_GLYPH)
+        hme.Font(self, style=hme.FONT_BOLD, size=36,
+                 flags=hme.FONT_METRICS_BASIC|hme.FONT_METRICS_GLYPH)
 
     def handle_font_info(self, font):
         # change the text displayed to contain the font info
@@ -36,7 +36,7 @@ class FontInfo(Application):
                          "linegap:    " + str(font.line_gap) + "\n" +
                          "l advance:  " + str(font.glyphs['l'][0]) + "\n" +
                          "M advance:  " + str(font.glyphs['M'][0]),
-                         flags=RSRC_TEXT_WRAP)
+                         flags=hme.RSRC_TEXT_WRAP)
 
         # resize the view vertically to exactly fit the text
         new_height = int(font.height * 8)
@@ -45,13 +45,13 @@ class FontInfo(Application):
 
         # create a header view that is sized to the exact top area above 
         # the font info
-        header = View(self, height=new_y, colornum=0x7f7f7f)
+        header = hme.View(self, height=new_y, colornum=0x7f7f7f)
         header.child().set_text('Header', colornum=0xff)
 
         # create a footer view that is sized to the exact area below the 
         # font info
-        footer = View(self, ypos=new_y + new_height, height=new_y,
-                      colornum=0x7f7f7f)
+        footer = hme.View(self, ypos=new_y + new_height, height=new_y,
+                          colornum=0x7f7f7f)
 
         # create a text resource and put in a view that is sized-to-fit 
         # the width
