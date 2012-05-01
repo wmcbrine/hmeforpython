@@ -461,9 +461,11 @@ def _pack_vdata(value):
 
 def _pack_string(value):
     """ unicode to HME string """
-    if not type(value) in (str, unicode):
+    if type(value) is unicode:
+        value = value.encode('utf-8')
+    elif type(value) is not str:
         value = str(value)
-    return _pack_vdata(value.encode('utf-8'))
+    return _pack_vdata(value)
 
 def _pack_dict(value):
     """ dict (of lists) to HME dict """
