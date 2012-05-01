@@ -6,11 +6,11 @@
 # Brigham Stevens, Jonathan Payne, Steven Samorodin
 # Copyright 2004, 2005 TiVo Inc.
 #
-# This version: William McBrine, 2008
+# This version: William McBrine, 2008-2012
 
 import thread
 
-from hme import *
+import hme
 
 """Illustrates animation effects with ease on Views.
 
@@ -35,7 +35,7 @@ from hme import *
 
 """
 
-class Effects(Application):
+class Effects(hme.Application):
     def handle_device_info(self, info):
         ver = info.get('version', '')
         if ver[:3] in ('9.1', '9.3') and not ver[-3:] in ('648', '652'):
@@ -48,18 +48,18 @@ class Effects(Application):
         # Prepare our view & container
         self.root.set_color()
 
-        Font(self, size=17)
+        hme.Font(self, size=17)
 
         # Container for everything inset to title-safe
-        self.content = View(self, SAFE_TITLE_H, SAFE_TITLE_V,
-                            self.root.width - SAFE_TITLE_H * 2,
-                            self.root.height - SAFE_TITLE_V * 2)
+        self.content = hme.View(self, hme.SAFE_TITLE_H, hme.SAFE_TITLE_V,
+                                self.root.width - hme.SAFE_TITLE_H * 2,
+                                self.root.height - hme.SAFE_TITLE_V * 2)
 
         # The current ease value
         self.ease = 0
 
         # Animation time
-        self.anim_time = 1000
+        self.anim_time = 1
 
         # Create the views for each demonstration -- each view is used 
         # for demonstrating a different property.
@@ -74,13 +74,12 @@ class Effects(Application):
         self.visible = Square(self.content, 100, 0, 90, 90, 'Visible')
         self.bounds = Square(self.content, 300, 100, 90, 90, 'Bounds')
         self.translate = self.content.child(0, 100, 290, 90)
-        Square(self.translate, -300, 0, 600, 90, bg=Color(self, 0x00ff00))
+        Square(self.translate, -300, 0, 600, 90, bg=hme.Color(self, 0x00ff00))
         Square(self.translate, 0, 0, 90, 90, 'Translate')
         self.scale = Square(self.content, 0, 200, 90, 90, 'Scale')
 
         # Kick off the thread to update the effects animation
         thread.start_new_thread(self.update, ())
-
 
     # Arrow keys control the ease.  The animation resource is updated 
     # with the new ease. The value of ease and animTime are updated on 
@@ -91,20 +90,19 @@ class Effects(Application):
         deltaD = 0
         deltaE = 0
 
-        if code == KEY_UP:
-            deltaD = 250
-        elif code == KEY_DOWN:
-            deltaD = -250
-        elif code == KEY_RIGHT:
-            deltaE = 10
-        elif code == KEY_LEFT:
-            deltaE = -10
+        if code == hme.KEY_UP:
+            deltaD = 0.25
+        elif code == hme.KEY_DOWN:
+            deltaD = -0.25
+        elif code == hme.KEY_RIGHT:
+            deltaE = 0.1
+        elif code == hme.KEY_LEFT:
+            deltaE = -0.1
 
         if deltaD or deltaE:
-            self.ease = max(min(self.ease + deltaE, 100), -100)
-            self.anim_time = max(min(self.anim_time + deltaD, 9750), 1000)
+            self.ease = max(min(self.ease + deltaE, 1.0), -1.0)
+            self.anim_time = max(min(self.anim_time + deltaD, 9.75), 1.0)
             self.show_settings(0xff0000)
-
 
     # Update the demo view animations and sleep until they are finished.
     # Then reverse the animations and do it again.
@@ -118,8 +116,7 @@ class Effects(Application):
             # method of creating the resource is the most efficient 
             # because the receiver will use a cached resource if it has 
             # one already.
-            anim = Animation(self, self.anim_time / 1000.0,
-                                   self.ease / 100.0)
+            anim = hme.Animation(self, self.anim_time, self.ease)
 
             # Update the animations for each property, alternating. All 
             # of these animations use the shared animation resource.
@@ -143,28 +140,26 @@ class Effects(Application):
             # Display the current animTime & ease in black to indicate 
             # it has taken effect.
             self.show_settings(0)
-
-            self.sleep(self.anim_time / 1000.0)
-
+            self.sleep(self.anim_time)
 
     # Display the value of the ease and animTime in the given color.
 
     def show_settings(self, color):
-        Color(self, color)
-        self.ease_text.set_text('Ease (use left/right) : %d' % self.ease,
-                                flags=RSRC_HALIGN_LEFT)
-        self.time_text.set_text('Time (use up/down) : %d' % self.anim_time,
-                                flags=RSRC_HALIGN_LEFT)
+        hme.Color(self, color)
+        self.ease_text.set_text('Ease (use left/right) : %.1f' % self.ease,
+                                flags=hme.RSRC_HALIGN_LEFT)
+        self.time_text.set_text('Time (use up/down) : %.2f' % self.anim_time,
+                                flags=hme.RSRC_HALIGN_LEFT)
 
 
 # This class handles the animated squares with text.
 
-class Square(View):
+class Square(hme.View):
     def __init__(self, parent, x, y, w, h, title='', bg=None):
-        View.__init__(self, parent.app, x, y, w, h, parent=parent)
+        hme.View.__init__(self, parent.app, x, y, w, h, parent=parent)
         if bg is None:
-            bg = Color(self.app, 0xff00ff)  # magenta
+            bg = hme.Color(self.app, 0xff00ff)  # magenta
         self.set_resource(bg)
         self.label = self.child()
         if title:
-            self.label.set_text(title, color=Color(self.app))
+            self.label.set_text(title, color=hme.Color(self.app))

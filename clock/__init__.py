@@ -18,7 +18,7 @@ import hme
 class Clock(hme.Application):
     def startup(self):
         self.root.set_color()
-        self.time_views = [hme.View(self, 0, 100, height=280)]
+        self.time_views = [hme.View(self, 0, 100, height=280)
                            for i in xrange(2)]
 
         hme.Font(self, size=96, style=hme.FONT_BOLD)
@@ -37,7 +37,7 @@ class Clock(hme.Application):
             self.time_views[n].set_transparency(1, fade)
 
             # switch to the other view
-            n = (n + 1) % 2
+            n = not n
 
             # show the current time
             self.time_views[n].set_text(time.strftime('%H:%M:%S'))
