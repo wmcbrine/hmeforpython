@@ -25,25 +25,24 @@
 
     Basic usage: import hme (or "from hme import *"); subclass the
     "Application" class; and override some of the stub functions that
-    appear at the end of this file. (startup() and handle_key_press()
-    are the most useful.) If you want to use it with the included
-    hmeserver.py, then your program should be in the form of a module
-    (see the included examples). Aside from the app class, you may want
-    to include TITLE and/or CLASS_NAME strings; TITLE is the display
-    title, and CLASS_NAME is the name of your main app class. (Both will
-    be derived from the module name if absent.)
+    appear at the end of this file. If you want to use it with the
+    included start.py, then your program should be in the form of a
+    module (see the included examples). Aside from the app class, you
+    may want to include TITLE and/or CLASS_NAME strings; TITLE is the
+    display title, and CLASS_NAME is the name of your main app class.
+    (Both will be derived from the module name if absent.)
 
-    startup() is called first, after the initial events are handled;
-    then the event loop runs until either it's out of events (i.e. the
-    socket closed), or you set self.active to False. Finally, cleanup()
-    is called.
+    startup() is called first, before any events are handled; then the
+    event loop runs until either it's out of events (i.e. the socket
+    closed), or you set self.active to False. Finally, cleanup() is
+    called.
 
     Items not yet implemented from the spec:
     * Event pushing other than key presses
 
     Java SDK items not in the spec and not implemented here:
     * Persistent data -- you can get the tsn and Cookie from 
-      self.context.headers, if using hmeserver.py, but what you do with
+      self.context.headers, if using start.py, but what you do with
       them is outside the scope of this module
     * Numerous specific methods -- but some of these are unneeded; e.g., 
       set_bounds() substitutes for setLocation() as well as setBounds()
@@ -1071,11 +1070,10 @@ class Application(Resource):
         Your apps should subclass this. It takes over just after the
         HTTP connection is established, does the HME handshake, sets up
         some default resources and caches for new ones, and handles the
-        startup events. (After initialization, you should call the
-        mainloop() method to continue handling events.)
+        startup events.
 
-        When started from hmeserver.py, the server's handler is passed 
-        as context; alternatively, you can pass infile and outfile, and 
+        When started from start.py, the server's handler is passed as
+        context; alternatively, you can pass infile and outfile, and
         (potentially) start the app from the command line.
 
     """
@@ -1126,7 +1124,7 @@ class Application(Resource):
 
     def mainloop(self):
         """ The main loop -- startup, handle events, cleanup, exit. 
-            hmeserver.py calls this after initializing the app object.
+            start.py calls this after initializing the app object.
 
         """
         if not self.answer.startswith('SBTV'):
