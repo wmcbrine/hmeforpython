@@ -8,11 +8,9 @@ Python, as a module (hme.py), a simple server (start.py), and examples
 the LGPL 2.1+, except where noted. (Most of the examples are Common 
 Public License.)
 
-I developed this in Python 2.6.5, and tested it in Linux, Mac OS X, and 
-Windows XP, and with Python 2.3 through 2.6. (I've also tested a Python 
-3.x version, but it's not quite ready for release.) The requirements are 
-minimal. (hme.py depends only on the string, struct and time modules. 
-start.py is a bit more demanding, but uses only the standard library.)
+Tested on multiple platforms with Python 2.3 through 2.7. (I've also
+tested a Python 3.x version, but it's not quite ready for release.)
+Requires only the standard library. 
 
 
 Quick Start
