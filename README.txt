@@ -120,6 +120,30 @@ the protocol spec.
 Changes
 -------
 
+0.20  -- 
+         UTF-8 strings can now be passed directly to HME commands --
+         previously only ASCII and Unicode strings were accepted. Note
+         that HME for Python isn't checking for valid UTF-8, so in fact
+         you can pass anything, and it's up to the TiVo to handle it.
+
+         Automatic flush after send_key().
+
+         Added KEY_OPT_ZOOM as another alias for KEY_OPT_WINDOW.
+
+         Check for existing instances of a title before announcing it,
+         to avoid stepping on them; append "[2]" etc. as needed. After
+         the Java SDK.
+
+         Use the alternate (modern) method of loading PIL's Image
+         module; prefer "import hme" over "from hme import *" for
+         examples; minor style cleanups for examples.
+
+         In Zeroconf, use the same method of getting the default IP as
+         in start.py, instead of gethostbyname(gethostname()); minor
+         style cleanups and code tightening for Zeroconf.
+
+         Documentation cleanup.
+
 0.19  -- HME for Python now reports itself as implementing version 0.49
          of the HME protocol. This version has not been publicly
          documented by TiVo, but the change is necessary in order to
