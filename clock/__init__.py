@@ -27,6 +27,11 @@ class Clock(hme.Application):
         # start a separate thread to update the time
         thread.start_new_thread(self.update, ())
 
+    def handle_key_press(self, keynum, index):
+        if keynum in (hme.KEY_LEFT, hme.KEY_CLEAR, hme.KEY_PAUSE):
+            self.sound('left')
+            self.active = False
+
     def update(self):
         fade = hme.Animation(self, 0.75)
         tm = time.time()

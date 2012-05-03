@@ -98,6 +98,9 @@ class Effects(hme.Application):
             deltaE = 0.1
         elif code == hme.KEY_LEFT:
             deltaE = -0.1
+        elif code in (hme.KEY_CLEAR, hme.KEY_PAUSE):
+            self.sound('left')
+            self.active = False
 
         if deltaD or deltaE:
             self.ease = max(min(self.ease + deltaE, 1.0), -1.0)

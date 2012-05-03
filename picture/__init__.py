@@ -83,6 +83,9 @@ class Picture(hme.Application):
             else:
                 self.sound('select')
                 self.start_slideshow()
+        elif code in (hme.KEY_LEFT, hme.KEY_CLEAR):
+            self.sound('left')
+            self.active = False
         else:
             if self.in_slideshow:
                 self.exit_slideshow()

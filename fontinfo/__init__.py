@@ -68,6 +68,11 @@ class FontInfo(hme.Application):
         footer.child(xpos=some_text_w, width=footer.width -
                      some_text_w).set_text('Footer', colornum=0xff)
 
+    def handle_key_press(self, keynum, index):
+        if keynum in (hme.KEY_LEFT, hme.KEY_CLEAR, hme.KEY_PAUSE):
+            self.sound('left')
+            self.active = False
+
     def measure_text_width(self, string, font):
         width = 0
         for c in string:

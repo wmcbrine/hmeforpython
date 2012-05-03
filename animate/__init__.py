@@ -45,6 +45,9 @@ class Animate(hme.Application):
     def handle_key_press(self, keynum, index):
         if keynum == hme.KEY_TIVO:
             self.sprites[index].animate()
+        elif keynum in (hme.KEY_LEFT, hme.KEY_CLEAR, hme.KEY_PAUSE):
+            self.sound('left')
+            self.active = False
 
     # If this ain't a screensaver, I don't know what is. -- wmcbrine
 
