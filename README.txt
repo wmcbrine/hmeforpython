@@ -1,6 +1,6 @@
-HME for Python, v0.19
+HME for Python, v0.20
 by William McBrine <wmcbrine@gmail.com>
-December 24, 2010
+May 6, 2012
 
 An implementation of TiVo's HME (Home Media Extensions) protocol for 
 Python, as a module (hme.py), a simple server (start.py), and examples 
@@ -8,9 +8,8 @@ Python, as a module (hme.py), a simple server (start.py), and examples
 the LGPL 2.1+, except where noted. (Most of the examples are Common 
 Public License.)
 
-Tested on multiple platforms with Python 2.3 through 2.7. (I've also
-tested a Python 3.x version, but it's not quite ready for release.)
-Requires only the standard library. 
+Tested on multiple platforms with Python 2.3 through 2.7 (not 
+caompatible with Python 3.x). Requires only the standard library.
 
 
 Quick Start
@@ -24,18 +23,19 @@ In Windows:
 
   python start.py
 
-This will serve the example apps. The default port is 9042 (not TiVo's 
-7288). To see more options, run "./start.py --help".
+This will serve the example apps. The default port is 9042 (NOT TiVo's 
+default of 7288). To see more options, run "./start.py --help".
 
 
 Quick Stop
 ----------
 
 In Linux, Mac OS X, etc., Ctrl-C does an orderly shutdown, un-announcing 
-the apps before closing.
+the apps before closing. (The equivalent is SIGINT, or "kill -2".)
 
-In Windows, you're stuck with either Ctrl-Break, or closing the command 
-window, neither of which does an orderly shutdown.
+In Windows, with older versions of Python, you're stuck with either 
+Ctrl-Break, or closing the command window, neither of which does an 
+orderly shutdown. This may have been fixed with Python 2.7.
 
 
 Config
@@ -117,11 +117,26 @@ from the example apps) this is NOT a port of the Java SDK; it's based on
 the protocol spec.
 
 
+Notes
+-----
+
+As of TiVo software version 20.2, at least, the HDUI no longer requests 
+the app icons. (The SDUI works as always.) Also in 20.2, there's a bug 
+in transparency rendering that sometimes causes black to be substituted 
+for white in text that's not fully opaque.
+
+The last TiVo software revision for the Series 2, 9.3b, still has fatal 
+bugs in its HME engine under certain conditions, where the text 
+disappears from the menus (outside HME), or the entire machine locks up. 
+As a result, the "animate" and "effects" demos now have code to keep 
+them from running in that environment. You can see the same effects with 
+the original versions from the Java SDK.
+
+
 Changes
 -------
 
-0.20  -- 
-         UTF-8 strings can now be passed directly to HME commands --
+0.20  -- UTF-8 strings can now be passed directly to HME commands --
          previously only ASCII and Unicode strings were accepted. Note
          that HME for Python isn't checking for valid UTF-8, so in fact
          you can pass anything, and it's up to the TiVo to handle it.
@@ -133,6 +148,11 @@ Changes
          Check for existing instances of a title before announcing it,
          to avoid stepping on them; append "[2]" etc. as needed. After
          the Java SDK.
+
+         Added the ability to back out to most sample apps (all that
+         didn't have it except "hello"), using Left, Clear and/or Pause,
+         depending on the app. This deviates (further) from the apps
+         being exact clones of the Java versions, but who cares.
 
          Use the alternate (modern) method of loading PIL's Image
          module; prefer "import hme" over "from hme import *" for
