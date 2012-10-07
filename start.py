@@ -147,6 +147,13 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         """
         return '%s:%s' % self.client_address
 
+    def version_string(self):
+        """ Override version_string() so it doesn't include the Python 
+            version.
+
+        """
+        return self.server_version
+
     def _ok(self, mime, size=0):
         self.send_response(200)
         self.send_header('Content-Type', mime)
