@@ -32,7 +32,7 @@
     neatness, they could just as well be named 'module.py' in this
     directory. And the subdirectories can be omitted if you don't need
     icons. (Other resources can be placed anywhere, but the TiVo always
-    requests '/module/icon.png'.)
+    requests '/module/icon.png', except in the HDUI.)
 
     Command-line options:
 
@@ -128,7 +128,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     XML_ITEM = """<Item><Details><ContentType>application/x-hme</ContentType>
         <SourceFormat>x-container/folder</SourceFormat><Title>%s</Title>
-        </Details><Links><Content><Url>http://%s:%d/%s/</Url></Content></Links>
+        </Details><Links><Content><Url>%s</Url></Content>
+        <CustomIcon><Url>%s</Url></CustomIcon></Links>
         </Item>
     """
 
@@ -177,8 +178,10 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.wfile.write(self.XML_HEADER % (len(apps), len(apps)))
             host, port = self.connection.getsockname()
             for name in apps:
+                appurl = 'http://%s:%d/%s/' % (host, port, name)
+                appicon = appurl + 'icon.png'
                 self.wfile.write(self.XML_ITEM % (apptitles[name],
-                                                  host, port, name))
+                                                  appurl, appicon))
             self.wfile.write(self.XML_CLOSER)
 
         elif name in apps:
