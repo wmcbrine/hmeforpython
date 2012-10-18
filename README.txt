@@ -56,6 +56,7 @@ illustrative purposes.)
 port=7288
 address=192.168.1.1
 zeroconf=False
+beacon=255.255.255.255
 basepath=c:\hme
 datapath=c:\
 apps=picture clock

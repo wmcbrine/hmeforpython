@@ -61,6 +61,11 @@
                       automatically if the Zeroconf module is not
                       present, or can't be loaded.
 
+    -i, --beaconip    Specify IP address for old-style beacon (default is
+                      '', disabled). 255.255.255.255 works for most cases;
+                      other values may be needed on some systems with
+                      multiple network interfaces.
+
     -h, --help        Print help and exit.
 
     -v, --version     Print the version and exit.
@@ -79,6 +84,9 @@ __license__ = 'LGPL'
 import getopt
 import mimetypes
 import os
+import random
+import string
+import struct
 import socket
 import sys
 import time
@@ -86,11 +94,13 @@ import urllib
 import SocketServer
 import BaseHTTPServer
 from ConfigParser import SafeConfigParser
+from threading import Timer
 
 # Version of the protocol implemented
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
 HME_ZC = '_tivo-hme._tcp.local.'
+PLATFORM = 'HMEPython'
 
 def norm(path): 
     return os.path.normcase(os.path.abspath(os.path.normpath(path)))
@@ -104,7 +114,7 @@ class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
         BaseHTTPServer.HTTPServer.__init__(self, addr, handler)
 
 class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
-    server_version = 'HMEPython/%s' % __version__
+    server_version = '%s/%s' % (PLATFORM, __version__)
 
     BUFSIZE = 0x10000
 
@@ -251,7 +261,7 @@ class ZCListener:
     def addService(self, server, type, name):
         self.names.append(name.replace('.' + type, ''))
 
-class Broadcast:
+class ZCBroadcast:
     def __init__(self, addr, apptitles):
         self.addr, self.port = addr
         self.apps = apptitles.keys()
@@ -300,6 +310,35 @@ class Broadcast:
             self.addr = s.getsockname()[0]
         return socket.inet_aton(self.addr)
 
+class Beacon:
+    def __init__(self, port, ips):
+        self.UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        guid = ''.join([random.choice(string.ascii_letters)
+                        for i in range(10)])
+
+        self.beacon_text = '\n'.join(['tivoconnect=1', 'swversion=1',
+            'method=broadcast', 'identity=%s' % guid,
+            'machine=%s' % socket.gethostname(), 'platform=%s' % PLATFORM,
+            'services=TiVoMediaServer:%s/http' % port])
+
+        self.ips = ips.split()
+
+    def send_beacon(self):
+        for beacon_ip in self.ips:
+            try:
+                self.UDPSock.sendto(self.beacon_text, (beacon_ip, 2190))
+            except socket.error, e:
+                print e
+
+    def start(self):
+        self.send_beacon()
+        self.timer = Timer(60, self.start)
+        self.timer.start()
+
+    def stop(self):
+        self.timer.cancel()
+
 if __name__ == '__main__':
     host = ''      # By default, attach to all available interfaces
     port = 9042    # TiVo Inc. uses 7288. But set it to 80 to make
@@ -309,6 +348,7 @@ if __name__ == '__main__':
     config_apps = None
 
     have_zc = True
+    beacon_ips = ''
     apps = []
     opts = []
 
@@ -328,14 +368,16 @@ if __name__ == '__main__':
                 app_root = value
             elif opt == 'datapath':
                 data_root = value
+            elif opt == 'beacon':
+                beacon_ips = value
             elif opt == 'zeroconf':
                 have_zc = config.getboolean('hmeserver', 'zeroconf')
 
     try:
-        opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:d:zvh',
+        opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:d:i:zvh',
                                    ['address=', 'port=', 'basepath=',
-                                    'datapath=', 'nozeroconf',
-                                    'version', 'help'])
+                                    'datapath=', 'beaconip=',
+                                    'nozeroconf', 'version', 'help'])
     except getopt.GetoptError, msg:
         print msg
 
@@ -348,6 +390,8 @@ if __name__ == '__main__':
             app_root = value
         elif opt in ('-d', '--datapath'):
             data_root = value
+        elif opt in ('-i', '--beaconip'):
+            beacon_ips = value
         elif opt in ('-z', '--nozeroconf'):
             have_zc = False
         elif opt in ('-v', '--version'):
@@ -393,11 +437,16 @@ if __name__ == '__main__':
     httpd = Server((host, port), Handler, app_root, data_root, apptitles,
                    config)
     if have_zc:
-        bd = Broadcast((host, port), apptitles)
+        zc = ZCBroadcast((host, port), apptitles)
+    if beacon_ips:
+        bc = Beacon(port, beacon_ips)
+        bc.start()
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         httpd.server_close()
         if have_zc:
-            bd.shutdown()
+            zc.shutdown()
+        if beacon_ips:
+            bc.stop()
     print time.asctime(), 'Server Stops'
