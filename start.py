@@ -86,7 +86,6 @@ import mimetypes
 import os
 import random
 import string
-import struct
 import socket
 import sys
 import time
