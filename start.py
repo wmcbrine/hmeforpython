@@ -90,6 +90,7 @@ import socket
 import sys
 import time
 import urllib
+import uuid
 import SocketServer
 import BaseHTTPServer
 from ConfigParser import SafeConfigParser
@@ -105,10 +106,12 @@ def norm(path):
     return os.path.normcase(os.path.abspath(os.path.normpath(path)))
 
 class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
-    def __init__(self, addr, handler, basepath, datapath, apptitles, config):
+    def __init__(self, addr, handler, basepath, datapath, apptitles,
+                 appids, config):
         self.basepath = basepath
         self.datapath = datapath
         self.apptitles = apptitles
+        self.appids = appids
         self.config = config
         BaseHTTPServer.HTTPServer.__init__(self, addr, handler)
 
@@ -137,7 +140,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     XML_ITEM = """<Item><Details><ContentType>application/x-hme</ContentType>
         <SourceFormat>x-container/folder</SourceFormat><Title>%s</Title>
-        </Details><Links><Content><Url>%s</Url></Content>
+        <Uuid>%s</Uuid></Details><Links><Content><Url>%s</Url></Content>
         <CustomIcon><Url>%s</Url></CustomIcon></Links>
         </Item>
     """
@@ -176,6 +179,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         name = path.strip('/')
         apps = self.server.apptitles.keys()
         apptitles = self.server.apptitles
+        appids = self.server.appids
 
         if name == 'robots.txt':
             self._ok('text/plain')
@@ -190,6 +194,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
                 appurl = 'http://%s:%d/%s/' % (host, port, name)
                 appicon = appurl + 'icon.png'
                 self.wfile.write(self.XML_ITEM % (apptitles[name],
+                                                  appids[name],
                                                   appurl, appicon))
             self.wfile.write(self.XML_CLOSER)
 
@@ -417,6 +422,7 @@ if __name__ == '__main__':
                 os.path.isdir(os.path.join(app_root, name))]
 
     apptitles = {}
+    appids = {}
 
     for name in apps:
         try:
@@ -431,10 +437,11 @@ if __name__ == '__main__':
                 print 'Skipping:', name, '- No application class'
             else:
                 apptitles[name] = getattr(app, 'TITLE', name.title())
+                appids[name] = uuid.uuid4()
 
     print time.asctime(), 'Server Starts'
     httpd = Server((host, port), Handler, app_root, data_root, apptitles,
-                   config)
+                   appids, config)
     if have_zc:
         zc = ZCBroadcast((host, port), apptitles)
     if beacon_ips:

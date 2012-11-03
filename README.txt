@@ -8,7 +8,7 @@ Python, as a module (hme.py), a simple server (start.py), and examples
 the LGPL 2.1+, except where noted. (Most of the examples are Common 
 Public License.)
 
-Tested on multiple platforms with Python 2.3 through 2.7 (not 
+Tested on multiple platforms with Python 2.5 through 2.7 (not 
 caompatible with Python 3.x). Requires only the standard library.
 
 
