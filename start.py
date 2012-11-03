@@ -85,7 +85,6 @@ import getopt
 import mimetypes
 import os
 import random
-import string
 import socket
 import sys
 import time
@@ -318,11 +317,9 @@ class Beacon:
     def __init__(self, port, ips):
         self.UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        guid = ''.join([random.choice(string.ascii_letters)
-                        for i in range(10)])
 
         self.beacon_text = '\n'.join(['tivoconnect=1', 'swversion=1',
-            'method=broadcast', 'identity=%s' % guid,
+            'method=broadcast', 'identity=%s' % uuid.uuid4(),
             'machine=%s' % socket.gethostname(), 'platform=%s' % PLATFORM,
             'services=TiVoMediaServer:%s/http' % port])
 
