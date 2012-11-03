@@ -84,7 +84,6 @@ __license__ = 'LGPL'
 import getopt
 import mimetypes
 import os
-import random
 import socket
 import sys
 import time
