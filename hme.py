@@ -504,7 +504,7 @@ def _pack(format, *values):
             'd': _pack_dict,
             'r': _pack_raw}
 
-    return ''.join([func[i](value) for i, value in zip(format, values)])
+    return ''.join(func[i](value) for i, value in zip(format, values))
 
 def _put_chunked(stream, data):
     """ Write HME-style chunked data to the output stream. """
