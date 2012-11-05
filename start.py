@@ -98,6 +98,7 @@ from threading import Timer
 from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
 HME_ZC = '_tivo-hme._tcp.local.'
+HME_VERSION = '%d.%d' % (HME_MAJOR_VERSION, HME_MINOR_VERSION)
 PLATFORM = 'HMEPython'
 
 def norm(path): 
@@ -273,9 +274,7 @@ class ZCBroadcast:
         old_titles = self.find_hme()
         for name in self.apps:
             print 'Registering:', name
-            desc = {'path': '/%s/' % name,
-                    'version': '%d.%d' % (HME_MAJOR_VERSION,
-                                          HME_MINOR_VERSION)}
+            desc = {'path': '/%s/' % name, 'version': HME_VERSION}
             title = apptitles[name]
             count = 1
             while title in old_titles:
