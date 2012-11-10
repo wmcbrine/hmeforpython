@@ -257,9 +257,10 @@ class ZCListener:
 
 class ZCBroadcast:
     def __init__(self, addr, apps):
-        self.addr, self.port = addr
+        host, port = addr
         self.apps = apps
         self.appinfo = []
+        host_ip = self.get_address(host)
         self.rz = Zeroconf.Zeroconf()
         old_titles = self.find_hme()
         for name in sorted(apps):
@@ -272,8 +273,7 @@ class ZCBroadcast:
                 title = '%s [%d]' % (apps[name]['title'], count)
 
             info = Zeroconf.ServiceInfo(HME_ZC, '%s.%s' % (title, HME_ZC),
-                                        self.get_address(), self.port,
-                                        0, 0, desc)
+                                        host_ip, port, 0, 0, desc)
             self.rz.registerService(info)
             self.appinfo.append(info)
 
@@ -294,12 +294,12 @@ class ZCBroadcast:
             self.rz.unregisterService(info)
         self.rz.close()
 
-    def get_address(self):
-        if not self.addr:
+    def get_address(self, host):
+        if not host:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(('4.2.2.1', 123))
-            self.addr = s.getsockname()[0]
-        return socket.inet_aton(self.addr)
+            host = s.getsockname()[0]
+        return socket.inet_aton(host)
 
 class Beacon:
     def __init__(self, port, ips):
