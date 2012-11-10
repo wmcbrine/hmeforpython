@@ -105,12 +105,10 @@ def norm(path):
     return os.path.normcase(os.path.abspath(os.path.normpath(path)))
 
 class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
-    def __init__(self, addr, handler, basepath, datapath, apptitles,
-                 appids, config):
+    def __init__(self, addr, handler, basepath, datapath, apps, config):
         self.basepath = basepath
         self.datapath = datapath
-        self.apptitles = apptitles
-        self.appids = appids
+        self.apps = apps
         self.config = config
         BaseHTTPServer.HTTPServer.__init__(self, addr, handler)
 
@@ -138,10 +136,10 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     """
 
     XML_ITEM = """<Item><Details><ContentType>application/x-hme</ContentType>
-        <SourceFormat>x-container/folder</SourceFormat><Title>%s</Title>
-        <Uuid>%s</Uuid></Details><Links><Content><Url>%s</Url></Content>
-        <CustomIcon><Url>%s</Url></CustomIcon></Links>
-        </Item>
+        <SourceFormat>x-container/folder</SourceFormat>
+        <Title>%(title)s</Title><Uuid>%(id)s</Uuid></Details>
+        <Links><Content><Url>%(url)s</Url></Content>
+        <CustomIcon><Url>%(icon)s</Url></CustomIcon></Links></Item>
     """
 
     XML_CLOSER = '</TiVoContainer>'
@@ -176,9 +174,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     def _page(self, body):
         path = self.path.split('?')[0]
         name = path.strip('/')
-        apps = self.server.apptitles.keys()
-        apptitles = self.server.apptitles
-        appids = self.server.appids
+        apps = self.server.apps
 
         if name == 'robots.txt':
             self._ok('text/plain')
@@ -188,12 +184,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self._ok('text/xml')
 
             self.wfile.write(self.XML_HEADER % (len(apps), len(apps)))
-            for name in apps:
-                appurl = '/%s/' % name
-                appicon = appurl + 'icon.png'
-                self.wfile.write(self.XML_ITEM % (apptitles[name],
-                                                  appids[name],
-                                                  appurl, appicon))
+            for name in sorted(apps):
+                self.wfile.write(self.XML_ITEM % apps[name])
             self.wfile.write(self.XML_CLOSER)
 
         elif name in apps:
@@ -264,21 +256,20 @@ class ZCListener:
         self.names.append(name.replace('.' + type, ''))
 
 class ZCBroadcast:
-    def __init__(self, addr, apptitles):
+    def __init__(self, addr, apps):
         self.addr, self.port = addr
-        self.apps = apptitles.keys()
-        self.apps.sort()
+        self.apps = apps
         self.appinfo = []
         self.rz = Zeroconf.Zeroconf()
         old_titles = self.find_hme()
-        for name in self.apps:
+        for name in sorted(apps):
             print 'Registering:', name
-            desc = {'path': '/%s/' % name, 'version': HME_VERSION}
-            title = apptitles[name]
+            desc = {'path': apps[name]['url'], 'version': HME_VERSION}
+            title = apps[name]['title']
             count = 1
             while title in old_titles:
                 count += 1
-                title = '%s [%d]' % (apptitles[name], count)
+                title = '%s [%d]' % (apps[name]['title'], count)
 
             info = Zeroconf.ServiceInfo(HME_ZC, '%s.%s' % (title, HME_ZC),
                                         self.get_address(), self.port,
@@ -298,7 +289,7 @@ class ZCBroadcast:
         return titles
 
     def shutdown(self):
-        print 'Unregistering:', ' '.join(self.apps)
+        print 'Unregistering:', ' '.join(sorted(self.apps))
         for info in self.appinfo:
             self.rz.unregisterService(info)
         self.rz.close()
@@ -347,7 +338,7 @@ if __name__ == '__main__':
 
     have_zc = True
     beacon_ips = ''
-    apps = []
+    applist = []
     opts = []
 
     print 'HME Server for Python', __version__
@@ -372,10 +363,10 @@ if __name__ == '__main__':
                 have_zc = config.getboolean('hmeserver', 'zeroconf')
 
     try:
-        opts, apps = getopt.getopt(sys.argv[1:], 'a:p:b:d:i:zvh',
-                                   ['address=', 'port=', 'basepath=',
-                                    'datapath=', 'beaconip=',
-                                    'nozeroconf', 'version', 'help'])
+        opts, applist = getopt.getopt(sys.argv[1:], 'a:p:b:d:i:zvh',
+                                      ['address=', 'port=', 'basepath=',
+                                       'datapath=', 'beaconip=',
+                                       'nozeroconf', 'version', 'help'])
     except getopt.GetoptError, msg:
         print msg
 
@@ -409,16 +400,15 @@ if __name__ == '__main__':
         print 'Not using Zeroconf:', msg
         have_zc = False
 
-    if not apps:
-        apps = config_apps
-    if not apps:
-        apps = [name for name in os.listdir(app_root) if 
-                os.path.isdir(os.path.join(app_root, name))]
+    if not applist:
+        applist = config_apps
+    if not applist:
+        applist = [name for name in os.listdir(app_root) if 
+                   os.path.isdir(os.path.join(app_root, name))]
 
-    apptitles = {}
-    appids = {}
+    apps = {}
 
-    for name in apps:
+    for name in applist:
         try:
             app = __import__(name)
         except (ValueError, ImportError), msg:
@@ -430,14 +420,15 @@ if __name__ == '__main__':
             except AttributeError:
                 print 'Skipping:', name, '- No application class'
             else:
-                apptitles[name] = getattr(app, 'TITLE', name.title())
-                appids[name] = uuid.uuid4()
+                apps[name] = {'title': getattr(app, 'TITLE', name.title()),
+                              'id': uuid.uuid4(),
+                              'url': '/%s/' % name,
+                              'icon': '/%s/icon.png' % name}
 
     print time.asctime(), 'Server Starts'
-    httpd = Server((host, port), Handler, app_root, data_root, apptitles,
-                   appids, config)
+    httpd = Server((host, port), Handler, app_root, data_root, apps, config)
     if have_zc:
-        zc = ZCBroadcast((host, port), apptitles)
+        zc = ZCBroadcast((host, port), apps)
     if beacon_ips:
         bc = Beacon(port, beacon_ips)
         bc.start()
