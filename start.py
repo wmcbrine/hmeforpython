@@ -188,9 +188,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self._ok('text/xml')
 
             self.wfile.write(self.XML_HEADER % (len(apps), len(apps)))
-            host, port = self.connection.getsockname()
             for name in apps:
-                appurl = 'http://%s:%d/%s/' % (host, port, name)
+                appurl = '/%s/' % name
                 appicon = appurl + 'icon.png'
                 self.wfile.write(self.XML_ITEM % (apptitles[name],
                                                   appids[name],
