@@ -99,6 +99,7 @@ from hme import HME_MAJOR_VERSION, HME_MINOR_VERSION
 
 HME_ZC = '_tivo-hme._tcp.local.'
 HME_VERSION = '%d.%d' % (HME_MAJOR_VERSION, HME_MINOR_VERSION)
+HME_MIME = 'application/x-hme'
 PLATFORM = 'HMEPython'
 
 def norm(path): 
@@ -135,7 +136,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         </Details><ItemStart>0</ItemStart><ItemCount>%d</ItemCount>
     """
 
-    XML_ITEM = """<Item><Details><ContentType>application/x-hme</ContentType>
+    XML_ITEM = """<Item><Details><ContentType>%(mime)s</ContentType>
         <SourceFormat>x-container/folder</SourceFormat>
         <Title>%(title)s</Title><Uuid>%(id)s</Uuid></Details>
         <Links><Content><Url>%(url)s</Url></Content>
@@ -193,7 +194,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             appname = getattr(app, 'CLASS_NAME', name.title())
             appclass = getattr(app, appname)
 
-            self._ok('application/x-hme')
+            self._ok(HME_MIME)
 
             self.log_message('Starting HME: %s', name)
             appinst = appclass(context=self)
@@ -423,7 +424,8 @@ if __name__ == '__main__':
                 apps[name] = {'title': getattr(app, 'TITLE', name.title()),
                               'id': uuid.uuid4(),
                               'url': '/%s/' % name,
-                              'icon': '/%s/icon.png' % name}
+                              'icon': '/%s/icon.png' % name,
+                              'mime': HME_MIME}
                 if config.has_section(name):
                     apps[name].update(dict(config.items(name)))
 
