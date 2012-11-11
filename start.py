@@ -420,18 +420,12 @@ if __name__ == '__main__':
             except AttributeError:
                 print 'Skipping:', name, '- No application class'
             else:
-                ac = {}
+                apps[name] = {'title': getattr(app, 'TITLE', name.title()),
+                              'id': uuid.uuid4(),
+                              'url': '/%s/' % name,
+                              'icon': '/%s/icon.png' % name}
                 if config.has_section(name):
-                    ac.update(dict(config.items(name)))
-                if not 'title' in ac:
-                    ac['title'] = getattr(app, 'TITLE', name.title())
-                if not 'id' in ac:
-                    ac['id'] = uuid.uuid4()
-                if not 'url' in ac:
-                    ac['url'] = '/%s/' % name
-                if not 'icon' in ac:
-                    ac['icon'] = '/%s/icon.png' % name
-                apps[name] = ac
+                    apps[name].update(dict(config.items(name)))
 
     print time.asctime(), 'Server Starts'
     httpd = Server((host, port), Handler, app_root, data_root, apps, config)
