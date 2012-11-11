@@ -194,7 +194,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             appname = getattr(app, 'CLASS_NAME', name.title())
             appclass = getattr(app, appname)
 
-            self._ok(HME_MIME)
+            self.appdata = apps[name]
+            self._ok(self.appdata['mime'])
 
             self.log_message('Starting HME: %s', name)
             appinst = appclass(context=self)

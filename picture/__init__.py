@@ -37,15 +37,13 @@ class Picture(hme.Application):
         """ Build the list of pictures, and start the slideshow. """
         global rootpath, goodexts, delay
 
-        config = self.context.server.config
-        if config.has_section('picture'):
-            for opt, value in config.items('picture'):
-                if opt == 'path':
-                    rootpath = value
-                if opt == 'exts':
-                    goodexts = value.split()
-                if opt == 'delay':
-                    delay = float(value)
+        config = self.context.appdata
+        if 'path' in config:
+            rootpath = config['path']
+        if 'exts' in config:
+            goodexts = config['exts'].split()
+        if 'delay' in config:
+            delay = float(config['delay'])
 
         if not os.path.isdir(rootpath):
             self.root.set_text('Path not found: ' + rootpath)
