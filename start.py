@@ -139,8 +139,9 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     XML_ITEM = """<Item><Details><ContentType>%(mime)s</ContentType>
         <SourceFormat>x-container/folder</SourceFormat>
         <Title>%(title)s</Title><Uuid>%(id)s</Uuid></Details>
-        <Links><Content><Url>%(url)s</Url></Content>
-        <CustomIcon><Url>%(icon)s</Url></CustomIcon></Links></Item>
+        <Links><Content><ContentType>%(mime)s</ContentType>
+        <Url>%(url)s</Url></Content><CustomIcon><Url>%(icon)s</Url>
+        </CustomIcon></Links></Item>
     """
 
     XML_CLOSER = '</TiVoContainer>'
