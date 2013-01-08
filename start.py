@@ -129,8 +129,8 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     BADEXTS = ('.py', '.pyc', '.pyo')  # Don't send back the code
 
-    XML_HEADER = """<TiVoContainer><Details>
-        <ContentType>x-container/tivo-server</ContentType>
+    XML_HEADER = """<?xml version="1.0" encoding="UTF-8"?><TiVoContainer>
+        <Details><ContentType>x-container/tivo-server</ContentType>
         <SourceFormat>x-container/folder</SourceFormat>
         <TotalItems>%d</TotalItems><Title>HME Server for Python</Title>
         </Details><ItemStart>0</ItemStart><ItemCount>%d</ItemCount>
