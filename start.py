@@ -144,6 +144,15 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
         </CustomIcon></Links></Item>
     """
 
+    XML_ITEM_G = """<Item><Details><ContentType>%(mime)s</ContentType>
+        <SourceFormat>x-container/folder</SourceFormat>
+        <Title>%(title)s</Title><Uuid>%(id)s</Uuid></Details>
+        <Genres><Genre>%(genre)s</Genre></Genres>
+        <Links><Content><ContentType>%(mime)s</ContentType>
+        <Url>%(url)s</Url></Content><CustomIcon><Url>%(icon)s</Url>
+        </CustomIcon></Links></Item>
+    """
+
     XML_CLOSER = '</TiVoContainer>'
 
     def __init__(self, request, client_address, server):
@@ -183,11 +192,16 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.wfile.write('User-agent: *\nDisallow: /\n')
 
         elif name == 'TiVoConnect':
+            if 'DoGenres=1' in self.path:
+                template = self.XML_ITEM_G
+            else:
+                template = self.XML_ITEM
+
             self._ok('text/xml')
 
             self.wfile.write(self.XML_HEADER % (len(apps), len(apps)))
             for name in sorted(apps):
-                self.wfile.write(self.XML_ITEM % apps[name])
+                self.wfile.write(template % apps[name])
             self.wfile.write(self.XML_CLOSER)
 
         elif name in apps:
@@ -427,7 +441,8 @@ if __name__ == '__main__':
                               'id': uuid.uuid4(),
                               'url': '/%s/' % name,
                               'icon': '/%s/icon.png' % name,
-                              'mime': HME_MIME}
+                              'mime': HME_MIME,
+                              'genre': 'other'}
                 if config.has_section(name):
                     apps[name].update(dict(config.items(name)))
 
