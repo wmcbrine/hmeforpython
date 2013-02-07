@@ -127,7 +127,7 @@ class Picture(hme.Application):
              width = int(height * ratio)
         pic = pic.resize((width, height), Image.ANTIALIAS)
         out = StringIO()
-        pic.save(out, 'JPEG')
+        pic.save(out, 'JPEG', quality=85)
         encoded = out.getvalue()
         out.close()
         return encoded
