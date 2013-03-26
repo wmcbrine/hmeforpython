@@ -130,7 +130,7 @@ The last TiVo software revision for the Series 2, 9.3b, still has fatal
 bugs in its HME engine under certain conditions, where the text 
 disappears from the menus (outside HME), or the entire machine locks up. 
 As a result, the "animate" and "effects" demos now have code to keep 
-them from running in that environment. You can see the same effects with 
+them from running in that environment. You can see the same bugs with 
 the original versions from the Java SDK.
 
 
