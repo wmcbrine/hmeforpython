@@ -12,7 +12,7 @@ except ImportError:
 
 import hme
 
-TITLE = 'Picture Viewer'
+TITLE = u'Picture\xa0Viewer'
 
 rootpath = '/home/wmcbrine/pictures'
 goodexts = ['.jpg', '.gif', '.png', '.bmp', '.tif', '.xbm', '.xpm', 

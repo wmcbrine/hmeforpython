@@ -287,7 +287,7 @@ class ZCBroadcast:
             count = 1
             while title in old_titles:
                 count += 1
-                title = '%s [%d]' % (apps[name]['title'], count)
+                title = '%s_%d' % (apps[name]['title'], count)
 
             info = Zeroconf.ServiceInfo(HME_ZC, '%s.%s' % (title, HME_ZC),
                                         host_ip, port, 0, 0, desc)

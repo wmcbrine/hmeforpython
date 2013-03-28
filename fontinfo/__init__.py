@@ -5,11 +5,11 @@
 # Original version credited author: Brigham Stevens
 # Copyright 2004, 2005 TiVo Inc.
 #
-# This version: William McBrine, 2008-2012
+# This version: William McBrine, 2008-2013
 
 import hme
 
-TITLE = 'Font Info'
+TITLE = 'FontInfo'
 CLASS_NAME = 'FontInfo'
 
 """Displays font metrics returned in EVT_FONT_INFO event.

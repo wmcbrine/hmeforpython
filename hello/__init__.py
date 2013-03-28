@@ -1,6 +1,6 @@
 import hme
 
-TITLE = 'Hello World'
+TITLE = 'HelloWorld'
 
 class Hello(hme.Application):
     def startup(self):

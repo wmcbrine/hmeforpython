@@ -6,11 +6,11 @@
 # Brigham Stevens, Jonathan Payne, Steven Samorodin
 # Copyright 2004, 2005 TiVo Inc.
 #
-# This version: William McBrine, 2008-2012
+# This version: William McBrine, 2008-2013
 
 import hme
 
-TITLE = 'Tic Tac Toe'
+TITLE = 'Tic-Tac-Toe'
 CLASS_NAME = 'TicTacToe'
 
 class TicTacToe(hme.Application):
