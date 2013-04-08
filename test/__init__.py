@@ -6,7 +6,7 @@ import random
 
 from hme import *
 
-TITLE = u'HME\xa0for\xa0Python'
+TITLE = 'HME for Python'
 
 KEY_NAMES = {0: 'KEY_UNKNOWN', 2: 'KEY_UP', 3: 'KEY_DOWN', 4: 
              'KEY_LEFT', 5: 'KEY_RIGHT', 6: 'KEY_SELECT', 7: 'KEY_PLAY', 8: 

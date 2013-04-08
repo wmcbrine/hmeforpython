@@ -437,7 +437,8 @@ if __name__ == '__main__':
             except AttributeError:
                 print 'Skipping:', name, '- No application class'
             else:
-                apps[name] = {'title': getattr(app, 'TITLE', name.title()),
+                title = getattr(app, 'TITLE', name.title())
+                apps[name] = {'title': title.replace(' ', u'\xa0'),
                               'id': uuid.uuid4(),
                               'url': '/%s/' % name,
                               'icon': '/%s/icon.png' % name,

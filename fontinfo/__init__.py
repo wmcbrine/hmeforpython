@@ -9,7 +9,7 @@
 
 import hme
 
-TITLE = 'FontInfo'
+TITLE = 'Font Info'
 CLASS_NAME = 'FontInfo'
 
 """Displays font metrics returned in EVT_FONT_INFO event.
