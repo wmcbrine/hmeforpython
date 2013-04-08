@@ -283,11 +283,11 @@ class ZCBroadcast:
         for name in sorted(apps):
             print 'Registering:', name
             desc = {'path': apps[name]['url'], 'version': HME_VERSION}
-            title = apps[name]['title']
+            title = orgtitle = apps[name]['title'].replace(' ', u'\xa0')
             count = 1
             while title in old_titles:
                 count += 1
-                title = '%s_%d' % (apps[name]['title'], count)
+                title = u'%s\xa0[%d]' % (orgtitle, count)
 
             info = Zeroconf.ServiceInfo(HME_ZC, '%s.%s' % (title, HME_ZC),
                                         host_ip, port, 0, 0, desc)
@@ -437,8 +437,7 @@ if __name__ == '__main__':
             except AttributeError:
                 print 'Skipping:', name, '- No application class'
             else:
-                title = getattr(app, 'TITLE', name.title())
-                apps[name] = {'title': title.replace(' ', u'\xa0'),
+                apps[name] = {'title': getattr(app, 'TITLE', name.title()),
                               'id': uuid.uuid4(),
                               'url': '/%s/' % name,
                               'icon': '/%s/icon.png' % name,
