@@ -94,6 +94,7 @@ ID_SLOWDOWN1_SOUND = 33
 ID_SPEEDUP1_SOUND = 34
 ID_SPEEDUP2_SOUND = 35
 ID_SPEEDUP3_SOUND = 36
+ID_SPEEDUP4_SOUND = 37
 
 ID_CLIENT = 2048
 
@@ -1346,7 +1347,8 @@ class Application(Resource):
                  'slowdown1': ID_SLOWDOWN1_SOUND,
                  'speedup1': ID_SPEEDUP1_SOUND,
                  'speedup2': ID_SPEEDUP2_SOUND,
-                 'speedup3': ID_SPEEDUP3_SOUND}
+                 'speedup3': ID_SPEEDUP3_SOUND,
+                 'speedup4': ID_SPEEDUP4_SOUND}
 
         if type(id) == str:
             id = names[id]
