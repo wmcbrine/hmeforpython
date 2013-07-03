@@ -333,7 +333,12 @@ class Beacon:
     def send_beacon(self):
         for beacon_ip in self.ips:
             try:
-                self.UDPSock.sendto(self.beacon_text, (beacon_ip, 2190))
+                packet = self.beacon_text
+                while packet:
+                    result = self.UDPSock.sendto(packet, (beacon_ip, 2190))
+                    if result < 0:
+                        break
+                    packet = packet[result:]
             except socket.error, e:
                 print e
 
