@@ -326,7 +326,7 @@ class Beacon:
         self.beacon_text = '\n'.join(['tivoconnect=1',
             'method=broadcast', 'identity={%s}' % uuid.uuid4(),
             'machine=%s' % socket.gethostname(), 'platform=%s' % PLATFORM,
-            'services=TiVoMediaServer:%s/http' % port])
+            'services=TiVoMediaServer:%s/http' % port]) + '\n'
 
         self.ips = ips.split()
 
