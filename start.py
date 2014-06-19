@@ -278,7 +278,7 @@ class ZCBroadcast:
         self.apps = apps
         self.appinfo = []
         host_ip = self.get_address(host)
-        self.rz = Zeroconf.Zeroconf()
+        self.rz = zeroconf.Zeroconf()
         old_titles = self.find_hme()
         for name in sorted(apps):
             print 'Registering:', name
@@ -289,7 +289,7 @@ class ZCBroadcast:
                 count += 1
                 title = u'%s\xa0[%d]' % (orgtitle, count)
 
-            info = Zeroconf.ServiceInfo(HME_ZC, '%s.%s' % (title, HME_ZC),
+            info = zeroconf.ServiceInfo(HME_ZC, '%s.%s' % (title, HME_ZC),
                                         host_ip, port, 0, 0, desc)
             self.rz.registerService(info)
             self.appinfo.append(info)
@@ -298,7 +298,7 @@ class ZCBroadcast:
         """ Get the titles of running HME apps. """
         titles = []
         try:
-            browser = Zeroconf.ServiceBrowser(self.rz, HME_ZC,
+            browser = zeroconf.ServiceBrowser(self.rz, HME_ZC,
                                               ZCListener(titles))
         except:
             return titles
@@ -417,7 +417,7 @@ if __name__ == '__main__':
 
     try:
         assert(have_zc)
-        import Zeroconf
+        import zeroconf
     except Exception, msg:
         print 'Not using Zeroconf:', msg
         have_zc = False
