@@ -55,6 +55,8 @@ Here's an example config.ini, showing all the possible keywords for the
 server and the picture app. (The values shown here are purely for
 illustrative purposes.)
 
+::
+
  [hmeserver]
  port=7288
  address=192.168.1.1
